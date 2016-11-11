@@ -8,8 +8,20 @@
 
 #include <iostream>
 
+#include "SIKAdd.hpp"
+#include "SIK_Lex.hpp"
+
 int main(int argc, const char * argv[]) {
-    // insert code here...
-    std::cout << "Hello, World!\n";
+    
+    std::string code = "print \"shlomi hassid\" and test;";
+    
+    //Build the needed tools:
+    sik::SIKLex lexer = sik::SIKLex();
+    
+    //Lex the lines:
+    lexer.parse(code, 1);
+    lexer.outputTokens();
+    std::cout << lexer.getOperatingMode() << "\n";
+    
     return 0;
 }
