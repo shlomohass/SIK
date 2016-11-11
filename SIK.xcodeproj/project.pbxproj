@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		3557FF091DCE9177003B2CD5 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3557FF081DCE9177003B2CD5 /* main.cpp */; };
+		3557FF111DCE91C6003B2CD5 /* SIK_Lex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3557FF0F1DCE91C6003B2CD5 /* SIK_Lex.cpp */; };
+		3557FF131DCE94C5003B2CD5 /* SIKAdd.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 3557FF121DCE94C5003B2CD5 /* SIKAdd.hpp */; };
+		3557FF161DCEA26A003B2CD5 /* SIKTokens.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3557FF141DCEA26A003B2CD5 /* SIKTokens.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +28,11 @@
 /* Begin PBXFileReference section */
 		3557FF051DCE9177003B2CD5 /* SIK */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SIK; sourceTree = BUILT_PRODUCTS_DIR; };
 		3557FF081DCE9177003B2CD5 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		3557FF0F1DCE91C6003B2CD5 /* SIK_Lex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SIK_Lex.cpp; sourceTree = "<group>"; };
+		3557FF101DCE91C6003B2CD5 /* SIK_Lex.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SIK_Lex.hpp; sourceTree = "<group>"; };
+		3557FF121DCE94C5003B2CD5 /* SIKAdd.hpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; path = SIKAdd.hpp; sourceTree = "<group>"; };
+		3557FF141DCEA26A003B2CD5 /* SIKTokens.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SIKTokens.cpp; sourceTree = "<group>"; };
+		3557FF151DCEA26A003B2CD5 /* SIKTokens.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SIKTokens.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +66,11 @@
 			isa = PBXGroup;
 			children = (
 				3557FF081DCE9177003B2CD5 /* main.cpp */,
+				3557FF0F1DCE91C6003B2CD5 /* SIK_Lex.cpp */,
+				3557FF101DCE91C6003B2CD5 /* SIK_Lex.hpp */,
+				3557FF121DCE94C5003B2CD5 /* SIKAdd.hpp */,
+				3557FF141DCEA26A003B2CD5 /* SIKTokens.cpp */,
+				3557FF151DCEA26A003B2CD5 /* SIKTokens.hpp */,
 			);
 			path = SIK;
 			sourceTree = "<group>";
@@ -118,6 +131,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3557FF111DCE91C6003B2CD5 /* SIK_Lex.cpp in Sources */,
+				3557FF161DCEA26A003B2CD5 /* SIKTokens.cpp in Sources */,
+				3557FF131DCE94C5003B2CD5 /* SIKAdd.hpp in Sources */,
 				3557FF091DCE9177003B2CD5 /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
