@@ -15,10 +15,10 @@ int main(int argc, const char * argv[]) {
     
     std::string code = "print \"shlomi hassid\" and test;";
     
-    //Build the needed tools:
+    //Build the needed tools :
     sik::SIKLex lexer = sik::SIKLex();
     
-    //Lex the lines:
+    //Lex the lines:  
     lexer.parse(code, 1);
     lexer.outputTokens();
     std::cout << lexer.getOperatingMode() << "\n";
