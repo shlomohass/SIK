@@ -33,6 +33,8 @@ namespace sik {
         SIKTokens();
         
         int size();
+		void clear();
+		void pop(int howMany); // Safe
         void insert(sik::Token token);
         void insert(sik::SIKTokens* tokens);
         std::vector<sik::Token> getSet();
@@ -44,7 +46,8 @@ namespace sik {
         sik::Token getHighestPriorityToken();
         sik::Token* getHighestPriorityTokenPointer();
         void renderTokenSet();
-        
+		std::string typeToString(sik::TokenTypes type);
+
         virtual ~SIKTokens();
         
     };

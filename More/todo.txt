@@ -1,0 +1,10 @@
+[X] Lexer -> basic skelaton;
+[X] Lang -> Import Lang helper;
+[X] Tokenizer -> basic skelaton;
+[X] Script load file parser -> add load file and basic parse statements;
+[X] Handle comments;
+[X] Generate tokens with types and priority
+[X] Handle negative numbers and dot prefix of number;
+[ ] Build Basic Precompiler -> Macros, Extenders.
+[ ] Parse Types boolean.
+[ ] Build Basic AST from token collection.
