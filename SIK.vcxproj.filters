@@ -33,6 +33,15 @@
     <ClCompile Include="SIK\SIKLang.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SIK\SIKAst.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SIK\SIKParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SIK\SIKException.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sik\SIKAdd.hpp">
@@ -54,6 +63,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SIK\SIKLang.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SIK\SIKAst.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SIK\SIKParser.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SIK\SIKException.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

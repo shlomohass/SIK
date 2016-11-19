@@ -507,7 +507,7 @@ namespace sik {
 	}
 
 	bool SIKLang::LangIsNaming(const std::string& value) {
-		for (int i = 0; i < value.length(); i++) {
+		for (unsigned int i = 0; i < value.length(); i++) {
 			if (!LangIsNamingAllowed(value[i])) return false;
 		}
 		return true;
@@ -519,7 +519,7 @@ namespace sik {
 		return false;
 	}
 	bool SIKLang::LangIsNumber(const std::string& value) {
-		for (int i = 0; i < value.length(); i++) {
+		for (unsigned int i = 0; i < value.length(); i++) {
 			if (!LangIsNumberAllowed(value[i])) return false;
 		}
 		return true;

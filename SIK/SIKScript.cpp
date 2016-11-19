@@ -5,17 +5,22 @@
 
 #include "SIKAdd.hpp"
 #include "SIKLang.hpp"
+#include "SIKException.hpp"
 #include "SIKScript.hpp"
 #include "SIKTokens.hpp"
 #include "SIK_Lex.hpp"
+#include "SIKAst.hpp"
+#include "SIKParser.hpp"
+
 #include <fstream>
 #include <streambuf>
 
 namespace sik
 {
 
-	SIKScript::SIKScript(bool debugMode) {
+	SIKScript::SIKScript(bool debugMode, int debugLevel) {
 		this->script_debug_flag = debugMode;
+		this->script_debug_level = debugLevel;
 		this->create_messages();
 	};
 
@@ -41,12 +46,13 @@ namespace sik
 	bool SIKScript::compile(std::string filename) {
 
 		//if Debug:
-		if (this->script_debug_flag) {
+		if (this->script_debug_flag && this->script_debug_level > 3) {
 			SIKLang::printHeader("TOKENIZER OUTPUT:");
 		}
 		//Force a file extension:
 		if (!this->validateFileExtension(filename)) {
 			this->printIt("ERROR", "bad-ext");
+			SIKLang::printEmpLine(1);
 			return false;
 		}
 
@@ -56,11 +62,15 @@ namespace sik
 		input.open(filename);
 		if (!input) {
 			this->printIt("ERROR", "cant-read");
+			SIKLang::printEmpLine(1);
 			return false;
 		}
 
 		//The Lexer:
 		sik::SIKLex lexer = sik::SIKLex();
+
+		//The parser:
+		sik::SIKParser parser = sik::SIKParser();
 
 		//Read to create token stream seperate by blocks and by end of statement:
 		std::string expbuffer = "";
@@ -110,16 +120,33 @@ namespace sik
 				//Pre compile: macros, expnsions.
 
 				//Generate tokens:
-				SIKLang::printEmpLine(1);
+				sik::SIKLang::printEmpLine(1);
 				lexer.parse(expbuffer, line);
+				lexer.tokens.addIndexes();
 
 				//Log tokens by debug:
-				if (this->script_debug_flag) {
+				if (this->script_debug_flag && this->script_debug_level > 3) {
 					lexer.outputExpressionLine(expbuffer, line);
 					lexer.outputTokens();
+					SIKLang::printEmpLine(1);
 				}
 
 				//Parse -> AlS -> Byte code:
+				sik::SIKAst* ParseTree = nullptr;
+				try {
+					ParseTree = parser.BuildAst(lexer.GetTokensPoint());
+				}
+				catch (sik::SIKException& ex)
+				{
+					ex.render(this->script_debug_level);
+					return false;
+				}
+
+				//Log trees by debug:
+				if (this->script_debug_flag && this->script_debug_level > 3) {
+					parser.printTree(ParseTree, 1, 0, std::cout);
+					SIKLang::printEmpLine(1);
+				}
 
 				lexer.truncateTokens();
 				expbuffer.clear();

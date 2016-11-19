@@ -19,16 +19,19 @@ namespace sik
     class SIKLex {
         
         sik::OperatingModes operateMode;
-        sik::SIKTokens tokens;
+        
         
         bool inString;
         bool hadEscape;
         
     public:
         
+		sik::SIKTokens tokens;
+
         SIKLex();
         SIKLex(sik::OperatingModes operate);
-        
+		sik::SIKTokens* GetTokensPoint();
+
         void parse(std::string code, int line);
         void addToken(std::string code, int line);
         sik::TokenTypes evalTokenType(const std::string& token);

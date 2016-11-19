@@ -10,18 +10,19 @@
 #define SIKTokens_hpp
 
 #include "SIKAdd.hpp"
+#include "SIKAst.hpp"
 #include <string>
 #include <vector>
 
 namespace sik {
     
     struct Token {
-        
+		int index;
         int fromLine;
         int priority;
         sik::TokenTypes type;
         std::string obj;
-        
+		sik::SIKAst* node;
     };
     
     class SIKTokens {
@@ -37,17 +38,23 @@ namespace sik {
 		void pop(int howMany); // Safe
         void insert(sik::Token token);
         void insert(sik::SIKTokens* tokens);
+		void insertAt(sik::Token token, int index);
+		void addIndexes();
         std::vector<sik::Token> getSet();
         std::vector<sik::Token>* getSetPointer();
         sik::Token getAt(int i);
         sik::Token* getAtPointer(int i);
         int hasType(sik::TokenTypes type);
-        int findHighestPriority();
+        
+		int findHighestPriority();
         sik::Token getHighestPriorityToken();
         sik::Token* getHighestPriorityTokenPointer();
+
+		bool replaceRangeWithNode(int start, int end, SIKAst* node);
+		bool removeFromeSet(int start, int end, bool resetIndexes);
         void renderTokenSet();
 		std::string typeToString(sik::TokenTypes type);
-
+		
         virtual ~SIKTokens();
         
     };

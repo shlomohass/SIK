@@ -21,6 +21,7 @@ namespace sik
 		std::map<std::string, std::string> ScriptMessage;
 
 		bool script_debug_flag;
+		int script_debug_level;
 
 		bool validateFileExtension(std::string filename);
 		void create_messages();
@@ -28,7 +29,7 @@ namespace sik
 
 	public:
 
-		SIKScript(bool debugMode);
+		SIKScript(bool debugMode, int debugLevel);
 		bool compile(std::string filename);
 
 	};

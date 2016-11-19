@@ -41,6 +41,21 @@ namespace sik {
             this->insert(tokens->getAt(j));
         }
     }
+	/** Insert a toke at a specific index:
+	*   @param Token token -> the token to insert.
+	*   @param int index   -> At a position
+	*/
+	void SIKTokens::insertAt(sik::Token token, int index) {
+		this->tokenSet.insert(this->tokenSet.begin() + index, token);
+	}
+	/** Add the correct indexes to the Token set:
+	 *
+	*/
+	void SIKTokens::addIndexes() {
+		for (int i = 0; i < this->size(); i++) {
+			this->tokenSet[i].index = i;
+		}
+	}
     std::vector<sik::Token> SIKTokens::getSet() {
         return this->tokenSet;
     }
@@ -73,7 +88,7 @@ namespace sik {
         int at = -1;
         int high = -1;
         for (int i = 0; i < s; i++) {
-            if (this->tokenSet[i].priority > high) {
+            if (this->tokenSet[i].priority > high && this->tokenSet[i].node == nullptr) {
                 high = this->tokenSet[i].priority;
                 at = i;
             }
@@ -94,6 +109,54 @@ namespace sik {
         }
         return this->getAtPointer(f);
     }
+	/* Replace a range in the token set and puts a node instead:
+	 * @param int start -> start index
+	 * @param int end   -> end index
+	 * @param SIKAst* node -> the node pointer
+	 * @return bool
+	*/
+	bool SIKTokens::replaceRangeWithNode(int start, int end, sik::SIKAst* node) {
+		if (node == nullptr) { return false; }
+
+		sik::Token token;
+		token.type = sik::NODE;
+		token.priority = 0;
+		token.index = start;
+		token.fromLine = -1;
+		token.obj = "\0";
+		token.node = node;
+
+		//Will perform the erase:
+		if (!this->removeFromeSet(start, end, false)) { return false; }
+
+		//Push the new one:
+		this->insertAt(token, start);
+
+		//Reindex Set:
+		this->addIndexes();
+
+		return true;
+	}
+	/* Earases a range in the token set:
+	* @param int start -> start index
+	* @param int end   -> end index
+	* @param bool resetIndexes   -> whether to reset the indexes or not
+	* @return bool
+	*/
+	bool SIKTokens::removeFromeSet(int start, int end, bool resetIndexes) {
+		int howMany = end - start + 1;
+		if (howMany < 1 || end >(int)this->tokenSet.size() - 1) {
+			return false;
+		}
+		//Will perform the erase:
+		for (int i = 0; i < howMany; i++) {
+			this->tokenSet.erase(this->tokenSet.begin() + start);
+		}
+		if (resetIndexes) {
+			this->addIndexes();
+		}
+		return true;
+	}
     void SIKTokens::renderTokenSet() {
         int i = this->size();
 		std::cout << "TYPE : ";
@@ -184,6 +247,10 @@ namespace sik {
 			return "STR";
 		case sik::NUMBER:
 			return "NUM";
+		case sik::NOPE:
+			return "NOPE";
+		case sik::NODE:
+			return "NODE";
 		default:
 			return "UNK";
 		}

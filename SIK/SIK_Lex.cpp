@@ -28,6 +28,14 @@ namespace sik
         this->hadEscape = false;
     }
 
+	/** Get a pointer to the tokens collection
+	 * @return SIKTokens* tokenSet
+	*/
+	sik::SIKTokens* SIKLex::GetTokensPoint()
+	{
+		return &this->tokens;
+	}
+
     void SIKLex::SIKLex::parse(std::string code, int line) {
         
 		int expIndex = 0;
@@ -134,11 +142,15 @@ namespace sik
 		}
     }
     void SIKLex::addToken(std::string tok, int line) {
-        sik::Token token;
+        
+		sik::Token token;
+		token.index = -1;
         token.fromLine = line;
         token.obj = tok;
         token.type = this->evalTokenType(tok);
 		token.priority = this->evalTokenPriority(&token);
+		token.node = nullptr;
+
         if (token.type == STRING) {
             this->stripStringQ(&token.obj);
         }

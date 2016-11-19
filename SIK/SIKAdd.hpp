@@ -17,6 +17,7 @@ namespace sik
     enum ExecCodes { SUCCESS, GENEROOR };
     
     enum TokenTypes { 
+		NODE,
 		NOPE, 
 		NUMBER, 
 		STRING, 

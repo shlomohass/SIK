@@ -30,6 +30,7 @@ int main(int argc, char** argv) {
 	std::string filepath;
 	cm::ArgvParser cmd;
 	bool enable_debug = SIK_DEBUG;
+	int  debug_level = 1; // 1-> Errors, Warnings : 2-> Opcodes, 3-> Executions, 4-> Tokens, AST, Macros.
 	bool execute_is_requested = false;
 
 	cmd.addErrorCode(0, "Success");
@@ -37,7 +38,8 @@ int main(int argc, char** argv) {
 	cmd.setIntroductoryDescription("This is foo written by bar.");
 	cmd.setHelpOption("h", "help", "Print this help page");
 	cmd.defineOption("r", "Compile and run a file -r file.sik", cm::ArgvParser::OptionRequiresValue);
-	cmd.defineOption("debug", "enable deep debug", cm::ArgvParser::NoOptionAttribute);
+	cmd.defineOption("debug", "enable debug", cm::ArgvParser::NoOptionAttribute);
+	cmd.defineOption("level", "set debuging level", cm::ArgvParser::OptionRequiresValue);
 
 	int result = cmd.parse(argc, argv);
 
@@ -57,6 +59,13 @@ int main(int argc, char** argv) {
 		if (cmd.foundOption("debug")) {
 			enable_debug = true;
 		}
+		if (cmd.foundOption("level")) {
+			try {
+				debug_level = std::stoi(cmd.optionValue("level"));
+			} catch (...) {
+				debug_level = 1;
+			}
+		}
 	}
 
 	if (result == cm::ArgvParser::ParserHelpRequested) {
@@ -70,7 +79,7 @@ int main(int argc, char** argv) {
 		sik::SIKLang* lang = new sik::SIKLang();
 
 		//Create a Script Container:
-		sik::SIKScript script(enable_debug);
+		sik::SIKScript script(enable_debug, debug_level);
 		//Load target script:
 		bool indicator = script.compile(filepath);
 
