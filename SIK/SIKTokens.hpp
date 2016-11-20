@@ -50,6 +50,9 @@ namespace sik {
         sik::Token getHighestPriorityToken();
         sik::Token* getHighestPriorityTokenPointer();
 
+		std::vector<int> hasNestedCommas(int indexStart);
+		bool hasUnparse();
+
 		bool replaceRangeWithNode(int start, int end, SIKAst* node);
 		bool removeFromeSet(int start, int end, bool resetIndexes);
         void renderTokenSet();

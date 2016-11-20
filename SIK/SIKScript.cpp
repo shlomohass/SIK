@@ -144,9 +144,25 @@ namespace sik
 
 				//Log trees by debug:
 				if (this->script_debug_flag && this->script_debug_level > 3) {
-					parser.printTree(ParseTree, 1, 0, std::cout);
-					SIKLang::printEmpLine(1);
+					for (int i = 0; i < (int)ParseTree->bulk.size(); i++) {
+						parser.printTree(ParseTree->bulk[i], 1, 0, std::cout);
+						SIKLang::printEmpLine(1);
+					}
 				}
+
+				//Walk tree and evaluate:
+				/**/
+				try {
+					parser.WalkAst(ParseTree);
+				}
+				catch (sik::SIKException& ex)
+				{
+					ex.render(this->script_debug_level);
+					return false;
+				}
+				
+				//Release memmory:
+				delete ParseTree;
 
 				lexer.truncateTokens();
 				expbuffer.clear();

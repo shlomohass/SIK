@@ -7,7 +7,7 @@
 //
 
 #include "SIKAst.hpp"
-
+#include <iostream>
 
 namespace sik {
 
@@ -20,13 +20,18 @@ namespace sik {
 		this->line = -1;
 		this->Left = nullptr;
 		this->Right = nullptr;
+		this->Mark = false;
 	}
 
 
 	SIKAst::~SIKAst()
 	{
+		std::cout << "ASTNode delete - " << this->Value << std::endl;
 		delete this->Left;
 		delete this->Right;
+		for (int i = 0; i < (int)this->bulk.size(); i++) {
+			delete this->bulk[i];
+		}
 	}
 
 }

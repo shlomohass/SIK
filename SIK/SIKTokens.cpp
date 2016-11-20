@@ -6,6 +6,7 @@
 //  Copyright © 2016 Shlomo Hassid. All rights reserved.
 //
 
+#include "SIKLang.hpp"
 #include "SIKTokens.hpp"
 
 #include <iostream>
@@ -109,6 +110,38 @@ namespace sik {
         }
         return this->getAtPointer(f);
     }
+
+	std::vector<int> SIKTokens::hasNestedCommas(int indexStart) {
+		int countNest = 0;
+		std::vector<int> vecnum;
+
+		for (int i = indexStart; i < (int)this->tokenSet.size(); i++) {
+			if (this->tokenSet[i].type == sik::DELI_BRKOPEN ||
+				this->tokenSet[i].type == sik::DELI_SBRKOPEN ||
+				this->tokenSet[i].type == sik::DELI_BRCOPEN
+			) { 
+				countNest++;
+				continue;
+			}
+			if (this->tokenSet[i].type == sik::DELI_BRKCLOSE ||
+				this->tokenSet[i].type == sik::DELI_SBRKCLOSE ||
+				this->tokenSet[i].type == sik::DELI_BRCCLOSE
+				) {
+				countNest--;
+				continue;
+			}
+			if (this->tokenSet[i].type == sik::DELI_COMMA && countNest < 1) {
+				vecnum.push_back(i);
+			}
+		}
+		return vecnum;
+	}
+	bool SIKTokens::hasUnparse() {
+		for (int i = 0; i < (int)this->tokenSet.size(); i++) {
+			if (this->tokenSet[i].node == nullptr) return true;
+		}
+		return false;
+	}
 	/* Replace a range in the token set and puts a node instead:
 	 * @param int start -> start index
 	 * @param int end   -> end index

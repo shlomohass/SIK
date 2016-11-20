@@ -23,9 +23,17 @@ namespace sik {
 
 		SIKParser();
 
+		//Operations:
 		SIKAst* BuildAst(SIKTokens* TokenSet);
 		void SetNodeFromToken(SIKAst* node, Token* tok);
-		
+		void WalkAst(SIKAst* nodeParent);
+		void WalkAst(SIKAst* nodeParent, SIKAst* nodeChild);
+
+		//Generate codes:
+		void genForKeywords(SIKAst* nodeParent, SIKAst* nodeChild);
+		void genForPrimitives(SIKAst* nodeParent, SIKAst* nodeChild);
+		void genForLR(SIKAst* nodeParent, SIKAst* nodeChild);
+
 		//Printing Trees:
 		int maxHeight(SIKAst *p);
 		void printBranches(int branchLen, int nodeSpaceLen, int startLen, int nodesInThisLevel, const std::deque<SIKAst*>& nodesQueue, std::ostream& out);

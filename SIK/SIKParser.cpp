@@ -23,7 +23,7 @@ namespace sik {
 
 	SIKAst* SIKParser::BuildAst(SIKTokens* TokenSet)
 	{
-		while (TokenSet->size() > 1) {
+		while (TokenSet->hasUnparse()) {
 			SIKAst* node = new SIKAst();
 			Token* tok = TokenSet->getHighestPriorityTokenPointer();
 			switch (tok->type) {
@@ -31,7 +31,11 @@ namespace sik {
 				case sik::NOPE:
 					TokenSet->removeFromeSet(tok->index, tok->index, true);
 					break;
+				case sik::DELI_COMMA:
+					TokenSet->removeFromeSet(tok->index, tok->index, true);
+					break;
 				case sik::KEYWORD:
+					// EQUAL SIGN: =
 					if (tok->obj == SIKLang::dicLangKey_variable) {
 
 						//Single Variable Declaration node:
@@ -46,6 +50,24 @@ namespace sik {
 							//Set the parent:
 							this->SetNodeFromToken(node, tokP);
 							node->Left = nodeChild;
+
+							//Add name to bulk define and check for nested:
+							SIKAst* nodeDefine = new SIKAst();
+							this->SetNodeFromToken(nodeDefine, tokP);
+							nodeChild->bulk.push_back(nodeDefine);
+							std::vector<int> testNested = TokenSet->hasNestedCommas(tokP->index);
+							for (int i = 0; i < (int)testNested.size(); i++) {
+								
+								Token* tokMore = TokenSet->getAtPointer(testNested[i] + 1);
+								if (tokMore != nullptr && tokP->type == NAMING) {
+									SIKAst* nodeDefineMore = new SIKAst();
+									this->SetNodeFromToken(nodeDefineMore, tokMore);
+									nodeChild->bulk.push_back(nodeDefineMore);
+								} else {
+									throw SIKException("Expected Variable name after Comma.", tokMore->fromLine);
+								}
+								
+							}
 
 							//Remove Both and replace:
 							if (!TokenSet->replaceRangeWithNode(tok->index, tokP->index, node)) {
@@ -103,11 +125,23 @@ namespace sik {
 					}
 					break;
 				case sik::NAMING:
+					this->SetNodeFromToken(node, tok);
+					//Remove Both and replace:
+					if (!TokenSet->replaceRangeWithNode(tok->index, tok->index, node)) {
+						throw SIKException("Expected value before and after " + tok->obj + " delimiter.", tok->fromLine);
+					}
 					break;
-
 			}
 		}
-		return TokenSet->getAtPointer(0)->node;
+		//Wrap result inside a node block;
+		SIKAst* nodeBlock = new SIKAst();
+		for (int i = 0; i < TokenSet->getSetPointer()->size(); i++) {
+			SIKAst* nodeAppend = TokenSet->getAtPointer(i)->node;
+			if (nodeAppend != nullptr) {
+				nodeBlock->bulk.push_back(nodeAppend);
+			}
+		}
+		return nodeBlock;
 	}
 	void SIKParser::SetNodeFromToken(SIKAst* node, Token* tok)
 	{
@@ -127,7 +161,120 @@ namespace sik {
 			node->Value = tok->obj;
 		}
 	}
-
+	/* Walk the Ast given
+	 * @param SIKAst* node -> the node
+	 *
+	*/
+	void SIKParser::WalkAst(SIKAst* nodeParent) {
+		for (int i = 0; i < (int)nodeParent->bulk.size(); i++) {
+			WalkAst(nullptr, nodeParent->bulk[i]);
+		}
+	}
+	void SIKParser::WalkAst(SIKAst* nodeParent, SIKAst* nodeChild) {
+		if (nodeChild->Left != nullptr && !nodeChild->Left->Mark) {
+			WalkAst(nodeChild, nodeChild->Left);
+		}
+		if (nodeChild->Right != nullptr && !nodeChild->Right->Mark) {
+			WalkAst(nodeChild, nodeChild->Right);
+		}
+		switch (nodeChild->Type) {
+		case sik::KEYWORD:
+			this->genForKeywords(nodeParent, nodeChild);
+			nodeChild->Mark = true;
+			break;
+		case sik::NAMING:
+		case sik::NUMBER:
+			this->genForPrimitives(nodeParent, nodeChild);
+			nodeChild->Mark = true;
+			break;
+		case sik::DELI_EQUAL:
+		case sik::DELI_PLUS:
+		case sik::DELI_MINUS:
+		case sik::DELI_MULTI:
+			this->genForLR(nodeParent, nodeChild);
+			nodeChild->Mark = true;
+			break;
+		}
+	}
+	void SIKParser::genForKeywords(SIKAst* nodeParent, SIKAst* nodeChild) {
+		// Variable definition:
+		if (nodeChild->Value == SIKLang::dicLangKey_variable) {
+			for (int i = 0; i < (int)nodeChild->bulk.size(); i++) {
+				std::cout << " OP: DEFINE " << nodeChild->bulk[i]->Value << std::endl;
+			}
+		}
+	}
+	void SIKParser::genForPrimitives(SIKAst* nodeParent, SIKAst* nodeChild) {
+		std::cout << " OP: PUSH " << nodeChild->Value << std::endl;
+	}
+	void SIKParser::genForLR(SIKAst* nodeParent, SIKAst* nodeChild) {
+		switch (nodeChild->Type) {
+			case DELI_PLUS:
+				std::cout << " OP: ADD " << nodeChild->Value << std::endl;
+				break;
+			case DELI_MINUS:
+				std::cout << " OP: SUB " << nodeChild->Value << std::endl;
+				break;
+			case DELI_INCR:
+				break;
+			case DELI_DECR:
+				break;
+			case DELI_MULTI:
+				std::cout << " OP: MUL " << nodeChild->Value << std::endl;
+				break;
+			case DELI_DIVIDE:
+				break;
+			case DELI_EQUAL:
+				std::cout << " OP: ASSIGN " << nodeChild->Value << std::endl;
+				break;
+			case DELI_EQUALADD:
+				break;
+			case DELI_EQUALSUB:
+				break;
+			case DELI_POINT:
+				break;
+			case DELI_BRKOPEN:
+				break;
+			case DELI_BRKCLOSE:
+				break;
+			case DELI_BRCOPEN:
+				break;
+			case DELI_BRCCLOSE:
+				break;
+			case DELI_SBRKOPEN:
+				break;
+			case DELI_SBRKCLOSE:
+				break;
+			case DELI_POW:
+				break;
+			case DELI_EXCL:
+				break;
+			case DELI_GRT:
+				break;
+			case DELI_LST:
+				break;
+			case DELI_GRTE:
+				break;
+			case DELI_LSTE:
+				break;
+			case DELI_COMMA:
+				break;
+			case DELI_CTEQUAL:
+				break;
+			case DELI_CTNEQUAL:
+				break;
+			case DELI_CEQUAL:
+				break;
+			case DELI_CNEQUAL:
+				break;
+			case DELI_CAND:
+				break;
+			case DELI_COR:
+				break;
+			case DELI_OBJCALL:
+				break;
+		}
+	}
 	// Find the maximum height of the binary tree
 	int SIKParser::maxHeight(SIKAst *p) {
 		if (!p) return 0;
