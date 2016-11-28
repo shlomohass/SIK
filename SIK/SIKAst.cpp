@@ -14,13 +14,14 @@ namespace sik {
 
 	SIKAst::SIKAst()
 	{
-		this->Type = NOPE;
-		this->Value = "\0";
-		this->Priority = -1;
-		this->line = -1;
-		this->Left = nullptr;
-		this->Right = nullptr;
-		this->Mark = false;
+		this->Type		= NOPE;
+		this->Value		= "\0";
+		this->Priority	= -1;
+		this->line		= -1;
+		this->Left		= nullptr;
+		this->Right		= nullptr;
+		this->Parent	= nullptr;
+		this->Mark		= false;
 	}
 
 

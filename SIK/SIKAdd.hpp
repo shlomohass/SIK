@@ -18,6 +18,7 @@ namespace sik
     
     enum TokenTypes {
 		NODE,
+		SBLOCK,
 		NOPE, 
 		NUMBER, 
 		STRING, 

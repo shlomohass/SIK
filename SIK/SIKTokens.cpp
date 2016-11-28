@@ -136,6 +136,28 @@ namespace sik {
 		}
 		return vecnum;
 	}
+	int SIKTokens::getParenthesesFirstAndLast(int indexStart) {
+		int countNested = 0;
+		//Validate first:
+		if (indexStart + 1 >= this->size() || this->tokenSet[indexStart + 1].type != sik::DELI_BRKOPEN) {
+			return -1;
+		}
+		for (int i = indexStart + 2; i < (int)this->tokenSet.size(); i++) {
+			if (this->tokenSet[i].type == sik::DELI_BRKOPEN) {
+				countNested++;
+				continue;
+			}
+			if (this->tokenSet[i].type == sik::DELI_BRKCLOSE && countNested > 0
+				) {
+				countNested--;
+				continue;
+			}
+			if (this->tokenSet[i].type == sik::DELI_BRKCLOSE) {
+				return i;
+			}
+		}
+		return -2;
+	}
 	bool SIKTokens::hasUnparse() {
 		for (int i = 0; i < (int)this->tokenSet.size(); i++) {
 			if (this->tokenSet[i].node == nullptr) return true;
@@ -189,6 +211,19 @@ namespace sik {
 			this->addIndexes();
 		}
 		return true;
+	}
+	/* Get from set a subset:
+	* @param int start -> start index
+	* @param int end   -> end index
+	* @return bool
+	*/
+	sik::SIKTokens SIKTokens::getFromeSet(int start, int end) {
+		sik::SIKTokens subset;
+		for (int i = start; i < end + 1; i++) {
+			subset.insert(this->getAt(i));
+		}
+		subset.addIndexes();
+		return subset;
 	}
     void SIKTokens::renderTokenSet() {
         int i = this->size();
@@ -284,6 +319,8 @@ namespace sik {
 			return "NOPE";
 		case sik::NODE:
 			return "NODE";
+		case sik::SBLOCK:
+			return "BLOC";
 		default:
 			return "UNK";
 		}

@@ -25,6 +25,7 @@ namespace sik {
 		int					 line;
 		sik::SIKAst*		 Left;
 		sik::SIKAst*		 Right;
+		sik::SIKAst*		 Parent;
 		std::vector<SIKAst*> bulk;
 		bool				 Mark;
 
