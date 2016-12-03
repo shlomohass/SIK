@@ -134,6 +134,7 @@ namespace sik
 				}
 			} else {
 				currentToken = "";
+				expIndex++;
 				continue;
 			}
 			//Add the token found:
@@ -164,6 +165,8 @@ namespace sik
 				if (
 					prevTwo != nullptr &&
 					this->isDelimiter(prevTwo->obj) &&
+					prevTwo->type != sik::DELI_BRKCLOSE && 
+					prevTwo->type != sik::DELI_SBRKCLOSE && 
 					prevOne != nullptr &&
 					(prevOne->obj == SIKLang::dicLang_minus || prevOne->obj == SIKLang::dicLang_objcall)
 					) {

@@ -121,6 +121,8 @@ namespace sik
 		static std::string dicLang_c_nequal;
 		static std::string dicLang_and;
 		static std::string dicLang_or;
+		static std::string dicLang_s_and;
+		static std::string dicLang_s_or;
 		static std::string dicLang_semicolon;
 		static std::string dicLang_objcall;
 

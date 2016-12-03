@@ -47,7 +47,9 @@ namespace sik {
 		{ "c-equal"           , "==" },
 		{ "c-nequal"          , "!=" },
 		{ "and"               , "&&" },
+		{ "single-and"        , "&" },
 		{ "or"                , "||" },
+		{ "single-or"        , "|" },
 		{ "semicolon"         , ";" },
 		{ "macro-def"		  , "#" },
 		{ "macro-set"		  , ":" },
@@ -198,6 +200,8 @@ namespace sik {
 	std::string SIKLang::dicLang_c_nequal = "";
 	std::string SIKLang::dicLang_and = "";
 	std::string SIKLang::dicLang_or = "";
+	std::string SIKLang::dicLang_s_and = "";
+	std::string SIKLang::dicLang_s_or = "";
 	std::string SIKLang::dicLang_semicolon = "";
 	std::string SIKLang::dicLang_objcall = "";
 
@@ -282,6 +286,8 @@ namespace sik {
 		dicLang_c_nequal = LangFindDelimiter("c-nequal");
 		dicLang_and = LangFindDelimiter("and");
 		dicLang_or = LangFindDelimiter("or");
+		dicLang_s_and = LangFindDelimiter("single-and");
+		dicLang_s_or = LangFindDelimiter("single-or");
 		dicLang_semicolon = LangFindDelimiter("semicolon");
 		dicLang_objcall = LangFindDelimiter("object-call");
 
@@ -441,6 +447,8 @@ namespace sik {
 		if (test == dicLang_c_nequal[0] && value == dicLang_c_nequal) return true;
 		if (test == dicLang_and[0] && value == dicLang_and) return true;
 		if (test == dicLang_or[0] && value == dicLang_or) return true;
+		if (test == dicLang_s_and[0] && value == dicLang_s_and) return true;
+		if (test == dicLang_s_or[0] && value == dicLang_s_or) return true;
 		if (test == dicLang_semicolon[0] && value == dicLang_semicolon) return true;
 		if (test == dicLang_objcall[0] && value == dicLang_objcall) return true;
 		return false;

@@ -14,6 +14,7 @@ namespace sik {
 
 	SIKAst::SIKAst()
 	{
+		this->PreventBulkDelete = false;
 		this->Type		= sik::NOPE;
 		this->Value		= "\0";
 		this->Block		= sik::BLOCK_NONE;
@@ -25,14 +26,27 @@ namespace sik {
 		this->Mark		= false;
 	}
 
-
+	void SIKAst::mutateTo(SIKAst* target) {
+		this->PreventBulkDelete = target->PreventBulkDelete;
+		this->Type = target->Type;
+		this->Value = target->Value;
+		this->Block = target->Block;
+		this->Priority = target->Priority;
+		this->line = target->line;
+		this->Left = target->Left;
+		this->Right = target->Right;
+		this->Parent = target->Parent;
+		this->Mark = target->Mark;
+	}
 	SIKAst::~SIKAst()
 	{
-		// std::cout << "ASTNode delete - " << this->Value << std::endl;
+		std::cout << "ASTNode delete - " << this->Value << std::endl;
 		delete this->Left;
 		delete this->Right;
-		for (int i = 0; i < (int)this->bulk.size(); i++) {
-			delete this->bulk[i];
+		if (!this->PreventBulkDelete) {
+			for (int i = 0; i < (int)this->bulk.size(); i++) {
+				delete this->bulk[i];
+			}
 		}
 	}
 

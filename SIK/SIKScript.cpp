@@ -60,7 +60,18 @@ namespace sik
 			{ INS_ELSEIF,	 "ELIF" },
 			{ INS_ELSE,		 "ELSE" },
 			{ INS_OSBLOCK,	 "OSBLK" },
-			{ INS_CSBLOCK,	 "CSBLK" }
+			{ INS_CSBLOCK,	 "CSBLK" },
+
+			{ INS_CGRT,		 "CGRT" },
+			{ INS_CLST,		 "CLST" },
+			{ INS_CGRTE,	 "CGRTE" },
+			{ INS_CLSTE,	 "CLSTE" },
+			{ INS_CTEQUAL,	 "CTEQ" },
+			{ INS_CNTEQUAL,	 "CNTEQ" },
+			{ INS_CEQUAL,	 "CEQ" },
+			{ INS_CNEQUAL,	 "CNEQ" },
+			{ INS_CAND,		 "CAND" },
+			{ INS_COR,		 "COR" }
 		};
 	}
 

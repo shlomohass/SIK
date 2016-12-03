@@ -23,7 +23,8 @@ namespace sik
         
         bool inString;
         bool hadEscape;
-        
+		float parenthesesIncr;
+
     public:
         
 		sik::SIKTokens tokens;

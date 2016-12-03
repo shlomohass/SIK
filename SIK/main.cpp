@@ -95,18 +95,4 @@ int main(int argc, char** argv) {
 		system("pause");
 	}
 	return 0;
-
-    //std::string code = "print \"shlomi hassid\" and test;";
-    
-    //Build the needed tools :
-    //sik::SIKLex lexer = sik::SIKLex();
-    
-    //Lex the lines:  
-    //lexer.parse(code, 1);
-    //lexer.outputTokens();
-    //std::cout << lexer.getOperatingMode() << "\n";
-    
-	//system("pause");
-
-    //return 0;
 }

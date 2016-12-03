@@ -18,7 +18,7 @@ namespace sik {
 	class SIKAst
 	{
 	public:
-
+		bool				 PreventBulkDelete;
 		sik::TokenTypes		 Type;
 		std::string			 Value;
 		sik::BlocksIn        Block;
@@ -30,7 +30,10 @@ namespace sik {
 		std::vector<SIKAst*> bulk;
 		bool				 Mark;
 
+		
 		SIKAst();
+		void mutateTo(SIKAst* target);
+
 		virtual ~SIKAst();
 	};
 

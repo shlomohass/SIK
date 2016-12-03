@@ -16,7 +16,8 @@ if (bookkkppp + 2) {
 	}
 }
 */
-let b = true,
-    c = null,
-	d = FALSE,
-	e = TRUE;
+// let b = true, c = null, d = FALSE, e = TRUE;
+// let a = 1 == 2 + 3;
+// let a = 1 <= 2 && 3 >= 1;
+// let a = 1 == 2 || 3 < 4 && 6 > 5;
+let b = 1 + 2 + (((2 * (3 + 5)) * 4 ) - 4) * 6 * 5;

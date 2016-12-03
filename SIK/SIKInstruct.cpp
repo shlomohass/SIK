@@ -93,23 +93,44 @@ namespace sik {
 			case sik::DELI_EQUALSUB:
 				this->Type = sik::INS_ASSIGNSUB;
 				break;
+			
+			case sik::DELI_GRT:
+				this->Type = sik::INS_CGRT;
+				break;
+			case sik::DELI_LST:
+				this->Type = sik::INS_CLST;
+				break;
+			case sik::DELI_GRTE:
+				this->Type = sik::INS_CGRTE;
+				break;
+			case sik::DELI_LSTE:
+				this->Type = sik::INS_CLSTE;
+				break;
+			case sik::DELI_CTEQUAL:
+				this->Type = sik::INS_CTEQUAL;
+				break;
+			case sik::DELI_CTNEQUAL:
+				this->Type = sik::INS_CNTEQUAL;
+				break;
+			case sik::DELI_CEQUAL:
+				this->Type = sik::INS_CEQUAL;
+				break;
+			case sik::DELI_CNEQUAL:
+				this->Type = sik::INS_CNEQUAL;
+				break;
+			case sik::DELI_CAND:
+				this->Type = sik::INS_CAND;
+				break;
+			case sik::DELI_COR:
+				this->Type = sik::INS_COR;
+				break;
+			case sik::DELI_COMMA:
+			case sik::DELI_EXCL:
 			case sik::DELI_POINT:
 			case sik::DELI_BRKOPEN:
 			case sik::DELI_BRKCLOSE:
 			case sik::DELI_SBRKOPEN:
 			case sik::DELI_SBRKCLOSE:
-			case sik::DELI_EXCL:
-			case sik::DELI_GRT:
-			case sik::DELI_LST:
-			case sik::DELI_GRTE:
-			case sik::DELI_LSTE:
-			case sik::DELI_COMMA:
-			case sik::DELI_CTEQUAL:
-			case sik::DELI_CTNEQUAL:
-			case sik::DELI_CEQUAL:
-			case sik::DELI_CNEQUAL:
-			case sik::DELI_CAND:
-			case sik::DELI_COR:
 			case sik::DELI_OBJCALL:
 			case sik::DELIMITER:
 			case sik::KEYWORD:
