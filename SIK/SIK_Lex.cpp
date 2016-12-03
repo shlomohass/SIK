@@ -151,7 +151,7 @@ namespace sik
 		token.priority = this->evalTokenPriority(&token);
 		token.node = nullptr;
 
-        if (token.type == STRING) {
+		if	(token.type == STRING) {
             this->stripStringQ(&token.obj);
         }
 		if (token.type == NUMBER) {
@@ -198,6 +198,12 @@ namespace sik
 			return this->evalDelimType(token);
 		}
 		if (SIKLang::LangIsNaming(token)) {
+			if (SIKLang::LangIsBoolean(token) > -1) {
+				return sik::BOOLEAN;
+			}
+			if (SIKLang::LangIsNull(token)) {
+				return sik::NULLTYPE;
+			}
 			return sik::NAMING;
 		}
 		if (SIKLang::LangIsNumber(token)) {

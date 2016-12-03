@@ -63,6 +63,8 @@ namespace sik
 		static std::map<std::string, std::string>     LangInverseValues;
 		static std::string LangFindValueNaming(const std::string& key);
 		static bool LangHasValueNaming(const std::string& key);
+		static int LangIsBoolean(const std::string& key);
+		static bool LangIsNull(const std::string& key);
 
 		//System function constants:
 		static std::map<int, std::string> LangSystemLib;

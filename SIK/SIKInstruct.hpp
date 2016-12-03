@@ -24,6 +24,7 @@ namespace sik {
 			std::string			 Value;
 			sik::BlocksIn        Block;
 			int					 lineOrigin;
+			int					 cache;
 
 			SIKInstruct();
 			SIKInstruct(sik::SIKAst* node);

@@ -7,6 +7,7 @@
 //
 
 #include "SIKInstruct.hpp"
+#include "SIKLang.hpp"
 
 namespace sik {
 
@@ -17,6 +18,7 @@ namespace sik {
 		this->Value = '\0';
 		this->Block = sik::BLOCK_NONE;
 		this->lineOrigin = -1;
+		this->cache = -1;
 	}
 	SIKInstruct::SIKInstruct(sik::SIKAst* node, sik::InstructType type) {
 		this->SubType = sik::NOPE;
@@ -33,77 +35,86 @@ namespace sik {
 		this->lineOrigin = node->line;
 
 		switch (node->Type) {
-			case DELI_BRCOPEN:
-			case SBLOCK:
+			case sik::DELI_BRCOPEN:
+			case sik::SBLOCK:
 				this->Type = sik::INS_OSBLOCK;
 				break;
-			case DELI_BRCCLOSE:
+			case sik::DELI_BRCCLOSE:
 				this->Type = sik::INS_CSBLOCK;
 				break;
-			case NUMBER:
+			case sik::NUMBER:
 				this->Type = sik::INS_PUSH;
 				this->SubType = sik::NUMBER;
 				break;
-			case STRING:
+			case sik::STRING:
 				this->Type = sik::INS_PUSH;
 				this->SubType = sik::STRING;
 				break;
-			case NAMING:
+			case sik::BOOLEAN:
+				this->Type = sik::INS_PUSH;
+				this->SubType = sik::BOOLEAN;
+				this->cache = sik::SIKLang::LangIsBoolean(this->Value);
+				break;
+			case sik::NULLTYPE:
+				this->Type = sik::INS_PUSH;
+				this->SubType = sik::NULLTYPE;
+				break;
+			case sik::NAMING:
 				this->Type = sik::INS_PUSH;
 				this->SubType = sik::NAMING;
 				break;
-			case DELI_PLUS:
+			case sik::DELI_PLUS:
 				this->Type = sik::INS_ADD;
 				break;
-			case DELI_MINUS:
+			case sik::DELI_MINUS:
 				this->Type = sik::INS_SUBTRACT;
 				break;
-			case DELI_INCR:
+			case sik::DELI_INCR:
 				this->Type = sik::INS_INCREMENT;
 				break;
-			case DELI_DECR:
+			case sik::DELI_DECR:
 				this->Type = sik::INS_DECREMENT;
 				break;
-			case DELI_MULTI:
+			case sik::DELI_MULTI:
 				this->Type = sik::INS_MULTI;
 				break;
-			case DELI_DIVIDE:
+			case sik::DELI_DIVIDE:
 				this->Type = sik::INS_DEVIDE;
 				break;
-			case DELI_POW:
+			case sik::DELI_POW:
 				this->Type = sik::INS_POW;
 				break;
-			case DELI_EQUAL:
+			case sik::DELI_EQUAL:
 				this->Type = sik::INS_ASSIGN;
 				break;
-			case DELI_EQUALADD:
+			case sik::DELI_EQUALADD:
 				this->Type = sik::INS_ASSIGNADD;
 				break;
-			case DELI_EQUALSUB:
+			case sik::DELI_EQUALSUB:
 				this->Type = sik::INS_ASSIGNSUB;
 				break;
-			case DELI_POINT:
-			case DELI_BRKOPEN:
-			case DELI_BRKCLOSE:
-			case DELI_SBRKOPEN:
-			case DELI_SBRKCLOSE:
-			case DELI_EXCL:
-			case DELI_GRT:
-			case DELI_LST:
-			case DELI_GRTE:
-			case DELI_LSTE:
-			case DELI_COMMA:
-			case DELI_CTEQUAL:
-			case DELI_CTNEQUAL:
-			case DELI_CEQUAL:
-			case DELI_CNEQUAL:
-			case DELI_CAND:
-			case DELI_COR:
-			case DELI_OBJCALL:
-			case DELIMITER:
-			case KEYWORD:
-			case NODE:
-			case NOPE:
+			case sik::DELI_POINT:
+			case sik::DELI_BRKOPEN:
+			case sik::DELI_BRKCLOSE:
+			case sik::DELI_SBRKOPEN:
+			case sik::DELI_SBRKCLOSE:
+			case sik::DELI_EXCL:
+			case sik::DELI_GRT:
+			case sik::DELI_LST:
+			case sik::DELI_GRTE:
+			case sik::DELI_LSTE:
+			case sik::DELI_COMMA:
+			case sik::DELI_CTEQUAL:
+			case sik::DELI_CTNEQUAL:
+			case sik::DELI_CEQUAL:
+			case sik::DELI_CNEQUAL:
+			case sik::DELI_CAND:
+			case sik::DELI_COR:
+			case sik::DELI_OBJCALL:
+			case sik::DELIMITER:
+			case sik::KEYWORD:
+			case sik::NODE:
+			case sik::NOPE:
 				this->Type = sik::INS_NONE;
 				break;
 		}

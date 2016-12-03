@@ -357,6 +357,8 @@ namespace sik {
 		case sik::NAMING:
 		case sik::NUMBER:
 		case sik::STRING:
+		case sik::BOOLEAN:
+		case sik::NULLTYPE:
 			this->genForPrimitives(nodeParent, nodeChild, Instructions);
 			nodeChild->Mark = true;
 			break;
@@ -396,14 +398,16 @@ namespace sik {
 	}
 	void SIKParser::genForPrimitives(SIKAst* nodeParent, SIKAst* nodeChild, std::vector<sik::SIKInstruct>* Instructions) {
 		switch (nodeChild->Type) {
-				case sik::SBLOCK:
-					Instructions->push_back(sik::SIKInstruct(nodeChild));
-					break;
-				case sik::NAMING:
-				case sik::NUMBER:
-				case sik::STRING:
-					Instructions->push_back(sik::SIKInstruct(nodeChild));
-					break;
+			case sik::SBLOCK:
+				Instructions->push_back(sik::SIKInstruct(nodeChild));
+				break;
+			case sik::NAMING:
+			case sik::NUMBER:
+			case sik::STRING:
+			case sik::BOOLEAN:
+			case sik::NULLTYPE:
+				Instructions->push_back(sik::SIKInstruct(nodeChild));
+				break;
 		}
 	}
 	void SIKParser::genForLR(SIKAst* nodeParent, SIKAst* nodeChild, std::vector<sik::SIKInstruct>* Instructions) {

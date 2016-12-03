@@ -315,6 +315,10 @@ namespace sik {
 			return "STR";
 		case sik::NUMBER:
 			return "NUM";
+		case sik::BOOLEAN:
+			return "BOOL";
+		case sik::NULLTYPE:
+			return "NULL";
 		case sik::NOPE:
 			return "NOPE";
 		case sik::NODE:

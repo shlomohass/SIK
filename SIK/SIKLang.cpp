@@ -353,6 +353,34 @@ namespace sik {
 	bool SIKLang::LangHasValueNaming(const std::string& key) {
 		return LangValues.count(key) == 1;
 	}
+	/** Check whether a string value name is BOOLEAN type of lang Definition:
+	*
+	* @param string key key name
+	* @return int -> -1 no, 1 true, 0 false.
+	*/
+	int SIKLang::LangIsBoolean(const std::string& key) {
+		if (key == SIKLang::LangValues["true-lower"])
+			return 1;
+		if (key == SIKLang::LangValues["false-lower"])
+			return 0;
+		if (key == SIKLang::LangValues["true-upper"])
+			return 1;
+		if (key == SIKLang::LangValues["false-upper"])
+			return 0;
+		return -1;
+	}
+	/** Check whether a string value name is NULL type of lang definition:
+	*
+	* @param string key key name
+	* @return bool
+	*/
+	bool SIKLang::LangIsNull(const std::string& key) {
+		if (key == SIKLang::LangValues["null-lower"])
+			return true;
+		if (key == SIKLang::LangValues["null-upper"])
+			return true;
+		return false;
+	}
 
 	/** Find the int that represent a function name:
 	*
