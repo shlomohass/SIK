@@ -18,7 +18,7 @@ namespace sik {
 
 	SIKParser::SIKParser()
 	{
-
+		BlockInCheck.reserve(20);
 	}
 
 	SIKAst* SIKParser::BuildAst(SIKTokens* TokenSet)
@@ -38,182 +38,282 @@ namespace sik {
 
 					// If statement:
 					if (tok->obj == sik::SIKLang::dicLangKey_cond_if) {
-
-						//Set if node:
-						this->SetNodeFromToken(node, tok);
-
-						//Extract condition:
-						int parenthesesEnd = TokenSet->getParenthesesFirstAndLast(tok->index);
-
-						//Validate If condition:
-						if (parenthesesEnd < 0) {
-							switch (parenthesesEnd) {
-								case -1:
-									throw SIKException("Expected Parentheses after IF keyword.", tok->fromLine);
-									break;
-								case -2:
-								default:
-									throw SIKException("Missing closing Parentheses in IF statement.", tok->fromLine);
-
-							}
-						}
-
-						//Create Subset:
-						sik::SIKTokens condSubSet = TokenSet->getFromeSet(tok->index + 2, parenthesesEnd - 1);
-
-						//Validate condition:
-						if (condSubSet.size() < 1) {
-							throw SIKException("IF statement condition part must contain a statement. 11", tok->fromLine);
-						}
-
-						//Recursively parse condition:
-						sik::SIKAst* condNode = this->BuildAst(&condSubSet);
-						
-						if ((int)condNode->bulk.size() > 0) {
-							node->Left = condNode->bulk[0];
-							condNode->Parent = node;
-						} else {
-							throw SIKException("IF statement condition part must contain a statement. 22", tok->fromLine);
-						}
-						
-						//Validate Check for Block:
-						if (TokenSet->getAtPointer(parenthesesEnd + 1) == nullptr || TokenSet->getAtPointer(parenthesesEnd + 1)->type != sik::DELI_BRCOPEN) {
-							throw SIKException("IF statement condition must have a block body.", tok->fromLine);
-						}
-
-						//Add the Block open
-						sik::SIKAst* blockNode = new sik::SIKAst();
-						blockNode->line = node->line;
-						blockNode->Type = sik::SBLOCK;
-						blockNode->Value = sik::SIKLang::dicLang_bracesOpen;
-						node->Parent = blockNode;
-						blockNode->Left = node;
-
-						//Remove The first Definitionand place the node chain:
-						if (!TokenSet->replaceRangeWithNode(tok->index, parenthesesEnd + 1, blockNode)) {
-							throw SIKException("Error in token extraction. 22", tok->fromLine);
-						}
-
+						this->BuildAst_KeyIf(node, tok, TokenSet);
+						BlockInCheck.push_back(sik::BLOCK_IF); //Mark block
+					}
+					// Else statement:
+					else if (tok->obj == sik::SIKLang::dicLangKey_cond_else) {
+						this->BuildAst_KeyElse(node, tok, TokenSet);
+						BlockInCheck.push_back(sik::BLOCK_ELSE); //Mark block
+					}
+					// ElseIf statement:
+					else if (tok->obj == sik::SIKLang::dicLangKey_cond_elseif) {
+						this->BuildAst_KeyElseIf(node, tok, TokenSet);
+						BlockInCheck.push_back(sik::BLOCK_ELSEIF); //Mark block
 					}
 					// Definition
 					else if (tok->obj == SIKLang::dicLangKey_variable) {
-
-						//Single Variable Declaration node:
-						sik::SIKAst* nodeChild = new sik::SIKAst();
-						this->SetNodeFromToken(nodeChild, tok);
-
-						//Get parent:
-						sik::Token* tokP = TokenSet->getAtPointer(tok->index + 1);
-						if (tokP == nullptr || ( tokP->node == nullptr && tokP->type != NAMING )) {
-							throw SIKException("Expected Variable name after Definition.", tokP->fromLine);
-						} else {
-
-							//Set the parent:
-							this->SetNodeFromToken(node, tokP);
-							node->Left = nodeChild;
-							nodeChild->Parent = node; // Set parent
-
-							//Add name to bulk define and check for nested:
-							std::vector<int> testNested = TokenSet->hasNestedCommas(tokP->index);
-							for (int i = (int)testNested.size() - 1; i >= 0; i--) {
-								sik::Token* tokMore = TokenSet->getAtPointer(testNested[i] + 1);
-								if (tokMore != nullptr && tokP->type == NAMING) {
-
-									//Create definition chain:
-									sik::SIKAst* nodeDefinintion = new sik::SIKAst();
-									sik::SIKAst* nodeDefineName = new sik::SIKAst();
-									this->SetNodeFromToken(nodeDefinintion, tok);
-									this->SetNodeFromToken(nodeDefineName, tokMore);
-
-									//Set pointers:
-									nodeDefineName->Left = nodeDefinintion;
-									nodeDefinintion->Parent = nodeDefineName;
-
-									//Replace tokens:
-									if (!TokenSet->replaceRangeWithNode(testNested[i], tokMore->index, nodeDefineName)) {
-										throw SIKException("Error in token extraction. 11", tokMore->fromLine);
-									}
-
-								} else {
-									throw SIKException("Expected Variable name after Definition.", tokMore->fromLine);
-								}
-								
-							}
-
-							//Remove The first Definitionand place the node chain:
-							if (!TokenSet->replaceRangeWithNode(tok->index, tokP->index, node)) {
-								throw SIKException("Error in token extraction. 22", tokP->fromLine);
-							}
-						}
+						this->BuildAst_KeyDefine(node, tok, TokenSet);
 					}
+
 					break;
-				case sik::DELI_EQUAL: {
-						this->SetNodeFromToken(node, tok);
-						Token* tokL = TokenSet->getAtPointer(tok->index - 1);
-						Token* tokR = TokenSet->getAtPointer(tok->index + 1);
-						if (tokL == nullptr || tokR == nullptr) {
-							throw SIKException("Expected Variable Before equal sign and value after.", tok->fromLine);
-						} else {
-
-							SIKAst* nodeLeft = new SIKAst();
-							SIKAst* nodeRight = new SIKAst();
-							this->SetNodeFromToken(nodeLeft, tokL);
-							this->SetNodeFromToken(nodeRight, tokR);
-							node->Left = nodeLeft;
-							node->Right = nodeRight;
-
-							//Remove Both and replace:
-							if (!TokenSet->replaceRangeWithNode(tokL->index, tokR->index, node)) {
-								throw SIKException("Expected Variable Before equal sign and value after.", tok->fromLine);
-							}
-
-						}
-					}
+				case sik::DELI_BRCCLOSE:
+					this->BuildAst_BlockClose(node, tok, TokenSet);
+					break;
+				case sik::DELI_EQUAL:
+					this->BuildAst_Assigning(node, tok, TokenSet);
 					break;
 				case sik::DELI_PLUS:
 				case sik::DELI_MINUS:
 				case sik::DELI_MULTI:
-				case sik::DELI_DIVIDE: {
-						this->SetNodeFromToken(node, tok);
-						Token* tokL = TokenSet->getAtPointer(tok->index - 1);
-						Token* tokR = TokenSet->getAtPointer(tok->index + 1);
-						if (tokL == nullptr || tokR == nullptr) {
-							throw SIKException("Expected value before and after " + tok->obj + " delimiter.", tok->fromLine);
-						} else {
-							SIKAst* nodeLeft = new SIKAst();
-							SIKAst* nodeRight = new SIKAst();
-							this->SetNodeFromToken(nodeLeft, tokL);
-							this->SetNodeFromToken(nodeRight, tokR);
-							node->Left = nodeLeft;
-							node->Right = nodeRight;
-
-							//Remove Both and replace:
-							if (!TokenSet->replaceRangeWithNode(tokL->index, tokR->index, node)) {
-								throw SIKException("Expected value before and after " + tok->obj + " delimiter.", tok->fromLine);
-							}
-
-						}
-					}
+				case sik::DELI_DIVIDE:
+					this->BuildAst_MathLR(node, tok, TokenSet);
 					break;
 				case sik::NAMING:
-					this->SetNodeFromToken(node, tok);
-					//Remove Both and replace:
-					if (!TokenSet->replaceRangeWithNode(tok->index, tok->index, node)) {
-						throw SIKException("Expected value before and after " + tok->obj + " delimiter.", tok->fromLine);
-					}
+					this->BuildAst_Naming(node, tok, TokenSet);
 					break;
 			}
 		}
 		//Wrap result inside a node block;
-		SIKAst* nodeBlock = new SIKAst();
-		for (int i = 0; i < TokenSet->getSetPointer()->size(); i++) {
-			SIKAst* nodeAppend = TokenSet->getAtPointer(i)->node;
+		sik::SIKAst* nodeBlock = new sik::SIKAst();
+		for (int i = 0; i < (int)TokenSet->getSetPointer()->size(); i++) {
+			sik::SIKAst* nodeAppend = TokenSet->getAtPointer(i)->node;
 			if (nodeAppend != nullptr) {
 				nodeBlock->bulk.push_back(nodeAppend);
 			}
 		}
 		return nodeBlock;
 	}
+	int SIKParser::BuildAst_Naming(sik::SIKAst* node, sik::Token* token ,sik::SIKTokens* TokenSet) {
+		this->SetNodeFromToken(node, token);
+		//Remove Both and replace:
+		if (!TokenSet->replaceRangeWithNode(token->index, token->index, node)) {
+			throw SIKException("Expected value before and after " + token->obj + " delimiter.", token->fromLine);
+		}
+		return 1;
+	}
+	int SIKParser::BuildAst_MathLR(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {
+		this->SetNodeFromToken(node, token);
+		Token* tokL = TokenSet->getAtPointer(token->index - 1);
+		Token* tokR = TokenSet->getAtPointer(token->index + 1);
+		if (tokL == nullptr || tokR == nullptr) {
+			throw SIKException("Expected value before and after " + token->obj + " delimiter.", token->fromLine);
+		} else {
+			SIKAst* nodeLeft = new SIKAst();
+			SIKAst* nodeRight = new SIKAst();
+			this->SetNodeFromToken(nodeLeft, tokL);
+			this->SetNodeFromToken(nodeRight, tokR);
+			node->Left = nodeLeft;
+			node->Right = nodeRight;
+
+			//Remove Both and replace:
+			if (!TokenSet->replaceRangeWithNode(tokL->index, tokR->index, node)) {
+				throw SIKException("Expected value before and after " + token->obj + " delimiter.", token->fromLine);
+			}
+		}
+		return 1;
+	}
+	int SIKParser::BuildAst_Assigning(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {
+		this->SetNodeFromToken(node, token);
+		Token* tokL = TokenSet->getAtPointer(token->index - 1);
+		Token* tokR = TokenSet->getAtPointer(token->index + 1);
+		if (tokL == nullptr || tokR == nullptr) {
+			throw SIKException("Expected Variable Before equal sign and value after.", token->fromLine);
+		} else {
+			SIKAst* nodeLeft = new SIKAst();
+			SIKAst* nodeRight = new SIKAst();
+			this->SetNodeFromToken(nodeLeft, tokL);
+			this->SetNodeFromToken(nodeRight, tokR);
+			node->Left = nodeLeft;
+			node->Right = nodeRight;
+
+			//Remove Both and replace:
+			if (!TokenSet->replaceRangeWithNode(tokL->index, tokR->index, node)) {
+				throw SIKException("Expected Variable Before equal sign and value after.", token->fromLine);
+			}
+		}
+		return 1;
+	}
+	int SIKParser::BuildAst_KeyDefine(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {
+		//Single Variable Declaration node:
+		sik::SIKAst* nodeChild = new sik::SIKAst();
+		this->SetNodeFromToken(nodeChild, token);
+
+		//Get parent:
+		sik::Token* tokP = TokenSet->getAtPointer(token->index + 1);
+		if (tokP == nullptr || (tokP->node == nullptr && tokP->type != NAMING)) {
+			throw sik::SIKException("Expected Variable name after Definition.", tokP->fromLine);
+		} else {
+
+			//Set the parent:
+			this->SetNodeFromToken(node, tokP);
+			node->Left = nodeChild;
+			nodeChild->Parent = node; // Set parent
+
+			//Add name to bulk define and check for nested:
+			std::vector<int> testNested = TokenSet->hasNestedCommas(tokP->index);
+			for (int i = (int)testNested.size() - 1; i >= 0; i--) {
+				sik::Token* tokMore = TokenSet->getAtPointer(testNested[i] + 1);
+				if (tokMore != nullptr && tokP->type == NAMING) {
+					//Create definition chain:
+					sik::SIKAst* nodeDefinintion = new sik::SIKAst();
+					sik::SIKAst* nodeDefineName = new sik::SIKAst();
+					this->SetNodeFromToken(nodeDefinintion, token);
+					this->SetNodeFromToken(nodeDefineName, tokMore);
+					//Set pointers:
+					nodeDefineName->Left = nodeDefinintion;
+					nodeDefinintion->Parent = nodeDefineName;
+					//Replace tokens:
+					if (!TokenSet->replaceRangeWithNode(testNested[i], tokMore->index, nodeDefineName)) {
+						throw sik::SIKException("Error in token extraction. 11", tokMore->fromLine);
+					}
+				} else {
+					throw sik::SIKException("Expected Variable name after Definition.", tokMore->fromLine);
+				}
+			}
+
+			//Remove The first Definitionand place the node chain:
+			if (!TokenSet->replaceRangeWithNode(token->index, tokP->index, node)) {
+				throw sik::SIKException("Error in token extraction. 22", tokP->fromLine);
+			}
+		}
+		return 1;
+	}
+	int SIKParser::BuildAst_KeyIf(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {
+		//Set if node:
+		this->SetNodeFromToken(node, token);
+		//Extract condition:
+		int parenthesesEnd = TokenSet->getParenthesesFirstAndLast(token->index);
+		//Validate If condition:
+		if (parenthesesEnd < 0) {
+			switch (parenthesesEnd) {
+			case -1:
+				throw sik::SIKException("Expected Parentheses after IF keyword.", token->fromLine);
+				break;
+			case -2:
+			default:
+				throw sik::SIKException("Missing closing Parentheses in IF statement.", token->fromLine);
+
+			}
+		}
+		//Create Subset:
+		sik::SIKTokens condSubSet = TokenSet->getFromeSet(token->index + 2, parenthesesEnd - 1);
+		//Validate condition:
+		if (condSubSet.size() < 1) {
+			throw sik::SIKException("IF statement condition part must contain a statement. 11", token->fromLine);
+		}
+		//Recursively parse condition:
+		sik::SIKAst* condNode = this->BuildAst(&condSubSet);
+		if ((int)condNode->bulk.size() > 0) {
+			node->Left = condNode->bulk[0];
+			condNode->Parent = node;
+		} else {
+			throw sik::SIKException("IF statement condition part must contain a statement. 22", token->fromLine);
+		}
+		//Validate Check for Block:
+		if (TokenSet->getAtPointer(parenthesesEnd + 1) == nullptr || TokenSet->getAtPointer(parenthesesEnd + 1)->type != sik::DELI_BRCOPEN) {
+			throw sik::SIKException("IF statement condition must have a block body.", token->fromLine);
+		}
+		//Add the Block open
+		sik::SIKAst* blockNode = new sik::SIKAst();
+		blockNode->line = node->line;
+		blockNode->Type = sik::SBLOCK;
+		blockNode->Block = sik::BLOCK_IF;
+		blockNode->Value = sik::SIKLang::dicLang_bracesOpen;
+		node->Parent = blockNode;
+		blockNode->Left = node;
+		//Remove The first Definitionand place the node chain:
+		if (!TokenSet->replaceRangeWithNode(token->index, parenthesesEnd + 1, blockNode)) {
+			throw sik::SIKException("Error in token extraction. 22", token->fromLine);
+		}
+		return 1;
+	}
+	int SIKParser::BuildAst_KeyElseIf(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {
+		//Set elseif node:
+		this->SetNodeFromToken(node, token);
+		//Extract condition:
+		int parenthesesEnd = TokenSet->getParenthesesFirstAndLast(token->index);
+		//Validate elseIf condition:
+		if (parenthesesEnd < 0) {
+			switch (parenthesesEnd) {
+			case -1:
+				throw sik::SIKException("Expected Parentheses after ELSEIF keyword.", token->fromLine);
+				break;
+			case -2:
+			default:
+				throw sik::SIKException("Missing closing Parentheses in ELSEIF statement.", token->fromLine);
+			}
+		}
+		//Create Subset:
+		sik::SIKTokens condSubSet = TokenSet->getFromeSet(token->index + 2, parenthesesEnd - 1);
+		//Validate condition:
+		if (condSubSet.size() < 1) {
+			throw sik::SIKException("ELSEIF statement condition part must contain a statement. 11", token->fromLine);
+		}
+		//Recursively parse condition:
+		sik::SIKAst* condNode = this->BuildAst(&condSubSet);
+		if ((int)condNode->bulk.size() > 0) {
+			node->Left = condNode->bulk[0];
+			condNode->Parent = node;
+		} else {
+			throw sik::SIKException("ELSEIF statement condition part must contain a statement. 22", token->fromLine);
+		}
+		//Validate Check for Block:
+		if (TokenSet->getAtPointer(parenthesesEnd + 1) == nullptr || TokenSet->getAtPointer(parenthesesEnd + 1)->type != sik::DELI_BRCOPEN) {
+			throw sik::SIKException("ELSEIF statement condition must have a block body.", token->fromLine);
+		}
+		//Add the Block open
+		sik::SIKAst* blockNode = new sik::SIKAst();
+		blockNode->line = node->line;
+		blockNode->Type = sik::SBLOCK;
+		blockNode->Block = sik::BLOCK_ELSEIF;
+		blockNode->Value = sik::SIKLang::dicLang_bracesOpen;
+		node->Parent = blockNode;
+		blockNode->Left = node;
+		//Remove The first Definitionand place the node chain:
+		if (!TokenSet->replaceRangeWithNode(token->index, parenthesesEnd + 1, blockNode)) {
+			throw sik::SIKException("Error in token extraction. 44", token->fromLine);
+		}
+		return 1;
+	}
+	int SIKParser::BuildAst_KeyElse(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {
+		//Set else node:
+		this->SetNodeFromToken(node, token);
+
+		//Validate Check for Block:
+		if (TokenSet->getAtPointer(token->index + 1) == nullptr || TokenSet->getAtPointer(token->index + 1)->type != sik::DELI_BRCOPEN) {
+			throw sik::SIKException("ELSE statement condition must have a block body.", token->fromLine);
+		}
+		//Add the Block open
+		sik::SIKAst* blockNode = new sik::SIKAst();
+		blockNode->line = node->line;
+		blockNode->Type = sik::SBLOCK;
+		blockNode->Block = sik::BLOCK_ELSE;
+		blockNode->Value = sik::SIKLang::dicLang_bracesOpen;
+		node->Parent = blockNode;
+		blockNode->Left = node;
+		//Remove The first Definitionand place the node chain:
+		if (!TokenSet->replaceRangeWithNode(token->index, token->index + 1, blockNode)) {
+			throw sik::SIKException("Error in token extraction. 33", token->fromLine);
+		}
+		return 1;
+	}
+	int SIKParser::BuildAst_BlockClose(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {
+		//Check if we had any openning:
+		if ((int)this->BlockInCheck.size() <= 0) {
+			throw SIKException("Unexpected " + token->obj + " delimiter - no opening found.", token->fromLine);
+		}
+		//Set:
+		this->SetNodeFromToken(node, token);
+		node->Block = this->BlockInCheck.back();
+		this->BlockInCheck.pop_back();
+		//Remove Both and replace:
+		if (!TokenSet->replaceRangeWithNode(token->index, token->index, node)) {
+			throw SIKException("Expected value before and after " + token->obj + " delimiter.", token->fromLine);
+		}
+		return 1;
+	}
+
 	void SIKParser::SetNodeFromToken(SIKAst* node, Token* tok)
 	{
 		if (tok->type == sik::NODE) {
@@ -236,127 +336,81 @@ namespace sik {
 	 * @param SIKAst* node -> the node
 	 *
 	*/
-	void SIKParser::WalkAst(SIKAst* nodeParent) {
+	void SIKParser::WalkAst(sik::SIKAst* nodeParent, std::vector<sik::SIKInstruct>* Instructions) {
 		for (int i = 0; i < (int)nodeParent->bulk.size(); i++) {
-			WalkAst(nullptr, nodeParent->bulk[i]);
+			WalkAst(nullptr, nodeParent->bulk[i], Instructions);
 		}
 	}
-	void SIKParser::WalkAst(SIKAst* nodeParent, SIKAst* nodeChild) {
+	void SIKParser::WalkAst(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild, std::vector<sik::SIKInstruct>* Instructions) {
 		if (nodeChild->Left != nullptr && !nodeChild->Left->Mark) {
-			WalkAst(nodeChild, nodeChild->Left);
+			WalkAst(nodeChild, nodeChild->Left, Instructions);
 		}
 		if (nodeChild->Right != nullptr && !nodeChild->Right->Mark) {
-			WalkAst(nodeChild, nodeChild->Right);
+			WalkAst(nodeChild, nodeChild->Right, Instructions);
 		}
 		switch (nodeChild->Type) {
 		case sik::KEYWORD:
-			this->genForKeywords(nodeParent, nodeChild);
+			this->genForKeywords(nodeParent, nodeChild, Instructions);
 			nodeChild->Mark = true;
 			break;
 		case sik::SBLOCK:
 		case sik::NAMING:
 		case sik::NUMBER:
-			this->genForPrimitives(nodeParent, nodeChild);
+		case sik::STRING:
+			this->genForPrimitives(nodeParent, nodeChild, Instructions);
 			nodeChild->Mark = true;
 			break;
 		case sik::DELI_EQUAL:
 		case sik::DELI_PLUS:
 		case sik::DELI_MINUS:
 		case sik::DELI_MULTI:
-			this->genForLR(nodeParent, nodeChild);
+			this->genForLR(nodeParent, nodeChild, Instructions);
 			nodeChild->Mark = true;
+			break;
+		case sik::DELI_BRCCLOSE:
+			this->genForBlockClose(nodeParent, nodeChild, Instructions);
 			break;
 		}
 	}
-	void SIKParser::genForKeywords(SIKAst* nodeParent, SIKAst* nodeChild) {
+	void SIKParser::genForKeywords(SIKAst* nodeParent, SIKAst* nodeChild, std::vector<sik::SIKInstruct>* Instructions) {
 		// IF statement:
 		if (nodeChild->Value == SIKLang::dicLangKey_cond_if) {
-			std::cout << " OP: IF " << nodeChild->Value << std::endl;
+			Instructions->push_back(sik::SIKInstruct(nodeChild, sik::INS_IF));
+			return;
+		}
+		// ELSE statement:
+		if (nodeChild->Value == SIKLang::dicLangKey_cond_else) {
+			Instructions->push_back(sik::SIKInstruct(nodeChild, sik::INS_ELSE));
+			return;
+		}
+		// ELSEIF statement:
+		if (nodeChild->Value == SIKLang::dicLangKey_cond_elseif) {
+			Instructions->push_back(sik::SIKInstruct(nodeChild, sik::INS_ELSEIF));
+			return;
 		}
 		// Variable definition:
 		if (nodeChild->Value == SIKLang::dicLangKey_variable) {
-			std::cout << " OP: DEFINE " << nodeChild->Parent->Value << std::endl;
+			Instructions->push_back(sik::SIKInstruct(nodeChild, sik::INS_DEFINE));
+			return;
 		}
-
 	}
-	void SIKParser::genForPrimitives(SIKAst* nodeParent, SIKAst* nodeChild) {
+	void SIKParser::genForPrimitives(SIKAst* nodeParent, SIKAst* nodeChild, std::vector<sik::SIKInstruct>* Instructions) {
 		switch (nodeChild->Type) {
 				case sik::SBLOCK:
-					std::cout << " OP: SBLOCK " << nodeChild->Value << std::endl;
+					Instructions->push_back(sik::SIKInstruct(nodeChild));
 					break;
 				case sik::NAMING:
 				case sik::NUMBER:
-					std::cout << " OP: PUSH " << nodeChild->Value << std::endl;
+				case sik::STRING:
+					Instructions->push_back(sik::SIKInstruct(nodeChild));
 					break;
 		}
 	}
-	void SIKParser::genForLR(SIKAst* nodeParent, SIKAst* nodeChild) {
-		switch (nodeChild->Type) {
-			case DELI_PLUS:
-				std::cout << " OP: ADD " << nodeChild->Value << std::endl;
-				break;
-			case DELI_MINUS:
-				std::cout << " OP: SUB " << nodeChild->Value << std::endl;
-				break;
-			case DELI_INCR:
-				break;
-			case DELI_DECR:
-				break;
-			case DELI_MULTI:
-				std::cout << " OP: MUL " << nodeChild->Value << std::endl;
-				break;
-			case DELI_DIVIDE:
-				break;
-			case DELI_EQUAL:
-				std::cout << " OP: ASSIGN " << nodeChild->Value << std::endl;
-				break;
-			case DELI_EQUALADD:
-				break;
-			case DELI_EQUALSUB:
-				break;
-			case DELI_POINT:
-				break;
-			case DELI_BRKOPEN:
-				break;
-			case DELI_BRKCLOSE:
-				break;
-			case DELI_BRCOPEN:
-				break;
-			case DELI_BRCCLOSE:
-				break;
-			case DELI_SBRKOPEN:
-				break;
-			case DELI_SBRKCLOSE:
-				break;
-			case DELI_POW:
-				break;
-			case DELI_EXCL:
-				break;
-			case DELI_GRT:
-				break;
-			case DELI_LST:
-				break;
-			case DELI_GRTE:
-				break;
-			case DELI_LSTE:
-				break;
-			case DELI_COMMA:
-				break;
-			case DELI_CTEQUAL:
-				break;
-			case DELI_CTNEQUAL:
-				break;
-			case DELI_CEQUAL:
-				break;
-			case DELI_CNEQUAL:
-				break;
-			case DELI_CAND:
-				break;
-			case DELI_COR:
-				break;
-			case DELI_OBJCALL:
-				break;
-		}
+	void SIKParser::genForLR(SIKAst* nodeParent, SIKAst* nodeChild, std::vector<sik::SIKInstruct>* Instructions) {
+		Instructions->push_back(sik::SIKInstruct(nodeChild));
+	}
+	void SIKParser::genForBlockClose(SIKAst* nodeParent, SIKAst* nodeChild, std::vector<sik::SIKInstruct>* Instructions) {
+		Instructions->push_back(sik::SIKInstruct(nodeChild));
 	}
 	// Find the maximum height of the binary tree
 	int SIKParser::maxHeight(SIKAst *p) {

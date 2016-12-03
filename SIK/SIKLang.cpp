@@ -60,9 +60,11 @@ namespace sik {
 		{ "unset"        , "unset" },
 		{ "cond-if"      , "if" },
 		{ "cond-else"    , "else" },
+		{ "cond-elseif"  , "elseif" },
 		{ "cond-break"   , "breakif" },
 		{ "loop-while"   , "while" },
 		{ "loop-for"     , "for" },
+		{ "loop-each"    , "each" },
 		{ "loop-break"   , "break" },
 		{ "function"     , "function" },
 		{ "return"       , "return" }
@@ -205,9 +207,11 @@ namespace sik {
 	std::string SIKLang::dicLangKey_sub_object = "";
 	std::string SIKLang::dicLangKey_cond_if = "";
 	std::string SIKLang::dicLangKey_cond_else = "";
+	std::string SIKLang::dicLangKey_cond_elseif = "";
 	std::string SIKLang::dicLangKey_cond_break = "";
 	std::string SIKLang::dicLangKey_loop_while = "";
 	std::string SIKLang::dicLangKey_loop_for = "";
+	std::string SIKLang::dicLangKey_loop_each = "";
 	std::string SIKLang::dicLangKey_loop_break = "";
 	std::string SIKLang::dicLangKey_function = "";
 	std::string SIKLang::dicLangKey_return = "";
@@ -287,9 +291,11 @@ namespace sik {
 		dicLangKey_sub_object = LangFindKeyword("sub-object");
 		dicLangKey_cond_if = LangFindKeyword("cond-if");
 		dicLangKey_cond_else = LangFindKeyword("cond-else");
+		dicLangKey_cond_elseif = LangFindKeyword("cond-elseif");
 		dicLangKey_cond_break = LangFindKeyword("cond-break");
 		dicLangKey_loop_while = LangFindKeyword("loop-while");
 		dicLangKey_loop_for = LangFindKeyword("loop-for");
+		dicLangKey_loop_each = LangFindKeyword("loop-each");
 		dicLangKey_loop_break = LangFindKeyword("loop-break");
 		dicLangKey_function = LangFindKeyword("function");
 		dicLangKey_return = LangFindKeyword("return");

@@ -128,9 +128,11 @@ namespace sik
 		static std::string dicLangKey_sub_object;
 		static std::string dicLangKey_cond_if;
 		static std::string dicLangKey_cond_else;
+		static std::string dicLangKey_cond_elseif;
 		static std::string dicLangKey_cond_break;
 		static std::string dicLangKey_loop_while;
 		static std::string dicLangKey_loop_for;
+		static std::string dicLangKey_loop_each;
 		static std::string dicLangKey_loop_break;
 		static std::string dicLangKey_function;
 		static std::string dicLangKey_return;

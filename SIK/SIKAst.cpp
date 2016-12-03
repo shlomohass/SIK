@@ -14,8 +14,9 @@ namespace sik {
 
 	SIKAst::SIKAst()
 	{
-		this->Type		= NOPE;
+		this->Type		= sik::NOPE;
 		this->Value		= "\0";
+		this->Block		= sik::BLOCK_NONE;
 		this->Priority	= -1;
 		this->line		= -1;
 		this->Left		= nullptr;
@@ -27,7 +28,7 @@ namespace sik {
 
 	SIKAst::~SIKAst()
 	{
-		std::cout << "ASTNode delete - " << this->Value << std::endl;
+		// std::cout << "ASTNode delete - " << this->Value << std::endl;
 		delete this->Left;
 		delete this->Right;
 		for (int i = 0; i < (int)this->bulk.size(); i++) {

@@ -16,6 +16,41 @@ namespace sik
 
     enum ExecCodes { SUCCESS, GENEROOR };
     
+	enum InstructType {
+		INS_NONE,
+		INS_PUSH,
+
+		INS_ADD,
+		INS_SUBTRACT,
+		INS_MULTI,
+		INS_DEVIDE,
+		INS_POW,
+		INS_INCREMENT,
+		INS_DECREMENT,
+
+		INS_ASSIGN,
+		INS_ASSIGNADD,
+		INS_ASSIGNSUB,
+
+		INS_DEFINE,
+		INS_IF,
+		INS_ELSEIF,
+		INS_ELSE,
+
+		INS_OSBLOCK,
+		INS_CSBLOCK,
+	};
+	enum BlocksIn {
+		BLOCK_NONE,
+		BLOCK_IF,
+		BLOCK_ELSE,
+		BLOCK_ELSEIF,
+		BLOCK_OBJ,
+		BLOCK_FUNC,
+		BLOCK_WHILE,
+		BLOCK_FOR,
+		BLOCK_EACH
+	};
     enum TokenTypes {
 		NODE,
 		SBLOCK,

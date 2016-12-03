@@ -21,6 +21,7 @@ namespace sik {
 
 		sik::TokenTypes		 Type;
 		std::string			 Value;
+		sik::BlocksIn        Block;
 		int					 Priority;
 		int					 line;
 		sik::SIKAst*		 Left;

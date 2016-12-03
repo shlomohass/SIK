@@ -102,6 +102,7 @@
     <ClCompile Include="sik\main.cpp" />
     <ClCompile Include="SIK\SIKAst.cpp" />
     <ClCompile Include="SIK\SIKException.cpp" />
+    <ClCompile Include="SIK\SIKInstruct.cpp" />
     <ClCompile Include="SIK\SIKLang.cpp" />
     <ClCompile Include="SIK\SIKParser.cpp" />
     <ClCompile Include="SIK\SIKScript.cpp" />
@@ -109,10 +110,11 @@
     <ClCompile Include="sik\SIK_Lex.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SETSIK.hpp" />
     <ClInclude Include="SIK\argvparser.hpp" />
+    <ClInclude Include="SIK\SETSIK.hpp" />
     <ClInclude Include="SIK\SIKAst.hpp" />
     <ClInclude Include="SIK\SIKException.hpp" />
+    <ClInclude Include="SIK\SIKInstruct.hpp" />
     <ClInclude Include="SIK\SIKLang.hpp" />
     <ClInclude Include="SIK\SIKParser.hpp" />
     <ClInclude Include="SIK\SIKScript.hpp" />

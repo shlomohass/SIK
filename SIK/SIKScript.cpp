@@ -12,6 +12,7 @@
 #include "SIKAst.hpp"
 #include "SIKParser.hpp"
 
+#include <iostream>
 #include <fstream>
 #include <streambuf>
 
@@ -22,6 +23,7 @@ namespace sik
 		this->script_debug_flag = debugMode;
 		this->script_debug_level = debugLevel;
 		this->create_messages();
+		this->Instructions.reserve(150);
 	};
 
 	bool SIKScript::validateFileExtension(std::string filename) {
@@ -37,22 +39,64 @@ namespace sik
 			{ "bad-ext"           , "The file you are trying to execute is not a SIK script." },
 			{ "cant-read"         , "The file can't be read - may be permission error."       }
 		};
+		this->InstructionName = {
+			{ INS_NONE,		 "NONE"},
+			{ INS_PUSH,		 "PUSH" },
+
+			{ INS_ADD,		 "ADD" },
+			{ INS_SUBTRACT,	 "SUB" },
+			{ INS_MULTI,	 "MUL" },
+			{ INS_DEVIDE,	 "DEV" },
+			{ INS_POW,		 "POW" },
+			{ INS_INCREMENT, "INC" },
+			{ INS_DECREMENT, "DEC" },
+
+			{ INS_ASSIGN,	 "ASGN" },
+			{ INS_ASSIGNADD, "ASNAD" },
+			{ INS_ASSIGNSUB, "ASNSB" },
+
+			{ INS_DEFINE,	 "DEF" },
+			{ INS_IF,		 "IF" },
+			{ INS_ELSEIF,	 "ELIF" },
+			{ INS_ELSE,		 "ELSE" },
+			{ INS_OSBLOCK,	 "OSBLK" },
+			{ INS_CSBLOCK,	 "CSBLK" }
+		};
 	}
 
 	void SIKScript::printIt(std::string type, std::string mesKey) {
 		std::cout << this->ScriptMessage[mesKey] << std::endl;
 	}
 
+	void SIKScript::printInstructions() {
+		int getSize = (int)this->Instructions.size();
+		for (int i = 0; i < getSize; i++) {
+			std::cout 
+				<< "INS "
+				<< (i+1) 
+				<< ": "
+				<< this->InstructionName[this->Instructions[i].Type] 
+				<< " \t -> V: "
+				<< this->truncateString(this->Instructions[i].Value, 8)
+				<< "\t , SUB: "
+				<< this->Instructions[i].SubType
+				<< " , BLOCK: "
+				<< this->Instructions[i].Block
+				<< " , LINE: "
+				<< this->Instructions[i].lineOrigin
+				<< std::endl;
+		}
+	}
 	bool SIKScript::compile(std::string filename) {
 
 		//if Debug:
 		if (this->script_debug_flag && this->script_debug_level > 3) {
-			SIKLang::printHeader("TOKENIZER OUTPUT:");
+			sik::SIKLang::printHeader("TOKENIZER OUTPUT:");
 		}
 		//Force a file extension:
 		if (!this->validateFileExtension(filename)) {
 			this->printIt("ERROR", "bad-ext");
-			SIKLang::printEmpLine(1);
+			sik::SIKLang::printEmpLine(1);
 			return false;
 		}
 
@@ -62,7 +106,7 @@ namespace sik
 		input.open(filename);
 		if (!input) {
 			this->printIt("ERROR", "cant-read");
-			SIKLang::printEmpLine(1);
+			sik::SIKLang::printEmpLine(1);
 			return false;
 		}
 
@@ -115,7 +159,7 @@ namespace sik
 			expbuffer += cbuffer;
 
 			//Check whether we are ready to pass the statement:
-			if (cbuffer == ';' || cbuffer == '{' || cbuffer == '}') {
+			if (cbuffer == sik::SIKLang::LangOperationEnd || cbuffer == sik::SIKLang::LangBlockOpenChar || cbuffer == sik::SIKLang::LangBlockCloseChar) {
 				
 				//Pre compile: macros, expnsions.
 
@@ -153,7 +197,7 @@ namespace sik
 				//Walk tree and evaluate:
 				/**/
 				try {
-					parser.WalkAst(ParseTree);
+					parser.WalkAst(ParseTree, &this->Instructions);
 				}
 				catch (sik::SIKException& ex)
 				{
@@ -172,6 +216,19 @@ namespace sik
 			//Log prev char for comment use:
 			prevbuff = cbuffer;
 		}
+
+		//Print Instructions:
+		if (this->script_debug_flag && this->script_debug_level > 1) {
+			sik::SIKLang::printHeader("CODE GENERATED:");
+			this->printInstructions();
+		}
+
 		return true;
+	}
+	std::string SIKScript::truncateString(const std::string& str, int max) {
+		if ((int)str.length() > max) {
+			return std::string(str.begin(), str.begin() + (max - 1)) + ">";
+		}
+		return str;
 	}
 }
