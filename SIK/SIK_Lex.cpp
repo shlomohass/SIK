@@ -20,12 +20,14 @@ namespace sik
         this->operateMode = ONORMAL;
         this->inString = false;
         this->hadEscape = false;
+		this->currentToken = "";
     }
 
     SIKLex::SIKLex(sik::OperatingModes debug) {
         this->operateMode = debug;
         this->inString = false;
         this->hadEscape = false;
+		this->currentToken = "";
     }
 
 	/** Get a pointer to the tokens collection
@@ -39,107 +41,122 @@ namespace sik
     void SIKLex::SIKLex::parse(std::string code, int line) {
         
 		int expIndex = 0;
-		std::string currentToken = "";
         this->hadEscape = false;
 
 		while (expIndex < (int)code.length()) {
 
 			//check for endl of expression
 			if (expIndex == (int)code.length()) {
-				currentToken = "";
 				continue;
 			}
 			if (expIndex > (int)code.length()) {
-				currentToken = "";
 				continue;
 			}
-			//skip over white spaces and ;
-			while (expIndex < (int)code.length() && ( this->isSpace(code[expIndex]) || code[expIndex] == '\t') ) {
-				++expIndex;
-			}
-			//check for endl of expression
-			if (expIndex == (int)code.length()) {
-				currentToken = "";
-				continue;
+			if (!this->inString) {
+				//skip over white spaces and ;
+				while (expIndex < (int)code.length() && (this->isSpace(code[expIndex]) || code[expIndex] == '\t')) {
+					++expIndex;
+				}
+				//check for endl of expression
+				if (expIndex == (int)code.length()) {
+					continue;
+				}
 			}
 			//Store correct token:
 			//First watch for double delimiters:
-			if (this->isDelimiter(code[expIndex]) && expIndex + 1 < (int)code.length()) {
+			if (!this->inString && this->isDelimiter(code[expIndex]) && expIndex + 1 < (int)code.length()) {
 				std::string lookInfront;
 				lookInfront += code[expIndex];
 				lookInfront += code[expIndex + 1];
 				if (this->isDelimiter(lookInfront)) {
-					currentToken += lookInfront;
+					this->currentToken += lookInfront;
 					expIndex += 2;
 					//Add the token found:
-					this->addToken(currentToken, line);
-					currentToken = "";
+					this->addToken(this->currentToken, line);
+					this->currentToken = "";
 					continue;
 				}
 			}
-			if (this->isDelimiter(code[expIndex])) {
-				currentToken.insert(currentToken.end(), 1, code[expIndex]);
+			if (!this->inString && this->isDelimiter(code[expIndex])) {
+				this->currentToken.insert(this->currentToken.end(), 1, code[expIndex]);
 				expIndex++;
 			}
-			else if (this->isLetter(code[expIndex])) {
+			else if (!this->inString && this->isLetter(code[expIndex])) {
 				//Grab entire word:
 				while (expIndex < (int)code.length() && this->isNaming(code[expIndex])) {
-					currentToken.insert(currentToken.end(), 1, code[expIndex]);
+					this->currentToken.insert(this->currentToken.end(), 1, code[expIndex]);
 					expIndex++;
 					if (expIndex >= (int)code.length()) {
 						break;
 					}
 				}
 				//Set all to lower that make sure we can check if its a keyword:
-				std::string temp_currentToken = this->toLowerString(&currentToken);
+				std::string temp_currentToken = this->toLowerString(&this->currentToken);
 
 				//Set this current token:
-				currentToken = temp_currentToken;
+				this->currentToken = temp_currentToken;
 			}
-			else if (this->isQstring(code[expIndex])) {
+			else if (this->inString || this->isQstring(code[expIndex])) {
 				//Grab entire string:
-				currentToken.insert(currentToken.end(), 1, code[expIndex]);
-				expIndex++;
+				char addChar = code[expIndex];
+				if (addChar == '\n' || addChar == '\t' || addChar == '\r' || addChar == '\0') {
+					addChar = ' ';
+				}
+				this->currentToken.insert(this->currentToken.end(), 1, addChar);
+				if (this->inString && addChar == '"') {
+					this->inString = false;
+				} else {
+					expIndex++;
+				}
+				bool avoid = false;
 				while (!isQstring(code[expIndex])) {
+					this->inString = false;
 					if (code[expIndex] == '\\') {
-						currentToken.insert(currentToken.end(), 1, code[expIndex]);
+						this->currentToken.insert(this->currentToken.end(), 1, code[expIndex]);
 						expIndex++;
 						if (expIndex >= (int)code.length()) {
 							//Throw error -> string is not encapsulated.
-							currentToken = "";
+							this->currentToken = "";
 							break;
 						}
-						currentToken.insert(currentToken.end(), 1, code[expIndex]);
+						this->currentToken.insert(this->currentToken.end(), 1, code[expIndex]);
 						expIndex++;
-					}
-					else {
-						currentToken.insert(currentToken.end(), 1, code[expIndex]);
+					} else {
+						char addCharMore = code[expIndex];
+						if (addCharMore == '\n' || addCharMore == '\t' || addCharMore == '\r' || addCharMore == '\0') {
+							addCharMore = ' ';
+						}
+						this->currentToken.insert(this->currentToken.end(), 1, addCharMore);
 						expIndex++;
 					}
 					if (expIndex >= (int)code.length()) {
-						// Throw error->string is not encapsulated.
-						currentToken = "";
+						avoid = true;
 						break;
 					}
 				}
-				currentToken.insert(currentToken.end(), 1, code[expIndex]);
-				expIndex++;
-			}
-			else if (this->isDigit(code[expIndex])) {
+				if (!avoid) {
+					this->inString = false;
+					this->currentToken.insert(this->currentToken.end(), 1, code[expIndex]);
+				} else {
+					this->inString = true;
+				}
+			} else if (!this->inString && this->isDigit(code[expIndex])) {
 				//Grab entire number
 				while (this->isDigit(code[expIndex])) { // `.` is a number too removed from the delimiter list
-					currentToken.insert(currentToken.end(), 1, code[expIndex]);
+					this->currentToken.insert(this->currentToken.end(), 1, code[expIndex]);
 					expIndex++;
 					if (expIndex > (int)code.length()) break;
 				}
 			} else {
-				currentToken = "";
+				this->currentToken = "";
 				expIndex++;
 				continue;
 			}
 			//Add the token found:
-			this->addToken(currentToken, line);
-			currentToken = "";
+			if (!this->inString) {
+				this->addToken(this->currentToken, line);
+				this->currentToken = "";
+			}
 		}
     }
     void SIKLex::addToken(std::string tok, int line) {
@@ -432,13 +449,13 @@ namespace sik
     /* Prints an Expression line into the console:
 	 * @param string exp
 	 */
-	void SIKLex::outputExpressionLine(const std::string& exp, int line) {
+	void SIKLex::outputExpressionLine(const std::string& exp, int smallestLine, int biggestLine) {
 		if (exp.length() > 50) {
-			std::cout << "LINE : " << "[" << line << "] -> " << std::string(exp.begin(), exp.begin() + 47) << "..." << std::endl;
+			std::cout << "LINE : " << "[" << smallestLine << " - " << biggestLine << "] -> " << std::string(exp.begin(), exp.begin() + 47) << "..." << std::endl;
 		}
 		else
 		{
-			std::cout << "LINE : " << "[" << line << "] -> " << exp << std::endl;
+			std::cout << "LINE : " << "[" << smallestLine << " - " << biggestLine << "] -> " << exp << std::endl;
 		}
 	}
     void SIKLex::outputTokens() {

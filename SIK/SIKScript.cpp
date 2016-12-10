@@ -166,6 +166,7 @@ namespace sik
 		sik::SIKParser parser = sik::SIKParser(&this->Instructions, &this->ObjectDefinitions, &this->FunctionInstructions);
 
 		//Read to create token stream seperate by blocks and by end of statement:
+		std::map<int,std::string> expressionContainer;
 		std::string expbuffer = "";
 		int line = 1;
 		char prevbuff = ' ';
@@ -177,6 +178,8 @@ namespace sik
 		while (input >> std::noskipws >> cbuffer) {
 			//Handle new lines:
 			if (cbuffer == '\n') {
+				expressionContainer[line] = expbuffer;
+				expbuffer = "";
 				line++;
 				singleComment = false;
 				continue;
@@ -220,8 +223,10 @@ namespace sik
 			//Check whether we are ready to pass the statement:
 			//if (cbuffer == sik::SIKLang::LangOperationEnd || cbuffer == sik::SIKLang::LangBlockOpenChar || cbuffer == sik::SIKLang::LangBlockCloseChar) {
 			if (cbuffer == sik::SIKLang::LangOperationEnd && block == 0) {
-				if (this->compile(&lexer, &parser, expbuffer, line)) {
+				expressionContainer[line] = expbuffer;
+				if (this->compile(&lexer, &parser, expressionContainer)) {
 					expbuffer.clear();
+					expressionContainer.clear();
 					continue;
 				} else {
 					return false;
@@ -233,8 +238,11 @@ namespace sik
 		}
 
 		//Final parse if needed:
-		if (!expbuffer.empty()) {
-			if (!this->compile(&lexer, &parser, expbuffer, line)) {
+		if (expressionContainer.size() > 0 || !expbuffer.empty()) {
+			if (!expbuffer.empty()) {
+				expressionContainer[line] = expbuffer;
+			}
+			if (!this->compile(&lexer, &parser, expressionContainer)) {
 				return false;
 			}
 		}
@@ -250,17 +258,28 @@ namespace sik
 
 		return true;
 	}
-	bool SIKScript::compile(sik::SIKLex* lexer, sik::SIKParser* parser, std::string expbuffer, int line) {
+	bool SIKScript::compile(sik::SIKLex* lexer, sik::SIKParser* parser, std::map<int, std::string> exp) {
 		//Pre compile: macros, expnsions.
 
 		//Generate tokens:
 		sik::SIKLang::printEmpLine(1);
-		lexer->parse(expbuffer, line);
+		typedef std::map<int,std::string>::iterator it_type;
+		for (it_type iterator = exp.begin(); iterator != exp.end(); iterator++) {
+			lexer->parse(iterator->second, iterator->first);
+		}
 		lexer->tokens.addIndexes();
 
 		//Log tokens by debug:
 		if (this->script_debug_flag && this->script_debug_level > 3) {
-			lexer->outputExpressionLine(expbuffer, line);
+			std::string singleLineExpression = "";
+			int smallestLine = 10000;
+			int biggestLine = 0;
+			for (it_type iterator = exp.begin(); iterator != exp.end(); iterator++) {
+				singleLineExpression += iterator->second;
+				if (iterator->first > biggestLine) biggestLine = iterator->first;
+				if (iterator->first < smallestLine) smallestLine = iterator->first;
+			}
+			lexer->outputExpressionLine(singleLineExpression, smallestLine, biggestLine);
 			lexer->outputTokens();
 			SIKLang::printEmpLine(1);
 		}

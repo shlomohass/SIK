@@ -1,3 +1,11 @@
+/*
+let b = " hassid
+	shlomi
+and 
+ we
+";
+*/
+
 // let a=3-2+65.4- -7*3;
 // let a = 1 + 2 * 3 + 2;
 // let b = 12 + 3 * 4 - 5 * 2 - 2;
@@ -27,8 +35,8 @@ if (bookkkppp + 2) {
 let gef,
     a = {
 		one : 2,
-		b25 : true,
-		c : { e : true, f : false }
+		b : true,
+		c : { e : true f : false }
 	}, 
 	kke = 5;
 

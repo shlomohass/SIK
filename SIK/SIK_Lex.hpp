@@ -27,6 +27,7 @@ namespace sik
 
     public:
         
+		std::string currentToken;
 		sik::SIKTokens tokens;
 
         SIKLex();
@@ -61,7 +62,7 @@ namespace sik
 		std::string toUpperString(std::string *s);
 
         sik::OperatingModes getOperatingMode();
-		void outputExpressionLine(const std::string& exp, int line);
+		void outputExpressionLine(const std::string& exp,int smallestLine, int biggestLine);
         void outputTokens();
         
         virtual ~SIKLex();
