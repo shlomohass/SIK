@@ -56,7 +56,7 @@ namespace sik
 			{ INS_ASSIGN,	 "ASGN" },
 			{ INS_ASSIGNADD, "ASNAD" },
 			{ INS_ASSIGNSUB, "ASNSB" },
-
+			{ INS_CHILDASSIGN, "CHASN" },
 			{ INS_DEFINE,	 "DEF"   },
 			{ INS_OBJCREATE, "OBJCR" },
 			{ INS_OBJDONE,	 "OBJDN" },
@@ -171,6 +171,8 @@ namespace sik
 		char prevbuff = ' ';
 		bool singleComment = false;
 		bool multicomment = false;
+		bool inString = false;
+		int block = 0;
 		//Lex the lines:  
 		while (input >> std::noskipws >> cbuffer) {
 			//Handle new lines:
@@ -203,67 +205,38 @@ namespace sik
 				expbuffer = expbuffer.substr(0, expbuffer.size() - 1);
 				continue;
 			}
-
+			if (cbuffer == '"' && prevbuff != '\\') {
+				inString = inString ? false : true;
+			}
+			if (cbuffer == '{' && !inString) {
+				block++;
+			}
+			if (cbuffer == '}' && !inString) {
+				block--;
+			}
 			//Build Expression:
 			expbuffer += cbuffer;
 
 			//Check whether we are ready to pass the statement:
-			if (cbuffer == sik::SIKLang::LangOperationEnd || cbuffer == sik::SIKLang::LangBlockOpenChar || cbuffer == sik::SIKLang::LangBlockCloseChar) {
-				
-				//Pre compile: macros, expnsions.
-
-				//Generate tokens:
-				sik::SIKLang::printEmpLine(1);
-				lexer.parse(expbuffer, line);
-				lexer.tokens.addIndexes();
-
-				//Log tokens by debug:
-				if (this->script_debug_flag && this->script_debug_level > 3) {
-					lexer.outputExpressionLine(expbuffer, line);
-					lexer.outputTokens();
-					SIKLang::printEmpLine(1);
-				}
-
-				//Parse -> AlS -> Byte code:
-				sik::SIKAst* ParseTree = nullptr;
-				try {
-					ParseTree = parser.BuildAst(lexer.GetTokensPoint());
-				}
-				catch (sik::SIKException& ex)
-				{
-					ex.render(this->script_debug_level);
+			//if (cbuffer == sik::SIKLang::LangOperationEnd || cbuffer == sik::SIKLang::LangBlockOpenChar || cbuffer == sik::SIKLang::LangBlockCloseChar) {
+			if (cbuffer == sik::SIKLang::LangOperationEnd && block == 0) {
+				if (this->compile(&lexer, &parser, expbuffer, line)) {
+					expbuffer.clear();
+					continue;
+				} else {
 					return false;
 				}
-
-				//Log trees by debug:
-				if (this->script_debug_flag && this->script_debug_level > 3) {
-					for (int i = 0; i < (int)ParseTree->bulk.size(); i++) {
-						parser.printTree(ParseTree->bulk[i], 1, 0, std::cout);
-						SIKLang::printEmpLine(1);
-					}
-				}
-
-				//Walk tree and evaluate:
-				/**/
-				try {
-					parser.WalkAst(ParseTree);
-				}
-				catch (sik::SIKException& ex)
-				{
-					ex.render(this->script_debug_level);
-					return false;
-				}
-				
-				//Release memmory:
-				delete ParseTree;
-
-				lexer.truncateTokens();
-				expbuffer.clear();
-				continue;
 			}
 
 			//Log prev char for comment use:
 			prevbuff = cbuffer;
+		}
+
+		//Final parse if needed:
+		if (!expbuffer.empty()) {
+			if (!this->compile(&lexer, &parser, expbuffer, line)) {
+				return false;
+			}
 		}
 
 		//Print Instructions:
@@ -274,6 +247,58 @@ namespace sik
 			sik::SIKLang::printHeader("OBJECT DEFINITIONS:");
 			this->printObjectDefinitions();
 		}
+
+		return true;
+	}
+	bool SIKScript::compile(sik::SIKLex* lexer, sik::SIKParser* parser, std::string expbuffer, int line) {
+		//Pre compile: macros, expnsions.
+
+		//Generate tokens:
+		sik::SIKLang::printEmpLine(1);
+		lexer->parse(expbuffer, line);
+		lexer->tokens.addIndexes();
+
+		//Log tokens by debug:
+		if (this->script_debug_flag && this->script_debug_level > 3) {
+			lexer->outputExpressionLine(expbuffer, line);
+			lexer->outputTokens();
+			SIKLang::printEmpLine(1);
+		}
+
+		//Parse -> AlS -> Byte code:
+		sik::SIKAst* ParseTree = nullptr;
+		try {
+			ParseTree = parser->BuildAst(lexer->GetTokensPoint());
+		}
+		catch (sik::SIKException& ex)
+		{
+			ex.render(this->script_debug_level);
+			return false;
+		}
+
+		//Log trees by debug:
+		if (this->script_debug_flag && this->script_debug_level > 3) {
+			for (int i = 0; i < (int)ParseTree->bulk.size(); i++) {
+				parser->printTree(ParseTree->bulk[i], 1, 0, std::cout);
+				SIKLang::printEmpLine(1);
+			}
+		}
+
+		//Walk tree and evaluate:
+		/**/
+		try {
+			parser->WalkAst(ParseTree);
+		}
+		catch (sik::SIKException& ex)
+		{
+			ex.render(this->script_debug_level);
+			return false;
+		}
+
+		//Release memmory:
+		delete ParseTree;
+
+		lexer->truncateTokens();
 
 		return true;
 	}

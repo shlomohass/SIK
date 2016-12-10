@@ -53,6 +53,7 @@ namespace sik {
 		{ "semicolon"         , ";" },
 		{ "macro-def"		  , "#" },
 		{ "macro-set"		  , ":" },
+		{ "child-set"		  , ":" },
 		{ "object-call"		  , "." }
 	};
 
@@ -169,6 +170,7 @@ namespace sik {
 	char SIKLang::LangOperationEnd = ' ';
 	char SIKLang::LangMacroIndicator = ' ';
 	char SIKLang::LangMacroSetChar = ' ';
+	char SIKLang::LangChildSetChar = ' ';
 
 	std::string SIKLang::dicLang_space = "";
 	std::string SIKLang::dicLang_plus = "";
@@ -204,6 +206,7 @@ namespace sik {
 	std::string SIKLang::dicLang_s_or = "";
 	std::string SIKLang::dicLang_semicolon = "";
 	std::string SIKLang::dicLang_objcall = "";
+	std::string SIKLang::dicLang_childSet = "";
 
 	//String based keywords:
 	std::string SIKLang::dicLangKey_variable = "";
@@ -254,6 +257,7 @@ namespace sik {
 		LangOperationEnd = LangFindDelimiter("semicolon")[0];
 		LangMacroIndicator = LangFindDelimiter("macro-def")[0];
 		LangMacroSetChar = LangFindDelimiter("macro-set")[0];
+		LangChildSetChar = LangFindDelimiter("child-set")[0];
 
 		//String based:
 		dicLang_space = LangFindDelimiter("space");
@@ -290,6 +294,7 @@ namespace sik {
 		dicLang_s_or = LangFindDelimiter("single-or");
 		dicLang_semicolon = LangFindDelimiter("semicolon");
 		dicLang_objcall = LangFindDelimiter("object-call");
+		dicLang_childSet = LangFindDelimiter("child-set");
 
 		//Keywords:
 		dicLangKey_variable = LangFindKeyword("variable");
@@ -451,6 +456,8 @@ namespace sik {
 		if (test == dicLang_s_or[0] && value == dicLang_s_or) return true;
 		if (test == dicLang_semicolon[0] && value == dicLang_semicolon) return true;
 		if (test == dicLang_objcall[0] && value == dicLang_objcall) return true;
+		if (test == dicLang_childSet[0] && value == dicLang_childSet) return true;
+
 		return false;
 	}
 	bool SIKLang::LangIsDelimiter(const char& value) {

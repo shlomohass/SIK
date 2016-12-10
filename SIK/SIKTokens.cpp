@@ -158,6 +158,28 @@ namespace sik {
 		}
 		return -2;
 	}
+	int SIKTokens::getBlockFirstAndLast(int indexStart) {
+		int countNested = 0;
+		//Validate first:
+		if (indexStart + 1 >= this->size()) {
+			return -1;
+		}
+		for (int i = indexStart + 1; i < (int)this->tokenSet.size(); i++) {
+			if (this->tokenSet[i].type == sik::DELI_BRCOPEN) {
+				countNested++;
+				continue;
+			}
+			if (this->tokenSet[i].type == sik::DELI_BRCCLOSE && countNested > 0
+				) {
+				countNested--;
+				continue;
+			}
+			if (this->tokenSet[i].type == sik::DELI_BRCCLOSE) {
+				return i;
+			}
+		}
+		return -2;
+	}
 	bool SIKTokens::hasUnparse() {
 		for (int i = 0; i < (int)this->tokenSet.size(); i++) {
 			if (this->tokenSet[i].node == nullptr) return true;
@@ -301,6 +323,8 @@ namespace sik {
 			return "EQUA";
 		case sik::DELI_EQUALSUB:
 			return "EQUS";
+		case sik::DELI_CHILDSET:
+			return "CEQU";
 		case sik::DELIMITER:
 			return "DELI";
 		case sik::DELI_COMMA:

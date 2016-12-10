@@ -223,6 +223,7 @@ namespace sik
 		if (test == SIKLang::dicLang_multi[0]			&& value == SIKLang::dicLang_multi)			return sik::DELI_MULTI;
 		if (test == SIKLang::dicLang_divide[0]			&& value == SIKLang::dicLang_divide)		return sik::DELI_DIVIDE;
 		if (test == SIKLang::dicLang_equal[0]			&& value == SIKLang::dicLang_equal)			return sik::DELI_EQUAL;
+		if (test == SIKLang::dicLang_childSet[0]		&& value == SIKLang::dicLang_childSet)		return sik::DELI_CHILDSET;
 		if (test == SIKLang::dicLang_equalAdd[0]		&& value == SIKLang::dicLang_equalAdd)		return sik::DELI_EQUALADD;
 		if (test == SIKLang::dicLang_equalSub[0]		&& value == SIKLang::dicLang_equalSub)		return sik::DELI_EQUALSUB;
 		if (test == SIKLang::dicLang_pointer[0]			&& value == SIKLang::dicLang_pointer)		return sik::DELI_POINT;
@@ -283,17 +284,21 @@ namespace sik
 			return 19;
 		case sik::DELI_COR:         // ||
 			return 18;
+		case sik::DELI_BRCOPEN:		// {
+			return 17;
 		case sik::DELI_POINT:		// ->
 		case sik::DELI_EQUAL:       // =
+		case sik::DELI_CHILDSET:    // :
 		case sik::DELI_EQUALADD:    // +=
 		case sik::DELI_EQUALSUB:    // -=
-			return 17;
+			return 16;
 		case sik::DELIMITER:		// ...
 		case sik::DELI_COMMA:       // ,
 			return 11;
-		case sik::DELI_BRCOPEN:		// {
+		
 		case sik::DELI_BRCCLOSE:    // }
 			return 10;
+
 		case sik::NAMING:
 		case sik::STRING:
 		case sik::NUMBER:

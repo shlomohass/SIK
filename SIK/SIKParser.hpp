@@ -47,6 +47,7 @@ namespace sik {
 		int BuildAst_KeyIf(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
 		int BuildAst_KeyElseIf(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
 		int BuildAst_KeyElse(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
+		int BuildAst_BlockOpen(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
 		int BuildAst_BlockClose(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
 		int BuildAst_BracketOpen(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
 
@@ -56,6 +57,9 @@ namespace sik {
 		void WalkAst(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild);
 
 		//Generate codes:
+		void AddToInstructions(const sik::SIKInstruct& instruct);
+		void AddToInstructions(const sik::SIKInstruct& instruct, SIKAst* nodeParent);
+		void pushToObjectsInstructions(const sik::SIKInstruct& instruct);
 		void genForKeywords(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild);
 		void genForPrimitives(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild);
 		void genForLR(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild);

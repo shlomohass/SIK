@@ -29,6 +29,7 @@ namespace sik {
 		sik::SIKAst*		 Parent;
 		std::vector<SIKAst*> bulk;
 		bool				 Mark;
+		int                  InsBlockPointer;
 
 		
 		SIKAst();

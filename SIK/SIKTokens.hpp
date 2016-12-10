@@ -52,6 +52,7 @@ namespace sik {
 
 		std::vector<int> hasNestedCommas(int indexStart);
 		int getParenthesesFirstAndLast(int indexStart);
+		int getBlockFirstAndLast(int indexStart);
 		bool hasUnparse();
 
 		bool replaceRangeWithNode(int start, int end, sik::SIKAst* node);

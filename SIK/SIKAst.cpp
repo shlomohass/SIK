@@ -24,6 +24,7 @@ namespace sik {
 		this->Right		= nullptr;
 		this->Parent	= nullptr;
 		this->Mark		= false;
+		this->InsBlockPointer = -1;
 	}
 
 	void SIKAst::mutateTo(SIKAst* target) {
@@ -37,6 +38,7 @@ namespace sik {
 		this->Right = target->Right;
 		this->Parent = target->Parent;
 		this->Mark = target->Mark;
+		this->InsBlockPointer = target->InsBlockPointer;
 	}
 	SIKAst::~SIKAst()
 	{

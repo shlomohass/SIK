@@ -27,7 +27,7 @@ namespace sik {
 		this->Value = node->Value;
 		this->lineOrigin = node->line;
 		this->Type = type;
-		this->pointToInstruct = -1;
+		this->pointToInstruct = node->InsBlockPointer;
 	}
 	SIKInstruct::SIKInstruct(sik::SIKAst* node)
 	{
@@ -35,7 +35,7 @@ namespace sik {
 		this->Block = node->Block;
 		this->Value = node->Value;
 		this->lineOrigin = node->line;
-		this->pointToInstruct = -1;
+		this->pointToInstruct = node->InsBlockPointer;
 
 		switch (node->Type) {
 			case sik::DELI_BRCOPEN:
@@ -89,6 +89,9 @@ namespace sik {
 				break;
 			case sik::DELI_EQUAL:
 				this->Type = sik::INS_ASSIGN;
+				break;
+			case sik::DELI_CHILDSET:
+				this->Type = sik::INS_CHILDASSIGN;
 				break;
 			case sik::DELI_EQUALADD:
 				this->Type = sik::INS_ASSIGNADD;

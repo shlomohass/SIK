@@ -9,6 +9,8 @@
 
 #include "SIKAdd.hpp"
 #include "SIKInstruct.hpp"
+#include "SIK_Lex.hpp"
+#include "SIKParser.hpp"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -41,6 +43,7 @@ namespace sik
 
 		SIKScript(bool debugMode, int debugLevel);
 		bool compile(std::string filename);
+		bool compile(sik::SIKLex* lexer, sik::SIKParser* parser, std::string expbuffer, int line);
 		std::string truncateString(const std::string& str, int max);
 
 	};

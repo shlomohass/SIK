@@ -3,7 +3,7 @@
 // let b = 12 + 3 * 4 - 5 * 2 - 2;
 // let b = 2*3*4 + 5*2-2;
 // let a,b;
-// let = c,d,a = 1 * 3 + 5,b = 1 - 2 * a + 4,e,t = a + b;
+// let c, d, a = 1 * 3 + 5, b = 1 - 2 * a + 4, e, t = a + b;
 // let a = "shlomi";
 /*
 if (bookkkppp + 2) {
@@ -21,8 +21,17 @@ if (bookkkppp + 2) {
 // let a = 1 <= 2 && 3 >= 1;
 // let a = 1 == 2 || 3 < 4 && 6 > 5;
 // let b = 1 + 2 + (((2 * (3 + 5)) * 4 ) - 4) * 6 * 5;
- // if (t == 5) { }
-let bob = {};
+// if (t == 5) { }
+// let test = { a : b }, s = 5;
+
+let gef,
+    a = {
+		one : 2,
+		b25 : true,
+		c : { e : true, f : false }
+	}, 
+	kke = 5;
+
 /*
 for (let i = 0, i < 4, i = i + 1) {
 
