@@ -40,7 +40,7 @@ namespace sik {
 	}
 	SIKAst::~SIKAst()
 	{
-		std::cout << "ASTNode delete - " << this->Value << std::endl;
+		//std::cout << "ASTNode delete - " << this->Value << std::endl;
 		delete this->Left;
 		delete this->Right;
 		if (!this->PreventBulkDelete) {

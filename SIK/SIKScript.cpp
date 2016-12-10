@@ -24,6 +24,8 @@ namespace sik
 		this->script_debug_level = debugLevel;
 		this->create_messages();
 		this->Instructions.reserve(150);
+		this->ObjectDefinitions.reserve(20);
+		this->FunctionInstructions.reserve(20);
 	};
 
 	bool SIKScript::validateFileExtension(std::string filename) {
@@ -55,8 +57,10 @@ namespace sik
 			{ INS_ASSIGNADD, "ASNAD" },
 			{ INS_ASSIGNSUB, "ASNSB" },
 
-			{ INS_DEFINE,	 "DEF" },
-			{ INS_IF,		 "IF" },
+			{ INS_DEFINE,	 "DEF"   },
+			{ INS_OBJCREATE, "OBJCR" },
+			{ INS_OBJDONE,	 "OBJDN" },
+			{ INS_IF,		 "IF"   },
 			{ INS_ELSEIF,	 "ELIF" },
 			{ INS_ELSE,		 "ELSE" },
 			{ INS_OSBLOCK,	 "OSBLK" },
@@ -79,20 +83,54 @@ namespace sik
 		std::cout << this->ScriptMessage[mesKey] << std::endl;
 	}
 
-	void SIKScript::printInstructions() {
-		int getSize = (int)this->Instructions.size();
+	void SIKScript::printInstructions(std::vector<sik::SIKInstruct>* _instruct) {
+		int getSize = (int)_instruct->size();
 		for (int i = 0; i < getSize; i++) {
+			sik::SIKInstruct* toPrint = &_instruct->at(i);
 			std::cout 
 				<< "INS "
 				<< (i+1) 
 				<< ": "
-				<< this->InstructionName[this->Instructions[i].Type] 
+				<< this->InstructionName[toPrint->Type]
+				<< " \t -> V: "
+				<< this->truncateString(toPrint->Value, 8)
+				<< "\t , SUB: "
+				<< toPrint->SubType
+				<< " , BLOCK: "
+				<< toPrint->Block
+				<< " , INSPO: "
+				<< toPrint->pointToInstruct
+				<< " , LINE: "
+				<< toPrint->lineOrigin
+				<< std::endl;
+		}
+	}
+	void SIKScript::printObjectDefinitions() {
+		int getSize = (int)this->ObjectDefinitions.size();
+		for (int i = 0; i < getSize; i++) {
+			std::cout
+				<< "INSPO : "
+				<< i
+				<< std::endl;
+			this->printInstructions(&this->ObjectDefinitions.at(i));
+		}
+	}
+	void SIKScript::printFunctionDefinitions() {
+		int getSize = (int)this->FunctionInstructions.size();
+		for (int i = 0; i < getSize; i++) {
+			std::cout
+				<< "INS "
+				<< (i + 1)
+				<< ": "
+				<< this->InstructionName[this->Instructions[i].Type]
 				<< " \t -> V: "
 				<< this->truncateString(this->Instructions[i].Value, 8)
 				<< "\t , SUB: "
 				<< this->Instructions[i].SubType
 				<< " , BLOCK: "
 				<< this->Instructions[i].Block
+				<< " , INSPO: "
+				<< this->Instructions[i].pointToInstruct
 				<< " , LINE: "
 				<< this->Instructions[i].lineOrigin
 				<< std::endl;
@@ -125,7 +163,7 @@ namespace sik
 		sik::SIKLex lexer = sik::SIKLex();
 
 		//The parser:
-		sik::SIKParser parser = sik::SIKParser();
+		sik::SIKParser parser = sik::SIKParser(&this->Instructions, &this->ObjectDefinitions, &this->FunctionInstructions);
 
 		//Read to create token stream seperate by blocks and by end of statement:
 		std::string expbuffer = "";
@@ -208,7 +246,7 @@ namespace sik
 				//Walk tree and evaluate:
 				/**/
 				try {
-					parser.WalkAst(ParseTree, &this->Instructions);
+					parser.WalkAst(ParseTree);
 				}
 				catch (sik::SIKException& ex)
 				{
@@ -231,7 +269,10 @@ namespace sik
 		//Print Instructions:
 		if (this->script_debug_flag && this->script_debug_level > 1) {
 			sik::SIKLang::printHeader("CODE GENERATED:");
-			this->printInstructions();
+			this->printInstructions(&this->Instructions);
+
+			sik::SIKLang::printHeader("OBJECT DEFINITIONS:");
+			this->printObjectDefinitions();
 		}
 
 		return true;

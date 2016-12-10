@@ -19,8 +19,18 @@ namespace sik {
 	SIKParser::SIKParser()
 	{
 		BlockInCheck.reserve(20);
+		this->Instructions = nullptr;
+		this->ObjectDefinitions = nullptr;
+		this->FunctionInstructions = nullptr;
 	}
 
+	SIKParser::SIKParser(std::vector<sik::SIKInstruct>* _Instructions, std::vector<std::vector<sik::SIKInstruct>>* _ObjectDefinitions, std::vector<std::vector<sik::SIKInstruct>>* _FunctionInstructions)
+	{
+		BlockInCheck.reserve(20);
+		this->Instructions = _Instructions;
+		this->ObjectDefinitions = _ObjectDefinitions;
+		this->FunctionInstructions = _FunctionInstructions;
+	}
 	SIKAst* SIKParser::BuildAst(SIKTokens* TokenSet)
 	{
 		while (TokenSet->hasUnparse()) {
@@ -42,17 +52,17 @@ namespace sik {
 					// If statement:
 					if (tok->obj == sik::SIKLang::dicLangKey_cond_if) {
 						this->BuildAst_KeyIf(node, tok, TokenSet);
-						BlockInCheck.push_back(sik::BLOCK_IF); //Mark block
+						this->BlockInCheck.push_back(sik::BLOCK_IF); //Mark block
 					}
 					// Else statement:
 					else if (tok->obj == sik::SIKLang::dicLangKey_cond_else) {
 						this->BuildAst_KeyElse(node, tok, TokenSet);
-						BlockInCheck.push_back(sik::BLOCK_ELSE); //Mark block
+						this->BlockInCheck.push_back(sik::BLOCK_ELSE); //Mark block
 					}
 					// ElseIf statement:
 					else if (tok->obj == sik::SIKLang::dicLangKey_cond_elseif) {
 						this->BuildAst_KeyElseIf(node, tok, TokenSet);
-						BlockInCheck.push_back(sik::BLOCK_ELSEIF); //Mark block
+						this->BlockInCheck.push_back(sik::BLOCK_ELSEIF); //Mark block
 					}
 					// Definition
 					else if (tok->obj == SIKLang::dicLangKey_variable) {
@@ -226,7 +236,7 @@ namespace sik {
 		Token* tokL = TokenSet->getAtPointer(token->index - 1);
 		Token* tokR = TokenSet->getAtPointer(token->index + 1);
 		if (tokL == nullptr || tokR == nullptr) {
-			throw SIKException("Expected Variable Before equal sign and value after.", token->fromLine);
+			throw SIKException("Expected Variable Before equal sign and value or object after.", token->fromLine);
 		} else {
 			SIKAst* nodeLeft = new SIKAst();
 			SIKAst* nodeRight = new SIKAst();
@@ -237,7 +247,12 @@ namespace sik {
 
 			//Remove Both and replace:
 			if (!TokenSet->replaceRangeWithNode(tokL->index, tokR->index, node)) {
-				throw SIKException("Expected Variable Before equal sign and value after.", token->fromLine);
+				throw SIKException("Expected Variable Before equal sign and value or object after.", token->fromLine);
+			}
+
+			//If its an object definition:
+			if (node->Right->Type == sik::DELI_BRCOPEN) {
+				this->BlockInCheck.push_back(sik::BLOCK_OBJ);
 			}
 		}
 		return 1;
@@ -497,30 +512,31 @@ namespace sik {
 	 * @param SIKAst* node -> the node
 	 *
 	*/
-	void SIKParser::WalkAst(sik::SIKAst* nodeParent, std::vector<sik::SIKInstruct>* Instructions) {
+	void SIKParser::WalkAst(sik::SIKAst* nodeParent) {
 		for (int i = 0; i < (int)nodeParent->bulk.size(); i++) {
-			WalkAst(nullptr, nodeParent->bulk[i], Instructions);
+			WalkAst(nullptr, nodeParent->bulk[i]);
 		}
 	}
-	void SIKParser::WalkAst(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild, std::vector<sik::SIKInstruct>* Instructions) {
+	void SIKParser::WalkAst(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild) {
 		if (nodeChild->Left != nullptr && !nodeChild->Left->Mark) {
-			WalkAst(nodeChild, nodeChild->Left, Instructions);
+			WalkAst(nodeChild, nodeChild->Left);
 		}
 		if (nodeChild->Right != nullptr && !nodeChild->Right->Mark) {
-			WalkAst(nodeChild, nodeChild->Right, Instructions);
+			WalkAst(nodeChild, nodeChild->Right);
 		}
 		switch (nodeChild->Type) {
 		case sik::KEYWORD:
-			this->genForKeywords(nodeParent, nodeChild, Instructions);
+			this->genForKeywords(nodeParent, nodeChild);
 			nodeChild->Mark = true;
 			break;
+		case sik::DELI_BRCOPEN:
 		case sik::SBLOCK:
 		case sik::NAMING:
 		case sik::NUMBER:
 		case sik::STRING:
 		case sik::BOOLEAN:
 		case sik::NULLTYPE:
-			this->genForPrimitives(nodeParent, nodeChild, Instructions);
+			this->genForPrimitives(nodeParent, nodeChild);
 			nodeChild->Mark = true;
 			break;
 		case sik::DELI_EQUAL:
@@ -540,55 +556,67 @@ namespace sik {
 
 		case sik::DELI_CAND:
 		case sik::DELI_COR:
-			this->genForLR(nodeParent, nodeChild, Instructions);
+			this->genForLR(nodeParent, nodeChild);
 			nodeChild->Mark = true;
 			break;
 		case sik::DELI_BRCCLOSE:
-			this->genForBlockClose(nodeParent, nodeChild, Instructions);
+			this->genForBlockClose(nodeParent, nodeChild);
 			break;
 		}
 	}
-	void SIKParser::genForKeywords(SIKAst* nodeParent, SIKAst* nodeChild, std::vector<sik::SIKInstruct>* Instructions) {
+	void SIKParser::genForKeywords(SIKAst* nodeParent, SIKAst* nodeChild) {
 		// IF statement:
 		if (nodeChild->Value == SIKLang::dicLangKey_cond_if) {
-			Instructions->push_back(sik::SIKInstruct(nodeChild, sik::INS_IF));
+			this->Instructions->push_back(sik::SIKInstruct(nodeChild, sik::INS_IF));
 			return;
 		}
 		// ELSE statement:
 		if (nodeChild->Value == SIKLang::dicLangKey_cond_else) {
-			Instructions->push_back(sik::SIKInstruct(nodeChild, sik::INS_ELSE));
+			this->Instructions->push_back(sik::SIKInstruct(nodeChild, sik::INS_ELSE));
 			return;
 		}
 		// ELSEIF statement:
 		if (nodeChild->Value == SIKLang::dicLangKey_cond_elseif) {
-			Instructions->push_back(sik::SIKInstruct(nodeChild, sik::INS_ELSEIF));
+			this->Instructions->push_back(sik::SIKInstruct(nodeChild, sik::INS_ELSEIF));
 			return;
 		}
 		// Variable definition:
 		if (nodeChild->Value == SIKLang::dicLangKey_variable) {
-			Instructions->push_back(sik::SIKInstruct(nodeChild, sik::INS_DEFINE));
+			this->Instructions->push_back(sik::SIKInstruct(nodeChild, sik::INS_DEFINE));
 			return;
 		}
 	}
-	void SIKParser::genForPrimitives(SIKAst* nodeParent, SIKAst* nodeChild, std::vector<sik::SIKInstruct>* Instructions) {
+	void SIKParser::genForPrimitives(SIKAst* nodeParent, SIKAst* nodeChild) {
 		switch (nodeChild->Type) {
 			case sik::SBLOCK:
-				Instructions->push_back(sik::SIKInstruct(nodeChild));
+				this->Instructions->push_back(sik::SIKInstruct(nodeChild));
+				break;
+			case sik::DELI_BRCOPEN:
+				this->Instructions->push_back(sik::SIKInstruct(nodeChild, sik::INS_OBJCREATE));
+				this->Instructions->back().pointToInstruct = this->ObjectDefinitions->size();
+				this->ObjectDefinitions->push_back(std::vector<sik::SIKInstruct>());
 				break;
 			case sik::NAMING:
 			case sik::NUMBER:
 			case sik::STRING:
 			case sik::BOOLEAN:
 			case sik::NULLTYPE:
-				Instructions->push_back(sik::SIKInstruct(nodeChild));
+				this->Instructions->push_back(sik::SIKInstruct(nodeChild));
 				break;
 		}
 	}
-	void SIKParser::genForLR(SIKAst* nodeParent, SIKAst* nodeChild, std::vector<sik::SIKInstruct>* Instructions) {
-		Instructions->push_back(sik::SIKInstruct(nodeChild));
+	void SIKParser::genForLR(SIKAst* nodeParent, SIKAst* nodeChild) {
+		this->Instructions->push_back(sik::SIKInstruct(nodeChild));
 	}
-	void SIKParser::genForBlockClose(SIKAst* nodeParent, SIKAst* nodeChild, std::vector<sik::SIKInstruct>* Instructions) {
-		Instructions->push_back(sik::SIKInstruct(nodeChild));
+	void SIKParser::genForBlockClose(SIKAst* nodeParent, SIKAst* nodeChild) {
+		//Incase we are wrapping an Object definition:
+		if (nodeChild->Block == sik::BLOCK_OBJ) {
+			// this->Instructions->push_back(sik::SIKInstruct(nodeChild, sik::INS_OBJDONE));
+		//Normal Object:
+		} else {
+			this->Instructions->push_back(sik::SIKInstruct(nodeChild));		
+		}
+		
 	}
 	// Find the maximum height of the binary tree
 	int SIKParser::maxHeight(SIKAst *p) {

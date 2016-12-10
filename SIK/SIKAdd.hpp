@@ -44,6 +44,8 @@ namespace sik
 		INS_ASSIGNSUB,
 
 		INS_DEFINE,
+		INS_OBJCREATE,
+		INS_OBJDONE,
 		INS_IF,
 		INS_ELSEIF,
 		INS_ELSE,

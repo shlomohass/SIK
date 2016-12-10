@@ -25,6 +25,7 @@ namespace sik {
 			sik::BlocksIn        Block;
 			int					 lineOrigin;
 			int					 cache;
+			int				     pointToInstruct;
 
 			SIKInstruct();
 			SIKInstruct(sik::SIKAst* node);

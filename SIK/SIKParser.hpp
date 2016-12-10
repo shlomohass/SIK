@@ -23,10 +23,16 @@ namespace sik {
 
 		std::vector<sik::BlocksIn> BlockInCheck;
 
+		//From Script containers:
+		std::vector<sik::SIKInstruct>* Instructions;
+		std::vector<std::vector<sik::SIKInstruct>>* ObjectDefinitions;
+		std::vector<std::vector<sik::SIKInstruct>>* FunctionInstructions;
+
 	public:
 
 		SIKParser();
-
+		SIKParser(std::vector<sik::SIKInstruct>* _Instructions, std::vector<std::vector<sik::SIKInstruct>>* _ObjectDefinitions, std::vector<std::vector<sik::SIKInstruct>>* _FunctionInstructions);
+		
 		//Operations AST:
 		sik::SIKAst* BuildAst(sik::SIKTokens* TokenSet);
 
@@ -46,14 +52,14 @@ namespace sik {
 
 		//Operations:
 		void SetNodeFromToken(sik::SIKAst* node, sik::Token* tok);
-		void WalkAst(sik::SIKAst* nodeParent, std::vector<sik::SIKInstruct>* Instructions);
-		void WalkAst(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild, std::vector<sik::SIKInstruct>* Instructions);
+		void WalkAst(sik::SIKAst* nodeParent);
+		void WalkAst(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild);
 
 		//Generate codes:
-		void genForKeywords(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild, std::vector<sik::SIKInstruct>* Instructions);
-		void genForPrimitives(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild, std::vector<sik::SIKInstruct>* Instructions);
-		void genForLR(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild, std::vector<sik::SIKInstruct>* Instructions);
-		void genForBlockClose(SIKAst* nodeParent, SIKAst* nodeChild, std::vector<sik::SIKInstruct>* Instructions);
+		void genForKeywords(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild);
+		void genForPrimitives(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild);
+		void genForLR(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild);
+		void genForBlockClose(SIKAst* nodeParent, SIKAst* nodeChild);
 
 		//Printing Trees:
 		int maxHeight(sik::SIKAst *p);
