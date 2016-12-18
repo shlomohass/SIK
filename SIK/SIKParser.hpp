@@ -20,9 +20,9 @@ namespace sik {
 
 	class SIKParser
 	{
-
 		std::vector<sik::BlocksIn> BlockInCheck;
-
+		int instructChunksContainer;
+		std::vector<sik::BlocksIn> BlockChunksContainer;
 		//From Script containers:
 		std::vector<sik::SIKInstruct>* Instructions;
 		std::vector<std::vector<sik::SIKInstruct>>* ObjectDefinitions;
@@ -68,8 +68,8 @@ namespace sik {
 		//Printing Trees:
 		int maxHeight(sik::SIKAst *p);
 		void printBranches(int branchLen, int nodeSpaceLen, int startLen, int nodesInThisLevel, const std::deque<sik::SIKAst*>& nodesQueue, std::ostream& out);
-		void printNodes(int branchLen, int nodeSpaceLen, int startLen, int nodesInThisLevel, const std::deque<sik::SIKAst*>& nodesQueue, std::ostream& out);
-		void printLeaves(int indentSpace, int level, int nodesInThisLevel, const std::deque<sik::SIKAst*>& nodesQueue, std::ostream& out);
+		void printNodes(int level, int indentSpace, int branchLen, int nodeSpaceLen, int startLen, int nodesInThisLevel, const std::deque<sik::SIKAst*>& nodesQueue, std::ostream& out, std::vector<SIKAst*>* later);
+		void printLeaves(int indentSpace, int level, int nodesInThisLevel, const std::deque<sik::SIKAst*>& nodesQueue, std::ostream& out, std::vector<SIKAst*>* later);
 		void printTree(sik::SIKAst *root, int level, int indentSpace, std::ostream& out);
 		std::string truncateString(const std::string& str);
 

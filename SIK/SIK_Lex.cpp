@@ -137,6 +137,7 @@ namespace sik
 				if (!avoid) {
 					this->inString = false;
 					this->currentToken.insert(this->currentToken.end(), 1, code[expIndex]);
+					expIndex++;
 				} else {
 					this->inString = true;
 				}

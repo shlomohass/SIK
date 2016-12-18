@@ -1,4 +1,13 @@
 /*
+a = { b : 2 + 3 * 4 };
+*/
+/*
+let a = {
+	bb : "shlomi",
+	cc : true
+};
+*/
+/*
 let b = " hassid
 	shlomi
 and 
@@ -31,14 +40,22 @@ if (bookkkppp + 2) {
 // let b = 1 + 2 + (((2 * (3 + 5)) * 4 ) - 4) * 6 * 5;
 // if (t == 5) { }
 // let test = { a : b }, s = 5;
-
+/*
 let gef,
     a = {
 		one : 2,
 		b : true,
-		c : { e : true f : false }
+		c : { e : true, f : false }
 	}, 
 	kke = 5;
+*/
+
+let a = {
+	aa : 2 + 3 * 4 - 4,
+	bb : "shlomi",
+	cc : true,
+	dd : { aaa : false, bbb : "hassid", ccc : { a : 4*5 } } 
+};
 
 /*
 for (let i = 0, i < 4, i = i + 1) {
