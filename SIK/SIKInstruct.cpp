@@ -20,6 +20,8 @@ namespace sik {
 		this->lineOrigin = -1;
 		this->cache = -1;
 		this->pointToInstruct = -1;
+		this->InternalJumper = -1;
+		this->MyInternalNumber = -1;
 	}
 	SIKInstruct::SIKInstruct(sik::SIKAst* node, sik::InstructType type) {
 		this->SubType = sik::NOPE;
@@ -28,6 +30,8 @@ namespace sik {
 		this->lineOrigin = node->line;
 		this->Type = type;
 		this->pointToInstruct = node->InsBlockPointer;
+		this->InternalJumper = node->InternalJumper;
+		this->MyInternalNumber = node->MyInternalNumber;
 	}
 	SIKInstruct::SIKInstruct(sik::SIKAst* node)
 	{
@@ -36,6 +40,8 @@ namespace sik {
 		this->Value = node->Value;
 		this->lineOrigin = node->line;
 		this->pointToInstruct = node->InsBlockPointer;
+		this->InternalJumper = node->InternalJumper;
+		this->MyInternalNumber = node->MyInternalNumber;
 
 		switch (node->Type) {
 			case sik::DELI_BRCOPEN:

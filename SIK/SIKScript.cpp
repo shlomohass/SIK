@@ -87,9 +87,9 @@ namespace sik
 		int getSize = (int)_instruct->size();
 		for (int i = 0; i < getSize; i++) {
 			sik::SIKInstruct* toPrint = &_instruct->at(i);
-			std::cout 
+			std::cout
 				<< "INS "
-				<< (i+1) 
+				<< (i + 1)
 				<< ": "
 				<< this->InstructionName[toPrint->Type]
 				<< " \t -> V: "
@@ -100,6 +100,10 @@ namespace sik
 				<< toPrint->Block
 				<< " , INSPO: "
 				<< toPrint->pointToInstruct
+				<< " , INJMP: "
+				<< this->Instructions[i].InternalJumper
+				<< " , INNUM: "
+				<< this->Instructions[i].MyInternalNumber
 				<< " , LINE: "
 				<< toPrint->lineOrigin
 				<< std::endl;
@@ -131,6 +135,10 @@ namespace sik
 				<< this->Instructions[i].Block
 				<< " , INSPO: "
 				<< this->Instructions[i].pointToInstruct
+				<< " , INJMP: "
+				<< this->Instructions[i].InternalJumper
+				<< " , INNUM: "
+				<< this->Instructions[i].MyInternalNumber
 				<< " , LINE: "
 				<< this->Instructions[i].lineOrigin
 				<< std::endl;

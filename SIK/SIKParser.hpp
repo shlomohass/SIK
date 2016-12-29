@@ -21,7 +21,7 @@ namespace sik {
 	class SIKParser
 	{
 		std::vector<sik::BlocksIn> BlockInCheck;
-		int instructChunksContainer;
+		int jumperCounter;
 		std::vector<sik::BlocksIn> BlockChunksContainer;
 		//From Script containers:
 		std::vector<sik::SIKInstruct>* Instructions;
@@ -53,6 +53,7 @@ namespace sik {
 
 		//Operations:
 		void SetNodeFromToken(sik::SIKAst* node, sik::Token* tok);
+		void applyNodeToMostLeft(sik::SIKAst* toApplyNode, sik::SIKAst* applyToNodeTree);
 		void WalkAst(sik::SIKAst* nodeParent);
 		void WalkAst(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild);
 

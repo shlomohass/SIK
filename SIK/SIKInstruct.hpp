@@ -26,6 +26,8 @@ namespace sik {
 			int					 lineOrigin;
 			int					 cache;
 			int				     pointToInstruct;
+			int				     InternalJumper;
+			int                  MyInternalNumber;
 
 			SIKInstruct();
 			SIKInstruct(sik::SIKAst* node);

@@ -49,13 +49,18 @@ let gef,
 	}, 
 	kke = 5;
 */
-
+/*
 let a = {
 	aa : 2 + 3 * 4 - 4,
 	bb : "shlomi",
 	cc : true,
 	dd : { aaa : false, bbb : "hassid", ccc : { a : 4*5 } } 
 };
+*/
+
+if (a + 2 && b < 5 || c && d ) {
+
+}
 
 /*
 for (let i = 0, i < 4, i = i + 1) {

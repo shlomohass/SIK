@@ -30,6 +30,8 @@ namespace sik {
 		std::vector<SIKAst*> bulk;
 		bool				 Mark;
 		int                  InsBlockPointer;
+		int                  InternalJumper;
+		int					 MyInternalNumber;
 
 		
 		SIKAst();
