@@ -33,6 +33,7 @@ namespace sik {
 		int                  InternalJumper;
 		int					 MyInternalNumber;
 		bool				 preVariable;
+		int					 Notation;
 
 		
 		SIKAst();

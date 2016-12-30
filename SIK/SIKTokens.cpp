@@ -373,6 +373,8 @@ namespace sik {
 			return "DELI";
 		case sik::DELI_COMMA:
 			return "COMA";
+		case sik::DELI_SCOPE:
+			return "SCOP";
 		case sik::DELI_BRCOPEN:
 			return "BRCO";
 		case sik::DELI_BRCCLOSE:

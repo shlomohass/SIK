@@ -22,6 +22,7 @@ namespace sik {
         int priority;
         sik::TokenTypes type;
         std::string obj;
+		int notation; // to mark early changes.
 		sik::SIKAst* node;
     };
     

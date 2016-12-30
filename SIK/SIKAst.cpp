@@ -28,6 +28,7 @@ namespace sik {
 		this->InternalJumper = -1;
 		this->MyInternalNumber = -1;
 		this->preVariable = false;
+		this->Notation = -1;
 	}
 
 	void SIKAst::mutateTo(SIKAst* target) {
@@ -45,6 +46,7 @@ namespace sik {
 		this->InternalJumper = target->InternalJumper;
 		this->MyInternalNumber = target->MyInternalNumber;
 		this->preVariable = target->preVariable;
+		this->Notation = target->Notation;
 	}
 	SIKAst::~SIKAst()
 	{

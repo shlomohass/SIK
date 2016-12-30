@@ -46,10 +46,10 @@ namespace sik {
 		switch (node->Type) {
 			case sik::DELI_BRCOPEN:
 			case sik::SBLOCK:
-				this->Type = sik::INS_OSBLOCK;
+				this->Type = sik::INS_OBLOCK;
 				break;
 			case sik::DELI_BRCCLOSE:
-				this->Type = sik::INS_CSBLOCK;
+				this->Type = sik::INS_CBLOCK;
 				break;
 			case sik::NUMBER:
 				this->Type = sik::INS_PUSH;
@@ -137,6 +137,7 @@ namespace sik {
 				this->Type = sik::INS_COR;
 				break;
 			case sik::DELI_COMMA:
+			case sik::DELI_SCOPE:
 			case sik::DELI_EXCL:
 			case sik::DELI_POINT:
 			case sik::DELI_BRKOPEN:

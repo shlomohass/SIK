@@ -430,7 +430,8 @@ namespace sik {
 		delete condNode;
 
 		//Validate Check for Block:
-		if (TokenSet->getAtPointer(parenthesesEnd + 1) == nullptr || TokenSet->getAtPointer(parenthesesEnd + 1)->type != sik::DELI_BRCOPEN) {
+		sik::Token* openBlockToken = TokenSet->getAtPointer(parenthesesEnd + 1);
+		if (openBlockToken == nullptr || openBlockToken->type != sik::DELI_BRCOPEN) {
 			throw sik::SIKException("IF statement condition must have a block body.", token->fromLine);
 		}
 
@@ -440,6 +441,7 @@ namespace sik {
 		blockNode->Type = sik::SBLOCK;
 		blockNode->Block = sik::BLOCK_IF;
 		blockNode->Value = sik::SIKLang::dicLang_bracesOpen;
+		blockNode->Notation = openBlockToken->notation;
 		node->Parent = blockNode;
 		blockNode->Left = node;
 
@@ -492,7 +494,8 @@ namespace sik {
 		delete condNode;
 
 		//Validate Check for Block:
-		if (TokenSet->getAtPointer(parenthesesEnd + 1) == nullptr || TokenSet->getAtPointer(parenthesesEnd + 1)->type != sik::DELI_BRCOPEN) {
+		sik::Token* openBlockToken = TokenSet->getAtPointer(parenthesesEnd + 1);
+		if (openBlockToken == nullptr || openBlockToken->type != sik::DELI_BRCOPEN) {
 			throw sik::SIKException("ELSEIF statement condition must have a block body.", token->fromLine);
 		}
 
@@ -502,6 +505,7 @@ namespace sik {
 		blockNode->Type = sik::SBLOCK;
 		blockNode->Block = sik::BLOCK_ELSEIF;
 		blockNode->Value = sik::SIKLang::dicLang_bracesOpen;
+		blockNode->Notation = openBlockToken->notation;
 		node->Parent = blockNode;
 		blockNode->Left = node;
 
@@ -516,7 +520,8 @@ namespace sik {
 		this->SetNodeFromToken(node, token);
 
 		//Validate Check for Block:
-		if (TokenSet->getAtPointer(token->index + 1) == nullptr || TokenSet->getAtPointer(token->index + 1)->type != sik::DELI_BRCOPEN) {
+		sik::Token* openBlockToken = TokenSet->getAtPointer(token->index + 1);
+		if (openBlockToken == nullptr || openBlockToken->type != sik::DELI_BRCOPEN) {
 			throw sik::SIKException("ELSE statement condition must have a block body.", token->fromLine);
 		}
 		//Add the Block open
@@ -525,8 +530,10 @@ namespace sik {
 		blockNode->Type = sik::SBLOCK;
 		blockNode->Block = sik::BLOCK_ELSE;
 		blockNode->Value = sik::SIKLang::dicLang_bracesOpen;
+		blockNode->Notation = openBlockToken->notation;
 		node->Parent = blockNode;
 		blockNode->Left = node;
+
 		//Remove The first Definitionand place the node chain:
 		if (!TokenSet->replaceRangeWithNode(token->index, token->index + 1, blockNode)) {
 			throw sik::SIKException("Error in token extraction. 33", token->fromLine);
@@ -667,15 +674,17 @@ namespace sik {
 		}
 
 		//Validate Check for Block:
-		if (TokenSet->getAtPointer(parenthesesEnd + 1) == nullptr || TokenSet->getAtPointer(parenthesesEnd + 1)->type != sik::DELI_BRCOPEN) {
+		sik::Token* openBlockToken = TokenSet->getAtPointer(parenthesesEnd + 1);
+		if (openBlockToken == nullptr || openBlockToken->type != sik::DELI_BRCOPEN) {
 			throw sik::SIKException("FOR statement condition must have a block body.", token->fromLine);
 		}
 
 		//Add the Block open
-		node->line = TokenSet->getAtPointer(parenthesesEnd + 1)->fromLine;
+		node->line = openBlockToken->fromLine;
 		node->Type = sik::SBLOCK;
 		node->Block = sik::BLOCK_FOR;
 		node->Value = sik::SIKLang::dicLang_bracesOpen;
+		node->Notation = openBlockToken->notation;
 
 		//handle nested definition:
 		sik::Token checkDefine = loopSubSet.getAt(0);
@@ -957,7 +966,11 @@ namespace sik {
 	void SIKParser::genForPrimitives(SIKAst* nodeParent, SIKAst* nodeChild) {
 		switch (nodeChild->Type) {
 			case sik::SBLOCK:
-				this->AddToInstructions(sik::SIKInstruct(nodeChild));
+				if (nodeChild->Notation == 1) {
+					this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_OSBLOCK));
+				} else {
+					this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_OBLOCK));
+				}
 				break;
 			case sik::DELI_BRCOPEN:
 				this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_OBJCREATE), nodeParent);

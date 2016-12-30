@@ -90,6 +90,7 @@ namespace sik
 		static char LangMacroIndicator;
 		static char LangMacroSetChar;
 		static char LangChildSetChar;
+		static char LangScopeChar;
 
 		//String based language symbols and keywords:
 		static std::string dicLang_space;
@@ -116,6 +117,7 @@ namespace sik
 		static std::string dicLang_greater_equal;
 		static std::string dicLang_smaller_equal;
 		static std::string dicLang_comma;
+		static std::string dicLang_scope;
 		static std::string dicLang_c_tequal;
 		static std::string dicLang_c_ntequal;
 		static std::string dicLang_c_equal;

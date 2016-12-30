@@ -58,8 +58,10 @@ namespace sik
 		INS_FRCO,
 		INS_FRCA,
 
-		INS_OSBLOCK,
-		INS_CSBLOCK,
+		INS_OSBLOCK, //Auto scope block
+		INS_OBLOCK,  //Forced scope block
+		INS_CBLOCK,  //General block close.
+
 	};
 	enum BlocksIn {
 		BLOCK_NONE,
@@ -107,6 +109,7 @@ namespace sik
 		DELI_GRTE,
 		DELI_LSTE,
 		DELI_COMMA,
+		DELI_SCOPE,
 		DELI_CTEQUAL,
 		DELI_CTNEQUAL,
 		DELI_CEQUAL,

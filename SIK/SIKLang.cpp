@@ -42,6 +42,7 @@ namespace sik {
 		{ "greater-equal"     , ">=" },
 		{ "smaller-equal"     , "<=" },
 		{ "comma"             , "," },
+		{ "scope"             , "~" },
 		{ "c-tequal"          , "=~" },
 		{ "c-ntequal"         , "!~" },
 		{ "c-equal"           , "==" },
@@ -171,6 +172,7 @@ namespace sik {
 	char SIKLang::LangMacroIndicator = ' ';
 	char SIKLang::LangMacroSetChar = ' ';
 	char SIKLang::LangChildSetChar = ' ';
+	char SIKLang::LangScopeChar    = ' ';
 
 	std::string SIKLang::dicLang_space = "";
 	std::string SIKLang::dicLang_plus = "";
@@ -196,6 +198,7 @@ namespace sik {
 	std::string SIKLang::dicLang_greater_equal = "";
 	std::string SIKLang::dicLang_smaller_equal = "";
 	std::string SIKLang::dicLang_comma = "";
+	std::string SIKLang::dicLang_scope = "";
 	std::string SIKLang::dicLang_c_tequal = "";
 	std::string SIKLang::dicLang_c_ntequal = "";
 	std::string SIKLang::dicLang_c_equal = "";
@@ -258,6 +261,7 @@ namespace sik {
 		LangMacroIndicator = LangFindDelimiter("macro-def")[0];
 		LangMacroSetChar = LangFindDelimiter("macro-set")[0];
 		LangChildSetChar = LangFindDelimiter("child-set")[0];
+		LangScopeChar    = LangFindDelimiter("scope")[0];
 
 		//String based:
 		dicLang_space = LangFindDelimiter("space");
@@ -284,6 +288,7 @@ namespace sik {
 		dicLang_greater_equal = LangFindDelimiter("greater-equal");
 		dicLang_smaller_equal = LangFindDelimiter("smaller-equal");
 		dicLang_comma = LangFindDelimiter("comma");
+		dicLang_scope = LangFindDelimiter("scope");
 		dicLang_c_tequal = LangFindDelimiter("c-tequal");
 		dicLang_c_ntequal = LangFindDelimiter("c-ntequal");
 		dicLang_c_equal = LangFindDelimiter("c-equal");
@@ -446,6 +451,7 @@ namespace sik {
 		if (test == dicLang_greater_equal[0] && value == dicLang_greater_equal) return true;
 		if (test == dicLang_smaller_equal[0] && value == dicLang_smaller_equal) return true;
 		if (test == dicLang_comma[0] && value == dicLang_comma) return true;
+		if (test == dicLang_scope[0] && value == dicLang_scope) return true;
 		if (test == dicLang_c_tequal[0] && value == dicLang_c_tequal) return true;
 		if (test == dicLang_c_ntequal[0] && value == dicLang_c_ntequal) return true;
 		if (test == dicLang_c_equal[0] && value == dicLang_c_equal) return true;

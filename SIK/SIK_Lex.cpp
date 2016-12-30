@@ -166,6 +166,7 @@ namespace sik
 		token.index = -1;
         token.fromLine = line;
         token.obj = tok;
+		token.notation = -1;
         token.type = this->evalTokenType(tok);
 		token.priority = this->evalTokenPriority(&token);
 		token.node = nullptr;
@@ -204,6 +205,13 @@ namespace sik
 					this->tokens.pop(1);
 					token.obj = '0' + SIKLang::dicLang_objcall + token.obj;
 				}
+			}
+		}
+		if (token.type == DELI_BRCOPEN) {
+			if (tokens.getSetPointer()->back().type == sik::DELI_SCOPE) {
+				token.notation = 1; //That mean scope the block -> force it!
+				//Remove the scope token:
+				this->tokens.pop(1);
 			}
 		}
         this->tokens.insert(token);
@@ -258,6 +266,7 @@ namespace sik
 		if (test == SIKLang::dicLang_greater_equal[0]	&& value == SIKLang::dicLang_greater_equal) return sik::DELI_GRTE;
 		if (test == SIKLang::dicLang_smaller_equal[0]	&& value == SIKLang::dicLang_smaller_equal) return sik::DELI_LSTE;
 		if (test == SIKLang::dicLang_comma[0]			&& value == SIKLang::dicLang_comma)			return sik::DELI_COMMA;
+		if (test == SIKLang::dicLang_scope[0]			&& value == SIKLang::dicLang_scope)			return sik::DELI_SCOPE;
 		if (test == SIKLang::dicLang_c_tequal[0]		&& value == SIKLang::dicLang_c_tequal)		return sik::DELI_CTEQUAL;
 		if (test == SIKLang::dicLang_c_ntequal[0]		&& value == SIKLang::dicLang_c_ntequal)		return sik::DELI_CTNEQUAL;
 		if (test == SIKLang::dicLang_c_equal[0]			&& value == SIKLang::dicLang_c_equal)		return sik::DELI_CEQUAL;
@@ -313,7 +322,7 @@ namespace sik
 		case sik::DELIMITER:		// ...
 		case sik::DELI_COMMA:       // ,
 			return 11;
-		
+		case sik::DELI_SCOPE:
 		case sik::DELI_BRCCLOSE:    // }
 			return 10;
 
