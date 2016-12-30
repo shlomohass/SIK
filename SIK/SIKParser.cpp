@@ -731,16 +731,27 @@ namespace sik {
 		} else {
 
 			if (tokL != nullptr) {
-				SIKAst* nodeLeft = new SIKAst();
-				this->SetNodeFromToken(nodeLeft, tokL);
-				if (nodeLeft->Type == sik::NAMING || nodeLeft->Type == sik::NUMBER) {
+				if (
+					(tokL->type == sik::NODE && (tokL->node->Type == sik::NAMING || tokL->node->Type == sik::NUMBER))
+					||
+					(tokL->type == sik::NAMING || tokL->type == sik::NUMBER)
+				) {
+					SIKAst* nodeLeft = new SIKAst();
+					this->SetNodeFromToken(nodeLeft, tokL);
 					node->Left = nodeLeft;
 					node->preVariable = false;
+					nodeLeft->Parent = node;
 				} else if (tokR != nullptr) {
-					this->SetNodeFromToken(nodeLeft, tokR);
-					if (nodeLeft->Type == sik::NAMING || nodeLeft->Type == sik::NUMBER) {
-						node->Left = nodeLeft;
+					if (
+						(tokR->type == sik::NODE && (tokR->node->Type == sik::NAMING || tokR->node->Type == sik::NUMBER))
+						||
+						(tokR->type == sik::NAMING || tokR->type == sik::NUMBER)
+					) {
+						SIKAst* nodeRight = new SIKAst();
+						this->SetNodeFromToken(nodeRight, tokR);
+						node->Left = nodeRight;
 						node->preVariable = true;
+						nodeRight->Parent = node;
 					} else {
 						throw SIKException("Expected number or variable before or after " + token->obj + " delimiter 11.", token->fromLine);
 					}

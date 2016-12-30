@@ -13,5 +13,8 @@
 [X] Variable declaration lookahead for nested.
 [X] Object Handler in Parser basic skelaton with nested objects.
 [X] AND OR -> early stop support.
-[ ] FOR Loop handler in parser.
+[X] FOR Loop handler in parser.
 [X] INC DEC operations -> support also primitive numbers.
+[X] Scoping engine to force block scope.
+[ ] WHILE loop.
+[X] IF and ELSEIF statement.
