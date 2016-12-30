@@ -50,7 +50,8 @@ namespace sik {
 		int BuildAst_BlockOpen(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
 		int BuildAst_BlockClose(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
 		int BuildAst_BracketOpen(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
-
+		int BuildAst_KeyForLoop(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
+		int BuildAst_OpSingleSide(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
 		//Operations:
 		void SetNodeFromToken(sik::SIKAst* node, sik::Token* tok);
 		void applyNodeToMostLeft(sik::SIKAst* toApplyNode, sik::SIKAst* applyToNodeTree);
@@ -65,6 +66,7 @@ namespace sik {
 		void genForPrimitives(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild);
 		void genForLR(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild);
 		void genForBlockClose(SIKAst* nodeParent, SIKAst* nodeChild);
+		void genForOpSingleSide(SIKAst* nodeParent, SIKAst* nodeChild);
 
 		//Printing Trees:
 		int maxHeight(sik::SIKAst *p);

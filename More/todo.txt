@@ -6,8 +6,12 @@
 [X] Generate tokens with types and priority
 [X] Handle negative numbers and dot prefix of number;
 [ ] Build Basic Precompiler -> Macros, Extenders.
-[ ] Parse Types boolean.
+[X] Parse Types boolean.
 [X] Build Basic AST from token collection.
 [X] Exception Class handlers.
 [X] Bulk AST support for complex parsing.
 [X] Variable declaration lookahead for nested.
+[X] Object Handler in Parser basic skelaton with nested objects.
+[X] AND OR -> early stop support.
+[ ] FOR Loop handler in parser.
+[X] INC DEC operations -> support also primitive numbers.

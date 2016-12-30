@@ -32,6 +32,7 @@ namespace sik {
 		int                  InsBlockPointer;
 		int                  InternalJumper;
 		int					 MyInternalNumber;
+		bool				 preVariable;
 
 		
 		SIKAst();

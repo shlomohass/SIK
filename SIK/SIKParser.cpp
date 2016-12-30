@@ -71,7 +71,10 @@ namespace sik {
 					else if (tok->obj == SIKLang::dicLangKey_variable) {
 						this->BuildAst_KeyDefine(node, tok, TokenSet);
 					}
-
+					//For loop:
+					else if (tok->obj == SIKLang::dicLangKey_loop_for) {
+						this->BuildAst_KeyForLoop(node, tok, TokenSet);
+					}
 					break;
 				case sik::DELI_BRCOPEN:
 					this->BuildAst_BlockOpen(node, tok, TokenSet);
@@ -88,6 +91,10 @@ namespace sik {
 				case sik::DELI_MULTI:
 				case sik::DELI_DIVIDE:
 					this->BuildAst_MathLR(node, tok, TokenSet);
+					break;
+				case sik::DELI_DECR:
+				case sik::DELI_INCR:
+					this->BuildAst_OpSingleSide(node, tok, TokenSet);
 					break;
 				case sik::DELI_CEQUAL:
 				case sik::DELI_CNEQUAL:
@@ -627,7 +634,107 @@ namespace sik {
 
 		return 1;
 	}
+	int SIKParser::BuildAst_KeyForLoop(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {
 
+		//Extract condition:
+		int parenthesesEnd = TokenSet->getParenthesesFirstAndLast(token->index);
+
+		//Validate FOR condition loop:
+		if (parenthesesEnd < 0) {
+			switch (parenthesesEnd) {
+				case -1:
+					throw sik::SIKException("Expected Parentheses after FOR keyword.", token->fromLine);
+				break;
+					case -2:
+				default:
+					throw sik::SIKException("Missing closing Parentheses in FOR statement.", token->fromLine);
+			}
+		}
+
+		//Create Subset:
+		sik::SIKTokens loopSubSet = TokenSet->getFromeSet(token->index + 2, parenthesesEnd - 1);
+
+		//Validate condition:
+		if (loopSubSet.size() < 1) {
+			throw sik::SIKException("IF statement condition part must contain a statement. 11", token->fromLine);
+		}
+
+		//Validate Check for Block:
+		if (TokenSet->getAtPointer(parenthesesEnd + 1) == nullptr || TokenSet->getAtPointer(parenthesesEnd + 1)->type != sik::DELI_BRCOPEN) {
+		throw sik::SIKException("IF statement condition must have a block body.", token->fromLine);
+		}
+
+		//Add the Block open
+		node->line = TokenSet->getAtPointer(parenthesesEnd + 1)->fromLine;
+		node->Type = sik::SBLOCK;
+		node->Block = sik::BLOCK_IF;
+		node->Value = sik::SIKLang::dicLang_bracesOpen;
+
+		//Recursively parse condition:
+		sik::SIKAst* condNode = this->BuildAst(&loopSubSet);
+		if ((int)condNode->bulk.size() > 0) {
+
+		node->Left = condNode->bulk[0];
+		condNode->bulk[0]->Parent = node;
+		//Apply the key:
+		sik::SIKAst* IfNode = new sik::SIKAst();
+		this->SetNodeFromToken(IfNode, token);
+		this->applyNodeToMostLeft(IfNode, node);
+		} else {
+		throw sik::SIKException("IF statement condition part must contain a statement. 22", token->fromLine);
+		}
+
+		//Destroy Container:
+		condNode->PreventBulkDelete = true;
+		delete condNode;
+
+		//Remove The first Definitionand place the node chain:
+		if (!TokenSet->replaceRangeWithNode(token->index, parenthesesEnd + 1, node)) {
+		throw sik::SIKException("Error in token extraction. 22", token->fromLine);
+		}
+		return 1;
+	}
+	int SIKParser::BuildAst_OpSingleSide(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {
+		this->SetNodeFromToken(node, token);
+		Token* tokL = TokenSet->getAtPointer(token->index - 1);
+		Token* tokR = TokenSet->getAtPointer(token->index + 1);
+		if (tokL == nullptr && tokR == nullptr) {
+			throw SIKException("Expected number or variable before or after " + token->obj + " delimiter.", token->fromLine);
+		} else {
+
+			if (tokL != nullptr) {
+				SIKAst* nodeLeft = new SIKAst();
+				this->SetNodeFromToken(nodeLeft, tokL);
+				if (nodeLeft->Type == sik::NAMING || nodeLeft->Type == sik::NUMBER) {
+					node->Left = nodeLeft;
+					node->preVariable = false;
+				} else if (tokR != nullptr) {
+					this->SetNodeFromToken(nodeLeft, tokR);
+					if (nodeLeft->Type == sik::NAMING || nodeLeft->Type == sik::NUMBER) {
+						node->Left = nodeLeft;
+						node->preVariable = true;
+					} else {
+						throw SIKException("Expected number or variable before or after " + token->obj + " delimiter 11.", token->fromLine);
+					}
+				} else {
+					throw SIKException("Expected number or variable before or after " + token->obj + " delimiter 22.", token->fromLine);
+				}
+			}
+			if (node->preVariable) {
+				//Remove Both and replace:
+				if (!TokenSet->replaceRangeWithNode(token->index, tokR->index, node)) {
+					throw SIKException("Expected value before or after " + token->obj + " delimiter. 33", token->fromLine);
+				}
+			} else {
+				//Remove Both and replace:
+				if (!TokenSet->replaceRangeWithNode(tokL->index, token->index, node)) {
+					throw SIKException("Expected value before or after " + token->obj + " delimiter. 44", token->fromLine);
+				}
+			}
+			
+		}
+		return 1;
+	}
 	/* Sets a node from token object:
 	* @param SIKAst* node -> the node
 	* @param Token* tok -> the node
@@ -648,6 +755,7 @@ namespace sik {
 			node->InsBlockPointer = tok->node->InsBlockPointer;
 			node->InternalJumper = tok->node->InternalJumper;
 			node->MyInternalNumber = tok->node->MyInternalNumber;
+			node->preVariable = tok->node->preVariable;
 
 		} else {
 			//Create new copy node:
@@ -731,6 +839,11 @@ namespace sik {
 		case sik::DELI_CAND:
 		case sik::DELI_COR:
 			this->genForLR(nodeParent, nodeChild);
+			nodeChild->Mark = true;
+			break;
+		case sik::DELI_INCR:
+		case sik::DELI_DECR:
+			this->genForOpSingleSide(nodeParent, nodeChild);
 			nodeChild->Mark = true;
 			break;
 		case sik::DELI_BRCCLOSE:
@@ -833,6 +946,17 @@ namespace sik {
 			this->AddToInstructions(sik::SIKInstruct(nodeChild));
 		}
 		
+	}
+	void SIKParser::genForOpSingleSide(SIKAst* nodeParent, SIKAst* nodeChild) {
+		if (nodeChild->preVariable && nodeChild->Type == sik::DELI_INCR) {
+			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_PINCREMENT), nodeParent);
+		} else if (!nodeChild->preVariable && nodeChild->Type == sik::DELI_INCR) {
+			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_INCREMENT), nodeParent);
+		} else if (nodeChild->preVariable && nodeChild->Type == sik::DELI_DECR) {
+			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_PDECREMENT), nodeParent);
+		} else if (!nodeChild->preVariable && nodeChild->Type == sik::DELI_DECR) {
+			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_DECREMENT), nodeParent);
+		}
 	}
 	// Find the maximum height of the binary tree
 	int SIKParser::maxHeight(SIKAst *p) {

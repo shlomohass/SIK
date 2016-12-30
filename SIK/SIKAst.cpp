@@ -27,6 +27,7 @@ namespace sik {
 		this->InsBlockPointer = -1;
 		this->InternalJumper = -1;
 		this->MyInternalNumber = -1;
+		this->preVariable = false;
 	}
 
 	void SIKAst::mutateTo(SIKAst* target) {
@@ -43,6 +44,7 @@ namespace sik {
 		this->InsBlockPointer = target->InsBlockPointer;
 		this->InternalJumper = target->InternalJumper;
 		this->MyInternalNumber = target->MyInternalNumber;
+		this->preVariable = target->preVariable;
 	}
 	SIKAst::~SIKAst()
 	{
