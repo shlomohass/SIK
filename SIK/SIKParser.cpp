@@ -84,6 +84,8 @@ namespace sik {
 					this->BuildAst_BlockClose(node, tok, TokenSet);
 					break;
 				case sik::DELI_EQUAL:
+				case sik::DELI_EQUALADD:
+				case sik::DELI_EQUALSUB:
 				case sik::DELI_CHILDSET:
 					this->BuildAst_Assigning(node, tok, TokenSet);
 					break;
@@ -249,14 +251,14 @@ namespace sik {
 		return 1;
 	}
 	int SIKParser::BuildAst_Assigning(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {
+
 		this->SetNodeFromToken(node, token);
 		Token* tokL = TokenSet->getAtPointer(token->index - 1);
 		Token* tokR = TokenSet->getAtPointer(token->index + 1);
 
 		if (tokL == nullptr || tokR == nullptr) {
 			throw SIKException("Expected Variable Before assigning sign and value or object after.", token->fromLine);
-		}
-		else if (node->Type == sik::DELI_CHILDSET && tokL != nullptr) {
+		} else if (node->Type == sik::DELI_CHILDSET && tokL != nullptr) {
 			Token* tokLL = TokenSet->getAtPointer(token->index - 2);
 			if (tokL->type != NAMING) {
 				throw SIKException("In Object definition property must be a valid variable name.", tokL->fromLine);
@@ -860,6 +862,8 @@ namespace sik {
 			nodeChild->Mark = true;
 			break;
 		case sik::DELI_EQUAL:
+		case sik::DELI_EQUALADD:
+		case sik::DELI_EQUALSUB:
 		case sik::DELI_CHILDSET:
 		case sik::DELI_PLUS:
 		case sik::DELI_MINUS:

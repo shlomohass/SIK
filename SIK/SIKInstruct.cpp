@@ -96,16 +96,15 @@ namespace sik {
 			case sik::DELI_EQUAL:
 				this->Type = sik::INS_ASSIGN;
 				break;
-			case sik::DELI_CHILDSET:
-				this->Type = sik::INS_CHILDASSIGN;
-				break;
 			case sik::DELI_EQUALADD:
 				this->Type = sik::INS_ASSIGNADD;
 				break;
 			case sik::DELI_EQUALSUB:
 				this->Type = sik::INS_ASSIGNSUB;
 				break;
-			
+			case sik::DELI_CHILDSET:
+				this->Type = sik::INS_CHILDASSIGN;
+				break;
 			case sik::DELI_GRT:
 				this->Type = sik::INS_CGRT;
 				break;
