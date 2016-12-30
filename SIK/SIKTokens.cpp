@@ -33,6 +33,9 @@ namespace sik {
 			}
 		}
 	}
+	/** Insert a token at the end:
+	*   @param Token token -> the token to insert.
+	*/
     void SIKTokens::insert(sik::Token token) {
         this->tokenSet.push_back(token);
     }
@@ -42,7 +45,7 @@ namespace sik {
             this->insert(tokens->getAt(j));
         }
     }
-	/** Insert a toke at a specific index:
+	/** Insert a token at a specific index:
 	*   @param Token token -> the token to insert.
 	*   @param int index   -> At a position
 	*/
@@ -57,24 +60,37 @@ namespace sik {
 			this->tokenSet[i].index = i;
 		}
 	}
+	/** Get a copy of the token set:
+	*/
     std::vector<sik::Token> SIKTokens::getSet() {
         return this->tokenSet;
     }
+	/** Get a pointer to the token set:
+	*/
     std::vector<sik::Token>* SIKTokens::getSetPointer() {
         return &this->tokenSet;
     }
+	/** Get a token at an index:
+	*  @param int i   -> At a position
+	*/
     sik::Token SIKTokens::getAt(int i) {
         if (i < 0 || i >= this->size()) {
             //Return Error.
         }
         return this->tokenSet[i];
     }
+	/** Get a pointer to the token at an index:
+	 *  @param int i   -> At a position
+	*/
     sik::Token* SIKTokens::getAtPointer(int i) {
         if (i < 0 || i >= this->size()) {
 			return nullptr;
         }
         return &this->tokenSet[i];
     }
+	/** Check if set has a token of type:
+	*  @param TokenTypes type   -> At a position
+	*/
     int SIKTokens::hasType(sik::TokenTypes type) {
         int i = this->size();
         for (int j = 0; j < i; j++) {
@@ -84,6 +100,9 @@ namespace sik {
         }
         return -1;
     }
+
+	/** Get the position of the highest priority token in a set:
+	*/
     int SIKTokens::findHighestPriority() {
         int s = this->size();
         int at = -1;
@@ -96,6 +115,8 @@ namespace sik {
         }
         return at;
     }
+	/** Get the token copy of the highest priority token in a set:
+	*/
     sik::Token SIKTokens::getHighestPriorityToken() {
         int f = this->findHighestPriority();
         if (f == -1) {
@@ -103,6 +124,8 @@ namespace sik {
         }
         return this->getAt(f);
     }
+	/** Get the token pointer of the highest priority token in a set:
+	*/
     sik::Token* SIKTokens::getHighestPriorityTokenPointer() {
         int f = this->findHighestPriority();
         if (f == -1) {
@@ -111,6 +134,10 @@ namespace sik {
         return this->getAtPointer(f);
     }
 
+	/** Check if set has nested commas:
+	 * @param int indexStart -> from where to seek
+	 * @return vector<int> -> a set of positions.
+	*/
 	std::vector<int> SIKTokens::hasNestedCommas(int indexStart) {
 		int countNest = 0;
 		std::vector<int> vecnum;
@@ -135,6 +162,23 @@ namespace sik {
 			}
 		}
 		return vecnum;
+	}
+	/** Check if set has nested commas that are repeated e.g -> 1,3,4 : ,??,,? :
+	* @param int indexStart -> from where to seek
+	* @return bool -> true if has otherwise false.
+	*/
+	bool SIKTokens::hasEmptyNestedCommas(int indexStart) {
+		std::vector<int> vecnum = this->hasNestedCommas(indexStart);
+		int sizecheck = (int)vecnum.size();
+		if (sizecheck < 2) return false;
+		int prev = -2;
+		for (int i = 0; i < sizecheck; i++) {
+			if (vecnum[i] - prev == 1) {
+				return true;
+			}
+			prev = vecnum[i];
+		}
+		return false;
 	}
 	int SIKTokens::getParenthesesFirstAndLast(int indexStart) {
 		int countNested = 0;

@@ -66,6 +66,12 @@ namespace sik
 			{ sik::INS_IF,		 "IF"   },
 			{ sik::INS_ELSEIF,	 "ELIF" },
 			{ sik::INS_ELSE,	 "ELSE" },
+
+			{ sik::INS_FORL,		 "FORL" },
+			{ sik::INS_FRCO,		 "FRCO" },
+			{ sik::INS_FRCA,		 "FRCA" },
+
+
 			{ sik::INS_OSBLOCK,	 "OSBLK" },
 			{ sik::INS_CSBLOCK,	 "CSBLK" },
 

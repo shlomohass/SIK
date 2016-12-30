@@ -74,6 +74,7 @@ namespace sik {
 					//For loop:
 					else if (tok->obj == SIKLang::dicLangKey_loop_for) {
 						this->BuildAst_KeyForLoop(node, tok, TokenSet);
+						this->BlockInCheck.push_back(sik::BLOCK_FOR); //Mark block
 					}
 					break;
 				case sik::DELI_BRCOPEN:
@@ -655,42 +656,60 @@ namespace sik {
 		sik::SIKTokens loopSubSet = TokenSet->getFromeSet(token->index + 2, parenthesesEnd - 1);
 
 		//Validate condition:
-		if (loopSubSet.size() < 1) {
-			throw sik::SIKException("IF statement condition part must contain a statement. 11", token->fromLine);
+		if (loopSubSet.size() < 3) {
+			throw sik::SIKException("FOR statement condition part must contain a statement with at least two parts (Definition, Condition, [optional]Callback).", token->fromLine);
+		}
+
+		//Validate commas and empty parts:
+		bool test = loopSubSet.hasEmptyNestedCommas(0);
+		if (test || loopSubSet.getSetPointer()->back().type == sik::DELI_COMMA) {
+			throw sik::SIKException("FOR loop must contain at least two parts seperated by commas and can't be empty between them.", token->fromLine);
 		}
 
 		//Validate Check for Block:
 		if (TokenSet->getAtPointer(parenthesesEnd + 1) == nullptr || TokenSet->getAtPointer(parenthesesEnd + 1)->type != sik::DELI_BRCOPEN) {
-		throw sik::SIKException("IF statement condition must have a block body.", token->fromLine);
+			throw sik::SIKException("FOR statement condition must have a block body.", token->fromLine);
 		}
 
 		//Add the Block open
 		node->line = TokenSet->getAtPointer(parenthesesEnd + 1)->fromLine;
 		node->Type = sik::SBLOCK;
-		node->Block = sik::BLOCK_IF;
+		node->Block = sik::BLOCK_FOR;
 		node->Value = sik::SIKLang::dicLang_bracesOpen;
 
-		//Recursively parse condition:
-		sik::SIKAst* condNode = this->BuildAst(&loopSubSet);
-		if ((int)condNode->bulk.size() > 0) {
-
-		node->Left = condNode->bulk[0];
-		condNode->bulk[0]->Parent = node;
-		//Apply the key:
-		sik::SIKAst* IfNode = new sik::SIKAst();
-		this->SetNodeFromToken(IfNode, token);
-		this->applyNodeToMostLeft(IfNode, node);
-		} else {
-		throw sik::SIKException("IF statement condition part must contain a statement. 22", token->fromLine);
+		//handle nested definition:
+		sik::Token checkDefine = loopSubSet.getAt(0);
+		bool addDefinition = false;
+		if (checkDefine.type == sik::KEYWORD && checkDefine.obj == SIKLang::dicLangKey_variable) {
+			addDefinition = true;
+			loopSubSet.removeFromeSet(0, 0, true);
+		}
+		if (loopSubSet.hasType(sik::KEYWORD) != -1) {
+			throw sik::SIKException("In FOR Loop you can't use keywords expect of a variable declaration in the declration part.", token->fromLine);
 		}
 
-		//Destroy Container:
-		condNode->PreventBulkDelete = true;
-		delete condNode;
+		//Recursively parse condition:
+		sik::SIKAst* forNode = this->BuildAst(&loopSubSet);
+		int chunks = (int)forNode->bulk.size();
+		if (chunks > 1 && chunks < 4) {
+			this->SetNodeFromToken(forNode, token);
+			node->Left = forNode;
+			forNode->Parent = node;
+		} else {
+			throw sik::SIKException("FOR loop must contain at least two parts (Definition, Condition, [optional]Callback).", token->fromLine);
+		}
 
+		//Validate parts and add definition if needed:
+		for (int i = 0; i < (int)forNode->bulk.size(); i++) {
+			if (i == 0 && addDefinition) {
+				sik::SIKAst* defNode = new SIKAst();
+				this->SetNodeFromToken(defNode, &checkDefine);
+				this->applyNodeToMostLeft(defNode,forNode->bulk[i]);
+			}
+		}
 		//Remove The first Definitionand place the node chain:
 		if (!TokenSet->replaceRangeWithNode(token->index, parenthesesEnd + 1, node)) {
-		throw sik::SIKException("Error in token extraction. 22", token->fromLine);
+			throw sik::SIKException("Error in token extraction. 656", token->fromLine);
 		}
 		return 1;
 	}
@@ -910,6 +929,28 @@ namespace sik {
 		// Variable definition:
 		if (nodeChild->Value == SIKLang::dicLangKey_variable) {
 			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_DEFINE));
+			return;
+		}
+		//For Loop:
+		if (nodeChild->Value == SIKLang::dicLangKey_loop_for) {
+			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_FORL));
+				int forPartsCount = nodeChild->bulk.size();
+				for (int i = 0; i < forPartsCount; i++) {
+					switch (i) {
+						case 0:
+							this->WalkAst(nodeChild, nodeChild->bulk[i]);
+							break;
+						case 1:
+							this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_FRCO));
+							this->WalkAst(nodeChild, nodeChild->bulk[i]);
+							break;
+						case 2:
+							this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_FRCA));
+							this->WalkAst(nodeChild, nodeChild->bulk[i]);
+							return; // max 3 parts -> so go out.
+							break;
+					}
+				}
 			return;
 		}
 	}

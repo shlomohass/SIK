@@ -54,6 +54,10 @@ namespace sik
 		INS_ELSEIF,
 		INS_ELSE,
 
+		INS_FORL,
+		INS_FRCO,
+		INS_FRCA,
+
 		INS_OSBLOCK,
 		INS_CSBLOCK,
 	};

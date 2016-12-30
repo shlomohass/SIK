@@ -51,6 +51,7 @@ namespace sik {
         sik::Token* getHighestPriorityTokenPointer();
 
 		std::vector<int> hasNestedCommas(int indexStart);
+		bool hasEmptyNestedCommas(int indexStart);
 		int getParenthesesFirstAndLast(int indexStart);
 		int getBlockFirstAndLast(int indexStart);
 		bool hasUnparse();

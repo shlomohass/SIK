@@ -1,11 +1,12 @@
 
+/*
 b = 2 * ++3 - 9 * --7 + b++;
-
 a = ++b;
 b = t++;
 c = --b + 4;
 d = 2 + b-- + 4;
 e = 3++;
+*/
 
 /*
 a = { b : 2 + 3 * 4 };
@@ -72,14 +73,195 @@ if (a + 2 && b < 5 || c && d ) {
 
 }
 */
-/*
-for (let i = 0, i < 4, i = i + 1) {
 
+for (let i = 0, i < 4, i++) {
+	let j,r,e;
+	j = { name : "shlomi", last : "hassid" };
+	r = a + 2 && b < 5 || c && d;
+	e = r++ + 4;
 }
-*/
+
 /*
 let bob = { 
 	a : { t : 7 }, 
 	b : function() { } 
 };
+*/
+
+
+/*
+-------------------------------------------------------------------
+| SIK Debugger -> TOKENIZER OUTPUT:
+-------------------------------------------------------------------
+
+for (let i = 0, i < 4, i++) {
+	let j,r,e;
+	j = { name : "shlomi", last : "hassid" };
+	r = a + 2 && b < 5 || c && d;
+	e = r++ + 4;
+}
+
+
+GENERATED AST:
+
+  _{
+ /
+for*
+NESTED GENERATED AST:
+
+GENERATED AST:
+
+    ___=__
+   /      \
+  _i       0
+ /
+let
+
+GENERATED AST:
+
+  _<
+ /  \
+ i   4
+
+GENERATED AST:
+
+  ++
+ /
+ i
+
+END NESTED.
+
+
+GENERATED AST:
+
+  _j
+ /
+let
+
+GENERATED AST:
+
+  _r
+ /
+let
+
+GENERATED AST:
+
+  _e
+ /
+let
+
+GENERATED AST:
+
+  _=
+ /  \
+ j  {*
+NESTED GENERATED AST:
+
+GENERATED AST:
+
+  _:
+ /  \
+na> sh>
+
+GENERATED AST:
+
+  _:
+ /  \
+la> ha>
+
+GENERATED AST:
+
+ }
+
+END NESTED.
+
+
+GENERATED AST:
+
+                _______________=______________
+               /                              \
+               r                        ______||______
+                                       /              \
+                                    __&&__          __&&__
+                                   /      \        /      \
+                                  _+      _<       c       d
+                                 /  \    /  \
+                                 a   2   b   5
+
+GENERATED AST:
+
+        _______=______
+       /              \
+       e            ___+__
+                   /      \
+                  ++       4
+                 /
+                 r
+
+GENERATED AST:
+
+ }
+
+
+-------------------------------------------------------------------
+| SIK Debugger -> CODE GENERATED:
+-------------------------------------------------------------------
+
+INS 1: FORL      -> V: for       , SUB: 2 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 77
+INS 2: DEF       -> V: let       , SUB: 2 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 77
+INS 3: PUSH      -> V: i         , SUB: 8 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 77
+INS 4: PUSH      -> V: 0         , SUB: 3 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 77
+INS 5: ASGN      -> V: =         , SUB: 2 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 77
+INS 6: FRCO      -> V: for       , SUB: 2 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 77
+INS 7: PUSH      -> V: i         , SUB: 8 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 77
+INS 8: PUSH      -> V: 4         , SUB: 3 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 77
+INS 9: CLST      -> V: <         , SUB: 2 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 77
+INS 10: FRCA     -> V: for       , SUB: 2 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 77
+INS 11: PUSH     -> V: i         , SUB: 8 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 77
+INS 12: INC      -> V: ++        , SUB: 2 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 77
+INS 13: OSBLK    -> V: {         , SUB: 2 , BLOCK: 7 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 77
+INS 14: DEF      -> V: let       , SUB: 2 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 78
+INS 15: PUSH     -> V: j         , SUB: 8 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 78
+INS 16: DEF      -> V: let       , SUB: 2 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 78
+INS 17: PUSH     -> V: r         , SUB: 8 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 78
+INS 18: DEF      -> V: let       , SUB: 2 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 78
+INS 19: PUSH     -> V: e         , SUB: 8 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 78
+INS 20: PUSH     -> V: j         , SUB: 8 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 79
+INS 21: OBJCR    -> V: {         , SUB: 2 , BLOCK: 0 , INSPO: 0 , INJMP: -1 , INNUM: -1 , LINE: 79
+INS 22: ASGN     -> V: =         , SUB: 2 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 79
+INS 23: PUSH     -> V: r         , SUB: 8 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 80
+INS 24: PUSH     -> V: a         , SUB: 8 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 80
+INS 25: PUSH     -> V: 2         , SUB: 3 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 80
+INS 26: ADD      -> V: +         , SUB: 2 , BLOCK: 0 , INSPO: -1 , INJMP: 0 , INNUM: -1 , LINE: 80
+INS 27: PUSH     -> V: b         , SUB: 8 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 80
+INS 28: PUSH     -> V: 5         , SUB: 3 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 80
+INS 29: CLST     -> V: <         , SUB: 2 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 80
+INS 30: CAND     -> V: &&        , SUB: 2 , BLOCK: 0 , INSPO: -1 , INJMP: 2 , INNUM: 0 , LINE: 80
+INS 31: PUSH     -> V: c         , SUB: 8 , BLOCK: 0 , INSPO: -1 , INJMP: 1 , INNUM: -1 , LINE: 80
+INS 32: PUSH     -> V: d         , SUB: 8 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 80
+INS 33: CAND     -> V: &&        , SUB: 2 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: 1 , LINE: 80
+INS 34: COR      -> V: ||        , SUB: 2 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: 2 , LINE: 80
+INS 35: ASGN     -> V: =         , SUB: 2 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 80
+INS 36: PUSH     -> V: e         , SUB: 8 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 81
+INS 37: PUSH     -> V: r         , SUB: 8 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 81
+INS 38: INC      -> V: ++        , SUB: 2 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 81
+INS 39: PUSH     -> V: 4         , SUB: 3 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 81
+INS 40: ADD      -> V: +         , SUB: 2 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 81
+INS 41: ASGN     -> V: =         , SUB: 2 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 81
+INS 42: CSBLK    -> V: }         , SUB: 2 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 82
+
+-------------------------------------------------------------------
+| SIK Debugger -> OBJECT DEFINITIONS:
+-------------------------------------------------------------------
+
+INSPO : 0
+INS 1: PUSH      -> V: name      , SUB: 8 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 79
+INS 2: PUSH      -> V: shlomi    , SUB: 4 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 79
+INS 3: CHASN     -> V: :         , SUB: 2 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 79
+INS 4: PUSH      -> V: last      , SUB: 8 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 79
+INS 5: PUSH      -> V: hassid    , SUB: 4 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 79
+INS 6: CHASN     -> V: :         , SUB: 2 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 79
+INS 7: OBJDN     -> V: }         , SUB: 2 , BLOCK: 0 , INSPO: -1 , INJMP: -1 , INNUM: -1 , LINE: 79
+Press any key to continue . . .
+
 */
