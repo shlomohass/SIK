@@ -71,6 +71,9 @@ namespace sik
 			{ sik::INS_FRCO,		 "FRCO" },
 			{ sik::INS_FRCA,		 "FRCA" },
 
+			{ sik::INS_WHLL,		 "WHLL" },
+			{ sik::INS_WHLM,		 "WHLM" },
+
 			{ sik::INS_OBLOCK,	 "OBLOK" },
 			{ sik::INS_OSBLOCK,	 "OSBLK" },
 			{ sik::INS_CBLOCK,	 "CBLOK" },

@@ -51,7 +51,6 @@ namespace sik {
 					this->BuildAst_BracketOpen(node, tok, TokenSet);
 					break;
 				case sik::KEYWORD:
-
 					// If statement:
 					if (tok->obj == sik::SIKLang::dicLangKey_cond_if) {
 						this->BuildAst_KeyIf(node, tok, TokenSet);
@@ -75,6 +74,11 @@ namespace sik {
 					else if (tok->obj == SIKLang::dicLangKey_loop_for) {
 						this->BuildAst_KeyForLoop(node, tok, TokenSet);
 						this->BlockInCheck.push_back(sik::BLOCK_FOR); //Mark block
+					}
+					//While loop:
+					else if (tok->obj == SIKLang::dicLangKey_loop_while) {
+						this->BuildAst_KeyWhileLoop(node, tok, TokenSet);
+						this->BlockInCheck.push_back(sik::BLOCK_WHILE); //Mark block
 					}
 					break;
 				case sik::DELI_BRCOPEN:
@@ -118,6 +122,10 @@ namespace sik {
 					this->BuildAst_CondOR(node, tok, TokenSet);
 					break;
 				case sik::NAMING:
+					this->BuildAst_Naming(node, tok, TokenSet);
+					break;
+				case sik::STRING:
+				case sik::NUMBER:
 					this->BuildAst_Naming(node, tok, TokenSet);
 					break;
 			}
@@ -724,6 +732,76 @@ namespace sik {
 		}
 		return 1;
 	}
+	int SIKParser::BuildAst_KeyWhileLoop(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {
+		//Extract condition:
+		int parenthesesEnd = TokenSet->getParenthesesFirstAndLast(token->index);
+
+		//Validate WHILE condition loop:
+		if (parenthesesEnd < 0) {
+			switch (parenthesesEnd) {
+			case -1:
+				throw sik::SIKException("Expected Parentheses after WHILE keyword.", token->fromLine);
+				break;
+			case -2:
+			default:
+				throw sik::SIKException("Missing closing Parentheses in WHILE condition statement.", token->fromLine);
+			}
+		}
+
+		//Create Subset:
+		sik::SIKTokens loopSubSet = TokenSet->getFromeSet(token->index + 2, parenthesesEnd - 1);
+
+		//Validate condition:
+		if (loopSubSet.size() < 1) {
+			throw sik::SIKException("WHILE statement condition part must contain a statement with one or two part (Condition, [optional integer]Max Iter).", token->fromLine);
+		}
+
+		//Validate commas and empty parts:
+		bool test = loopSubSet.hasEmptyNestedCommas(0);
+		if (test || loopSubSet.getSetPointer()->back().type == sik::DELI_COMMA) {
+			throw sik::SIKException("WHILE loop must contain at most two parts seperated by commas and can't be empty between them.", token->fromLine);
+		}
+
+		//Validate Check for Block:
+		sik::Token* openBlockToken = TokenSet->getAtPointer(parenthesesEnd + 1);
+		if (openBlockToken == nullptr || openBlockToken->type != sik::DELI_BRCOPEN) {
+			throw sik::SIKException("WHILE statement condition must have a block body.", token->fromLine);
+		}
+
+		//Add the Block open
+		node->line = openBlockToken->fromLine;
+		node->Type = sik::SBLOCK;
+		node->Block = sik::BLOCK_WHILE;
+		node->Value = sik::SIKLang::dicLang_bracesOpen;
+		node->Notation = openBlockToken->notation;
+
+		//handle nested keywords:
+		if (loopSubSet.hasType(sik::KEYWORD) != -1) {
+			throw sik::SIKException("In WHILE Loop Definition you can't use keywords in the condition part.", token->fromLine);
+		}
+
+		//Recursively parse condition:
+		sik::SIKAst* whileNode = this->BuildAst(&loopSubSet);
+		int chunks = (int)whileNode->bulk.size();
+		if (chunks > 0 && chunks < 3) {
+			this->SetNodeFromToken(whileNode, token);
+			node->Left = whileNode;
+			whileNode->Parent = node;
+		} else {
+			throw sik::SIKException("WHILE loop must contain one or two parts (Condition, [optional integer]Max Iter).", token->fromLine);
+		}
+
+		//Validate parts and add definition if needed:
+		for (int i = 0; i < (int)whileNode->bulk.size(); i++) {
+
+		}
+
+		//Remove The first Definition and place the node chain:
+		if (!TokenSet->replaceRangeWithNode(token->index, parenthesesEnd + 1, node)) {
+			throw sik::SIKException("Error in token extraction. 73456", token->fromLine);
+		}
+		return 1;
+	}
 	int SIKParser::BuildAst_OpSingleSide(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {
 		this->SetNodeFromToken(node, token);
 		Token* tokL = TokenSet->getAtPointer(token->index - 1);
@@ -898,7 +976,7 @@ namespace sik {
 	void SIKParser::AddToInstructions(const sik::SIKInstruct& instruct) {
 		this->AddToInstructions(instruct, nullptr);
 	}
-	void SIKParser::AddToInstructions(const sik::SIKInstruct& instruct, SIKAst* nodeParent) {
+	void SIKParser::AddToInstructions(const sik::SIKInstruct& instruct, sik::SIKAst* nodeParent) {
 		int testForBlocks = (int)this->BlockChunksContainer.size();
 		if (testForBlocks > 0 && this->BlockChunksContainer[testForBlocks - 1] == sik::BLOCK_OBJ) {
 			this->pushToObjectsInstructions(instruct);
@@ -934,7 +1012,7 @@ namespace sik {
 			}
 		}
 	}
-	void SIKParser::genForKeywords(SIKAst* nodeParent, SIKAst* nodeChild) {
+	void SIKParser::genForKeywords(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild) {
 		// IF statement:
 		if (nodeChild->Value == SIKLang::dicLangKey_cond_if) {
 			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_IF));
@@ -953,6 +1031,24 @@ namespace sik {
 		// Variable definition:
 		if (nodeChild->Value == SIKLang::dicLangKey_variable) {
 			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_DEFINE));
+			return;
+		}
+		//While Loop:
+		if (nodeChild->Value == SIKLang::dicLangKey_loop_while) {
+			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_WHLL));
+			int forPartsCount = nodeChild->bulk.size();
+			for (int i = 0; i < forPartsCount; i++) {
+				switch (i) {
+				case 0:
+					this->WalkAst(nodeChild, nodeChild->bulk[i]);
+					break;
+				case 1:
+					this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_WHLM));
+					this->WalkAst(nodeChild, nodeChild->bulk[i]);
+					return;
+					break; // max 2 parts -> so go out.
+				}
+			}
 			return;
 		}
 		//For Loop:
@@ -978,7 +1074,7 @@ namespace sik {
 			return;
 		}
 	}
-	void SIKParser::genForPrimitives(SIKAst* nodeParent, SIKAst* nodeChild) {
+	void SIKParser::genForPrimitives(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild) {
 		switch (nodeChild->Type) {
 			case sik::SBLOCK:
 				if (nodeChild->Notation == 1) {
@@ -1002,10 +1098,10 @@ namespace sik {
 				break;
 		}
 	}
-	void SIKParser::genForLR(SIKAst* nodeParent, SIKAst* nodeChild) {
+	void SIKParser::genForLR(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild) {
 		this->AddToInstructions(sik::SIKInstruct(nodeChild));
 	}
-	void SIKParser::genForBlockClose(SIKAst* nodeParent, SIKAst* nodeChild) {
+	void SIKParser::genForBlockClose(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild) {
 		//Incase we are wrapping an Object definition:
 		if ((int)this->BlockChunksContainer.size() > 0 && this->BlockChunksContainer.back() == sik::BLOCK_OBJ) {
 			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_OBJDONE));
@@ -1016,7 +1112,7 @@ namespace sik {
 		}
 		
 	}
-	void SIKParser::genForOpSingleSide(SIKAst* nodeParent, SIKAst* nodeChild) {
+	void SIKParser::genForOpSingleSide(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild) {
 		if (nodeChild->preVariable && nodeChild->Type == sik::DELI_INCR) {
 			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_PINCREMENT), nodeParent);
 		} else if (!nodeChild->preVariable && nodeChild->Type == sik::DELI_INCR) {
@@ -1027,8 +1123,10 @@ namespace sik {
 			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_DECREMENT), nodeParent);
 		}
 	}
+
+
 	// Find the maximum height of the binary tree
-	int SIKParser::maxHeight(SIKAst *p) {
+	int SIKParser::maxHeight(sik::SIKAst *p) {
 		if (!p) return 0;
 		int leftHeight = maxHeight(p->Left);
 		int rightHeight = maxHeight(p->Right);
@@ -1036,7 +1134,7 @@ namespace sik {
 	}
 
 	// Print the arm branches (eg, /    \ ) on a line
-	void SIKParser::printBranches(int branchLen, int nodeSpaceLen, int startLen, int nodesInThisLevel, const std::deque<SIKAst*>& nodesQueue, std::ostream& out) {
+	void SIKParser::printBranches(int branchLen, int nodeSpaceLen, int startLen, int nodesInThisLevel, const std::deque<sik::SIKAst*>& nodesQueue, std::ostream& out) {
 		std::deque<SIKAst*>::const_iterator iter = nodesQueue.begin();
 		for (int i = 0; i < nodesInThisLevel / 2; i++) {
 			out << ((i == 0) ? std::setw(startLen - 1) : std::setw(nodeSpaceLen - 2)) << "" << ((*iter++) ? "/" : " ");
@@ -1046,7 +1144,7 @@ namespace sik {
 	}
 
 	// Print the branches and node (eg, ___10___ )
-	void SIKParser::printNodes(int level, int indentSpace, int branchLen, int nodeSpaceLen, int startLen, int nodesInThisLevel, const std::deque<SIKAst*>& nodesQueue, std::ostream& out, std::vector<SIKAst*>* later) {
+	void SIKParser::printNodes(int level, int indentSpace, int branchLen, int nodeSpaceLen, int startLen, int nodesInThisLevel, const std::deque<sik::SIKAst*>& nodesQueue, std::ostream& out, std::vector<sik::SIKAst*>* later) {
 		std::deque<SIKAst*>::const_iterator iter = nodesQueue.begin();
 		std::string sValue = "";
 		for (int i = 0; i < nodesInThisLevel; i++, iter++) {
@@ -1068,7 +1166,7 @@ namespace sik {
 	}
 
 	// Print the leaves only (just for the bottom row)
-	void SIKParser::printLeaves(int indentSpace, int level, int nodesInThisLevel, const std::deque<SIKAst*>& nodesQueue, std::ostream& out, std::vector<SIKAst*>* later) {
+	void SIKParser::printLeaves(int indentSpace, int level, int nodesInThisLevel, const std::deque<sik::SIKAst*>& nodesQueue, std::ostream& out, std::vector<sik::SIKAst*>* later) {
 		std::deque<SIKAst*>::const_iterator iter = nodesQueue.begin();
 		std::string sValue = "";
 		for (int i = 0; i < nodesInThisLevel; i++, iter++) {
@@ -1092,7 +1190,7 @@ namespace sik {
 	// @ param
 	// level  Control how wide you want the tree to sparse (eg, level 1 has the minimum space between nodes, while level 2 has a larger space between nodes)
 	// indentSpace  Change this to add some indent space to the left (eg, indentSpace of 0 means the lowest level of the left node will stick to the left margin)
-	void SIKParser::printTree(SIKAst *root, int level, int indentSpace, std::ostream& out) {
+	void SIKParser::printTree(sik::SIKAst *root, int level, int indentSpace, std::ostream& out) {
 		std::vector<SIKAst*> later;
 		if (root->Left == nullptr && root->Right == nullptr && root->bulk.size() > 0) {
 			for (int i = 0; i < (int)root->bulk.size(); i++) {

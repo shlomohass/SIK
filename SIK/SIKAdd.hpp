@@ -47,16 +47,19 @@ namespace sik
 		INS_ASSIGNSUB,
 		INS_CHILDASSIGN,
 
-		INS_DEFINE,
+		INS_DEFINE, //OBJECTS
 		INS_OBJCREATE,
 		INS_OBJDONE,
-		INS_IF,
+		INS_IF,     //IFs
 		INS_ELSEIF,
 		INS_ELSE,
 
-		INS_FORL,
+		INS_FORL, //FOR
 		INS_FRCO,
 		INS_FRCA,
+
+		INS_WHLL, //WHILE
+		INS_WHLM, //WHILE MAX part
 
 		INS_OSBLOCK, //Auto scope block
 		INS_OBLOCK,  //Forced scope block
