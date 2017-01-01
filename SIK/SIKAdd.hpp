@@ -61,6 +61,10 @@ namespace sik
 		INS_WHLL, //WHILE
 		INS_WHLM, //WHILE MAX part
 
+		INS_EACH, //EACH Loop
+		INS_EACHI, //EACH Index
+		INS_EACHE, //EACH Element
+
 		INS_OSBLOCK, //Auto scope block
 		INS_OBLOCK,  //Forced scope block
 		INS_CBLOCK,  //General block close.

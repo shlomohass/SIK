@@ -42,30 +42,30 @@ namespace sik
 			{ "cant-read"         , "The file can't be read - may be permission error."       }
 		};
 		this->InstructionName = {
-			{ sik::INS_NONE,		 "NONE"},
-			{ sik::INS_PUSH,		 "PUSH" },
+			{ sik::INS_NONE,		"NONE" },
+			{ sik::INS_PUSH,		"PUSH" },
 
-			{ sik::INS_ADD,		 "ADD" },
-			{ sik::INS_SUBTRACT,	 "SUB" },
-			{ sik::INS_MULTI,	 "MUL" },
-			{ sik::INS_DEVIDE,	 "DEV" },
-			{ sik::INS_POW,		 "POW" },
+			{ sik::INS_ADD,			"ADD" },
+			{ sik::INS_SUBTRACT,	"SUB" },
+			{ sik::INS_MULTI,		"MUL" },
+			{ sik::INS_DEVIDE,		"DEV" },
+			{ sik::INS_POW,			"POW" },
 			
-			{ sik::INS_INCREMENT, "INC" },
-			{ sik::INS_DECREMENT, "DEC" },
-			{ sik::INS_PINCREMENT, "PINC" },
-			{ sik::INS_PDECREMENT, "PDEC" },
+			{ sik::INS_INCREMENT,	"INC"  },
+			{ sik::INS_DECREMENT,	"DEC"  },
+			{ sik::INS_PINCREMENT,	"PINC" },
+			{ sik::INS_PDECREMENT,	"PDEC" },
 
-			{ sik::INS_ASSIGN,	    "ASGN" },
+			{ sik::INS_ASSIGN,	    "ASGN"  },
 			{ sik::INS_ASSIGNADD,   "ASNAD" },
 			{ sik::INS_ASSIGNSUB,   "ASNSB" },
-			{ sik::INS_CHILDASSIGN, "CHASN" },
-			{ sik::INS_DEFINE,	  "DEF"   },
-			{ sik::INS_OBJCREATE, "OBJCR" },
-			{ sik::INS_OBJDONE,	 "OBJDN" },
-			{ sik::INS_IF,		 "IF"   },
-			{ sik::INS_ELSEIF,	 "ELIF" },
-			{ sik::INS_ELSE,	 "ELSE" },
+			{ sik::INS_CHILDASSIGN,	"CHASN" },
+			{ sik::INS_DEFINE,		"DEF"   },
+			{ sik::INS_OBJCREATE,	"OBJCR" },
+			{ sik::INS_OBJDONE,		"OBJDN" },
+			{ sik::INS_IF,			"IF"   },
+			{ sik::INS_ELSEIF,		"ELIF" },
+			{ sik::INS_ELSE,		"ELSE" },
 
 			{ sik::INS_FORL,		 "FORL" },
 			{ sik::INS_FRCO,		 "FRCO" },
@@ -74,20 +74,28 @@ namespace sik
 			{ sik::INS_WHLL,		 "WHLL" },
 			{ sik::INS_WHLM,		 "WHLM" },
 
-			{ sik::INS_OBLOCK,	 "OBLOK" },
-			{ sik::INS_OSBLOCK,	 "OSBLK" },
-			{ sik::INS_CBLOCK,	 "CBLOK" },
+			{ sik::INS_EACH,		 "EACHL" },
+			{ sik::INS_EACHI,		 "EACHI" },
+			{ sik::INS_EACHE,		 "EACHE" },
 
-			{ sik::INS_CGRT,	 "CGRT" },
-			{ sik::INS_CLST,	 "CLST" },
-			{ sik::INS_CGRTE,	 "CGRTE" },
-			{ sik::INS_CLSTE,	 "CLSTE" },
-			{ sik::INS_CTEQUAL,	 "CTEQ" },
-			{ sik::INS_CNTEQUAL, "CNTEQ" },
-			{ sik::INS_CEQUAL,	 "CEQ" },
-			{ sik::INS_CNEQUAL,	 "CNEQ" },
-			{ sik::INS_CAND,     "CAND" },
-			{ sik::INS_COR,		 "COR" }
+			{ sik::INS_OBLOCK,		 "OBLOK" },
+			{ sik::INS_OSBLOCK,		 "OSBLK" },
+			{ sik::INS_CBLOCK,		 "CBLOK" },
+
+			{ sik::INS_EACH,		 "EACH" },
+			{ sik::INS_EACHI,		 "EACHI" },
+			{ sik::INS_EACHE,		 "EACHE" },
+
+			{ sik::INS_CGRT,		 "CGRT"  },
+			{ sik::INS_CLST,		 "CLST"  },
+			{ sik::INS_CGRTE,		 "CGRTE" },
+			{ sik::INS_CLSTE,		 "CLSTE" },
+			{ sik::INS_CTEQUAL,		 "CTEQ"  },
+			{ sik::INS_CNTEQUAL,	 "CNTEQ" },
+			{ sik::INS_CEQUAL,		 "CEQ"  },
+			{ sik::INS_CNEQUAL,		 "CNEQ" },
+			{ sik::INS_CAND,		 "CAND" },
+			{ sik::INS_COR,			 "COR"  }
 		};
 	}
 
@@ -113,9 +121,9 @@ namespace sik
 				<< " , INSPO: "
 				<< toPrint->pointToInstruct
 				<< " , INJMP: "
-				<< this->Instructions[i].InternalJumper
+				<< toPrint->InternalJumper
 				<< " , INNUM: "
-				<< this->Instructions[i].MyInternalNumber
+				<< toPrint->MyInternalNumber
 				<< " , LINE: "
 				<< toPrint->lineOrigin
 				<< std::endl;

@@ -23,6 +23,7 @@ namespace sik
         
         bool inString;
         bool hadEscape;
+		bool seenSpace;
 		float parenthesesIncr;
 
     public:

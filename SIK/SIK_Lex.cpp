@@ -20,6 +20,7 @@ namespace sik
         this->operateMode = ONORMAL;
         this->inString = false;
         this->hadEscape = false;
+		this->seenSpace = false;
 		this->currentToken = "";
     }
 
@@ -27,6 +28,7 @@ namespace sik
         this->operateMode = debug;
         this->inString = false;
         this->hadEscape = false;
+		this->seenSpace = false;
 		this->currentToken = "";
     }
 
@@ -56,6 +58,7 @@ namespace sik
 				//skip over white spaces and ;
 				while (expIndex < (int)code.length() && (this->isSpace(code[expIndex]) || code[expIndex] == '\t')) {
 					++expIndex;
+					this->seenSpace = true;
 				}
 				//check for endl of expression
 				if (expIndex == (int)code.length()) {
@@ -182,6 +185,7 @@ namespace sik
 				sik::Token* prevTwo = this->tokens.getAtPointer(this->tokens.size() - 2);
 				bool check = false;
 				if (
+					!this->seenSpace &&
 					prevTwo != nullptr &&
 					this->isDelimiter(prevTwo->obj) &&
 					prevTwo->type != sik::DELI_BRKCLOSE && 
@@ -191,6 +195,7 @@ namespace sik
 					) {
 					check = true;
 				} else if (
+					!this->seenSpace &&
 					prevTwo == nullptr &&
 					prevOne != nullptr &&
 					(prevOne->obj == SIKLang::dicLang_minus || prevOne->obj == SIKLang::dicLang_objcall)
@@ -215,6 +220,7 @@ namespace sik
 			}
 		}
         this->tokens.insert(token);
+		this->seenSpace = false;
     }
     sik::TokenTypes SIKLex::evalTokenType(const std::string& token) {
         if (token.at(0) == '"' && token.at(token.size() - 1) == '"') {

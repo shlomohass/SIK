@@ -5,16 +5,31 @@
 [X] Handle comments;
 [X] Generate tokens with types and priority
 [X] Handle negative numbers and dot prefix of number;
-[ ] Build Basic Precompiler -> Macros, Extenders.
+[ ] Build Basic Precompiler -> Macros, Extenders, Includes.
 [X] Parse Types boolean.
 [X] Build Basic AST from token collection.
 [X] Exception Class handlers.
 [X] Bulk AST support for complex parsing.
 [X] Variable declaration lookahead for nested.
-[X] Object Handler in Parser basic skelaton with nested objects.
+[X] OBJECT Handler in Parser basic skelaton with nested objects.
 [X] AND OR -> early stop support.
 [X] FOR Loop handler in parser.
 [X] INC DEC operations -> support also primitive numbers.
 [X] Scoping engine to force block scope.
-[ ] WHILE loop.
+[X] WHILE loop.
 [X] IF and ELSEIF statement.
+[X] EACH loop.
+[X] Improved negative number handler. <- handle check for space before negativity.
+[X] Object Instruction debuger output print.
+[ ] DEFER keyword for blocks.
+[ ] Functions + RETRUN keyword decleration.
+[ ] PRINT keyword -> primitive withe comma support.
+[ ] BREAK keyword.
+[ ] BREAKIF keyword.
+[ ] CONTINUE keyword.
+[ ] SKIP key word in loops -> for loop, each loop. jup iterations.
+[ ] ADD Pointers.
+[ ] ARRAYS.
+[ ] ENUMS.
+[ ] UNSET keyword for variables.
+[ ] NAMING Map for compile check -> seen + declared.
