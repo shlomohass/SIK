@@ -52,6 +52,7 @@ namespace sik {
 		int BuildAst_BlockOpen(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
 		int BuildAst_BlockClose(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
 		int BuildAst_BracketOpen(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
+		int BuildAst_SquareBracketOpen(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
 		int BuildAst_KeyForLoop(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
 		int BuildAst_KeyWhileLoop(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
 		int BuildAst_KeyEachLoop(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
@@ -75,7 +76,7 @@ namespace sik {
 		void genForLR(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild);
 		void genForBlockClose(SIKAst* nodeParent, SIKAst* nodeChild);
 		void genForOpSingleSide(SIKAst* nodeParent, SIKAst* nodeChild);
-
+		void genForArray(SIKAst* nodeParent, SIKAst* nodeChild);
 		//Printing Trees:
 		int maxHeight(sik::SIKAst *p);
 		void printBranches(int branchLen, int nodeSpaceLen, int startLen, int nodesInThisLevel, const std::deque<sik::SIKAst*>& nodesQueue, std::ostream& out);

@@ -37,6 +37,8 @@ namespace sik {
         int size();
 		void clear();
 		void pop(int howMany); // Safe
+		sik::Token* back(); // Safe
+		bool empty();
         void insert(sik::Token token);
         void insert(sik::SIKTokens* tokens);
 		void insertAt(sik::Token token, int index);
@@ -46,7 +48,8 @@ namespace sik {
         sik::Token getAt(int i);
         sik::Token* getAtPointer(int i);
         int hasType(sik::TokenTypes type);
-        
+		int hasTypeDeep(sik::TokenTypes type);
+
 		int findHighestPriority();
         sik::Token getHighestPriorityToken();
         sik::Token* getHighestPriorityTokenPointer();
@@ -54,6 +57,7 @@ namespace sik {
 		std::vector<int> hasNestedCommas(int indexStart);
 		bool hasEmptyNestedCommas(int indexStart);
 		int getParenthesesFirstAndLast(int indexStart);
+		int getSBracketFirstAndLast(int indexStart);
 		int getBlockFirstAndLast(int indexStart);
 		int getSatementLast(int indexStart);
 		bool hasUnparse();

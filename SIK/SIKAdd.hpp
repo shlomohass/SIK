@@ -50,6 +50,12 @@ namespace sik
 		INS_DEFINE, //OBJECTS
 		INS_OBJCREATE,
 		INS_OBJDONE,
+
+		INS_ARRC, //Array create
+		INS_ARRT, //Array traverse
+		INS_ARRP, //Array push
+		INS_ARRD,
+
 		INS_IF,     //IFs
 		INS_ELSEIF,
 		INS_ELSE,

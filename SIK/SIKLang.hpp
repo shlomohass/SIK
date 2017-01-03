@@ -168,6 +168,7 @@ namespace sik
 		virtual ~SIKLang();
 
 		//Printing stuff:
+		static std::string toString(int value);
 		static void printHeader(std::string headername);
 		static void printSepLine(int breaks);
 		static void printEmpLine(int breaks);

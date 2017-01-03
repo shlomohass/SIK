@@ -61,9 +61,17 @@ namespace sik
 			{ sik::INS_ASSIGNADD,   "ASNAD" },
 			{ sik::INS_ASSIGNSUB,   "ASNSB" },
 			{ sik::INS_CHILDASSIGN,	"CHASN" },
+
 			{ sik::INS_DEFINE,		"DEF"   },
+
 			{ sik::INS_OBJCREATE,	"OBJCR" },
 			{ sik::INS_OBJDONE,		"OBJDN" },
+
+			{ sik::INS_ARRC,		"ARRC" },
+			{ sik::INS_ARRT,		"ARRT" },
+			{ sik::INS_ARRP,		"ARRP" },
+			{ sik::INS_ARRD,		"ARRD" },
+
 			{ sik::INS_IF,			"IF"   },
 			{ sik::INS_ELSEIF,		"ELIF" },
 			{ sik::INS_ELSE,		"ELSE" },

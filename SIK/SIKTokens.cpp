@@ -33,6 +33,19 @@ namespace sik {
 			}
 		}
 	}
+	/* Get the Last token from vector is safe:
+	*/
+	sik::Token* SIKTokens::back() {
+		if (!this->empty()) {
+			return &this->tokenSet.back();
+		}
+		return nullptr;
+	}
+	/* Get empty state of th tokens set:
+	*/
+	bool SIKTokens::empty() {
+		return this->tokenSet.empty();
+	}
 	/** Insert a token at the end:
 	*   @param Token token -> the token to insert.
 	*/
@@ -94,12 +107,21 @@ namespace sik {
     int SIKTokens::hasType(sik::TokenTypes type) {
         int i = this->size();
         for (int j = 0; j < i; j++) {
-            if (this->tokenSet[j].type == type) {
+            if (this->getAtPointer(j)->type == type) {
                 return j;
             }
         }
         return -1;
     }
+	int SIKTokens::hasTypeDeep(sik::TokenTypes type) {
+		int i = this->size();
+		for (int j = 0; j < i; j++) {
+			if (this->getAtPointer(j)->type == type) {
+				return j;
+			}
+		}
+		return -1;
+	}
 
 	/** Get the position of the highest priority token in a set:
 	*/
@@ -140,24 +162,26 @@ namespace sik {
 	*/
 	std::vector<int> SIKTokens::hasNestedCommas(int indexStart) {
 		int countNest = 0;
+		int size = this->size();
 		std::vector<int> vecnum;
 
-		for (int i = indexStart; i < (int)this->tokenSet.size(); i++) {
-			if (this->tokenSet[i].type == sik::DELI_BRKOPEN ||
-				this->tokenSet[i].type == sik::DELI_SBRKOPEN ||
-				this->tokenSet[i].type == sik::DELI_BRCOPEN
+		for (int i = indexStart; i < size; i++) {
+			sik::Token* tok = this->getAtPointer(i);
+			if (tok->type == sik::DELI_BRKOPEN ||
+				tok->type == sik::DELI_SBRKOPEN ||
+				tok->type == sik::DELI_BRCOPEN
 			) { 
 				countNest++;
 				continue;
 			}
-			if (this->tokenSet[i].type == sik::DELI_BRKCLOSE ||
-				this->tokenSet[i].type == sik::DELI_SBRKCLOSE ||
-				this->tokenSet[i].type == sik::DELI_BRCCLOSE
+			if (tok->type == sik::DELI_BRKCLOSE ||
+				tok->type == sik::DELI_SBRKCLOSE ||
+				tok->type == sik::DELI_BRCCLOSE
 				) {
 				countNest--;
 				continue;
 			}
-			if (this->tokenSet[i].type == sik::DELI_COMMA && countNest < 1) {
+			if (tok->type == sik::DELI_COMMA && countNest < 1) {
 				vecnum.push_back(i);
 			}
 		}
@@ -186,17 +210,43 @@ namespace sik {
 		if (indexStart + 1 >= this->size() || this->tokenSet[indexStart + 1].type != sik::DELI_BRKOPEN) {
 			return -1;
 		}
-		for (int i = indexStart + 2; i < (int)this->tokenSet.size(); i++) {
-			if (this->tokenSet[i].type == sik::DELI_BRKOPEN) {
+		int size = this->size();
+		for (int i = indexStart + 2; i < size; i++) {
+			sik::Token* tok = this->getAtPointer(i);
+			if (tok->type == sik::DELI_BRKOPEN) {
 				countNested++;
 				continue;
 			}
-			if (this->tokenSet[i].type == sik::DELI_BRKCLOSE && countNested > 0
+			if (tok->type == sik::DELI_BRKCLOSE && countNested > 0
 				) {
 				countNested--;
 				continue;
 			}
-			if (this->tokenSet[i].type == sik::DELI_BRKCLOSE) {
+			if (tok->type == sik::DELI_BRKCLOSE) {
+				return i;
+			}
+		}
+		return -2;
+	}
+	int SIKTokens::getSBracketFirstAndLast(int indexStart) {
+		int countNested = 0;
+		//Validate first:
+		if (this->tokenSet[indexStart].type != sik::DELI_SBRKOPEN) {
+			return -1;
+		}
+		int size = this->size();
+		for (int i = indexStart + 1; i < size; i++) {
+			sik::Token* tok = this->getAtPointer(i);
+			if (tok->type == sik::DELI_SBRKOPEN) {
+				countNested++;
+				continue;
+			}
+			if (tok->type == sik::DELI_SBRKCLOSE && countNested > 0
+				) {
+				countNested--;
+				continue;
+			}
+			if (tok->type == sik::DELI_SBRKCLOSE) {
 				return i;
 			}
 		}
@@ -208,17 +258,19 @@ namespace sik {
 		if (indexStart + 1 >= this->size()) {
 			return -1;
 		}
-		for (int i = indexStart + 1; i < (int)this->tokenSet.size(); i++) {
-			if (this->tokenSet[i].type == sik::DELI_BRCOPEN) {
+		int size = this->size();
+		for (int i = indexStart + 1; i < size; i++) {
+			sik::Token* tok = this->getAtPointer(i);
+			if (tok->type == sik::DELI_BRCOPEN) {
 				countNested++;
 				continue;
 			}
-			if (this->tokenSet[i].type == sik::DELI_BRCCLOSE && countNested > 0
+			if (tok->type == sik::DELI_BRCCLOSE && countNested > 0
 				) {
 				countNested--;
 				continue;
 			}
-			if (this->tokenSet[i].type == sik::DELI_BRCCLOSE) {
+			if (tok->type == sik::DELI_BRCCLOSE) {
 				return i;
 			}
 		}
@@ -231,24 +283,27 @@ namespace sik {
 		if (indexStart + 1 >= this->size() || this->tokenSet[indexStart].type == sik::DELI_OPEND) {
 			return -1;
 		}
-		for (int i = indexStart + 1; i < (int)this->tokenSet.size(); i++) {
-			if (this->tokenSet[i].type == sik::DELI_BRCOPEN) {
+		int size = this->size();
+		for (int i = indexStart + 1; i < size; i++) {
+			sik::Token* tok = this->getAtPointer(i);
+			if (tok->type == sik::DELI_BRCOPEN) {
 				countNested++;
 				continue;
 			}
-			if (this->tokenSet[i].type == sik::DELI_BRCCLOSE && countNested > 0
+			if (tok->type == sik::DELI_BRCCLOSE && countNested > 0
 				) {
 				countNested--;
 				continue;
 			}
-			if (this->tokenSet[i].type == sik::DELI_OPEND && countNested == 0) {
+			if (tok->type == sik::DELI_OPEND && countNested == 0) {
 				return i;
 			}
 		}
 		return -1;
 	}
 	bool SIKTokens::hasUnparse() {
-		for (int i = 0; i < (int)this->tokenSet.size(); i++) {
+		int size = this->size();
+		for (int i = 0; i < size; i++) {
 			if (this->tokenSet[i].node == nullptr) return true;
 		}
 		return false;
@@ -289,7 +344,7 @@ namespace sik {
 	*/
 	bool SIKTokens::removeFromeSet(int start, int end, bool resetIndexes) {
 		int howMany = end - start + 1;
-		if (howMany < 1 || end >(int)this->tokenSet.size() - 1) {
+		if (howMany < 1 || end > this->size() - 1) {
 			return false;
 		}
 		//Will perform the erase:

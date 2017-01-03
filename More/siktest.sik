@@ -1,3 +1,18 @@
+
+//a = bob.name;
+
+//a = [1,2];
+//b = 1 + a[1,7, c*3] * 3;
+//g = [2, { name: "sh" }, { name: "gf" }];
+//g = ++a[i];
+//h = a[2, i + 1]++;
+//print [2, 3], t[5]++ + 9;
+//a[] = [2, 4, b[3], ["sh","lo"]];
+//a = [];
+//a[1][] = 4;
+//a[t,j+1][] = ["first"];
+//b = [["shlomi", "hassid"],["yes", "no"],];
+
 //print a;
 //print a,b,4;
 //print "test" + " hello";
@@ -32,7 +47,7 @@ while (a > 3, 10) ~{
 */
 
 //each (a, i, e) { test = test + 1; }
-each (a, e) { print "yes"; }
+//each (a, e) { print "yes"; }
 
 //for (i, i < 2) { i++; a -= "shlomi"; }
 //for (j, j < 10) ~{ --j; j += 2; }

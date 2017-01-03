@@ -1,3 +1,5 @@
+SIK todo list:
+********************************************************************************************
 [X] Lexer -> basic skelaton;
 [X] Lang -> Import Lang helper;
 [X] Tokenizer -> basic skelaton;
@@ -27,9 +29,15 @@
 [X] BREAK keyword.
 [X] BREAKIF keyword.
 [X] CONTINUE keyword.
+[ ] SWITCH  keyword.
 [ ] SKIP key word in loops -> for loop, each loop. jump iterations.
 [ ] ADD Pointers.
-[ ] ARRAYS.
+[ ] Object Traverse in parser.
+[X] ARRAYS parser.
+[X] Array travers with multidim support.
+[X] Array quick push support.
+[X] Nested Arrays suppord multi dim.
+[X] Easy hard codded array helpers -> the travers name + num of elements. 
 [ ] ENUMS.
 [ ] UNSET keyword for variables.
 [ ] NAMING Map for compile check -> seen + declared.
@@ -37,5 +45,6 @@
 [ ] SLEEP Keyword -> stop program
 [ ] PAUSE Keyword -> Pause until Enter.
 [ ] EXIT Keyword -> Exit Program with Integer code.
-[ ] code Analayzer -> auto set in jumps.
-[ ] code Analayzer -> auto set in blocks + check.
+[X] code Analayzer -> auto set in jumps.
+[X] code Analayzer -> auto set in blocks + check.
+[ ] chunks - quick page chunks methods.

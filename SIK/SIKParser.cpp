@@ -51,6 +51,9 @@ namespace sik {
 				case sik::DELI_BRKOPEN:
 					this->BuildAst_BracketOpen(node, tok, TokenSet);
 					break;
+				case sik::DELI_SBRKOPEN:
+					this->BuildAst_SquareBracketOpen(node, tok, TokenSet);
+					break;
 				case sik::KEYWORD:
 					// If statement:
 					if (tok->obj == sik::SIKLang::dicLangKey_cond_if) {
@@ -154,7 +157,7 @@ namespace sik {
 		}
 		//Wrap result inside a node block;
 		sik::SIKAst* nodeBlock = new sik::SIKAst();
-		for (int i = 0; i < (int)TokenSet->getSetPointer()->size(); i++) {
+		for (int i = 0; i < TokenSet->size(); i++) {
 			sik::SIKAst* nodeAppend = TokenSet->getAtPointer(i)->node;
 			if (nodeAppend != nullptr) {
 				nodeBlock->bulk.push_back(nodeAppend);
@@ -379,7 +382,7 @@ namespace sik {
 		sik::SIKTokens condSubSet = TokenSet->getFromeSet(token->index + 2, parenthesesEnd - 1);
 
 		//Validate condition:
-		if (condSubSet.size() < 1) {
+		if (condSubSet.empty()) {
 			throw sik::SIKException(token->obj + " statement condition part must contain a statement. 11", token->fromLine);
 		}
 
@@ -517,7 +520,7 @@ namespace sik {
 		//Create Subset:
 		sik::SIKTokens condSubSet = TokenSet->getFromeSet(token->index + 1, parenthesesEnd - 1);
 		//Validate Subset:
-		if (condSubSet.size() < 1) {
+		if (condSubSet.empty()) {
 			throw sik::SIKException("Parentheses In statement must contain a statement. 11", token->fromLine);
 		}
 
@@ -538,6 +541,112 @@ namespace sik {
 			throw sik::SIKException("Error in token extraction. 22", token->fromLine);
 		}
 
+		return 1;
+	}
+	int SIKParser::BuildAst_SquareBracketOpen(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {
+		//Extract Bracket content:
+		int parenthesesEnd = TokenSet->getSBracketFirstAndLast(token->index);
+
+		//Validate Closing:
+		if (parenthesesEnd < 0) {
+			switch (parenthesesEnd) {
+			case -1:
+				throw sik::SIKException("Expected Open Array char" + token->obj + ".", token->fromLine);
+				break;
+			case -2:
+			default:
+				throw sik::SIKException("Missing closing Array char" + token->obj + ".", token->fromLine);
+
+			}
+		}
+
+		//Create Subset:
+		sik::SIKTokens SubSet = TokenSet->getFromeSet(token->index + 1, parenthesesEnd - 1);
+
+		//If Last is comma remove:
+		if (!SubSet.empty() && SubSet.back()->type == sik::DELI_COMMA) {
+			SubSet.pop(1);
+		}
+
+		//check for cells:
+		std::vector<int> countEle = SubSet.hasNestedCommas(0);
+
+		//Validate cells:
+		if (!countEle.empty() && (SubSet.hasEmptyNestedCommas(0) || countEle[0] == 0 || countEle.back() == SubSet.size() - 1)) {
+			throw sik::SIKException("Missing value in array declaration / traverse.", token->fromLine);
+		}
+		
+		//Validate key words & blocks:
+		/*
+		if (SubSet.hasTypeDeep(sik::KEYWORD) >= 0 || SubSet.hasTypeDeep(sik::DELI_BRCOPEN) >= 0) {
+			throw sik::SIKException("You can't use keywords or Blocks in an array declaration / traverse after the " + token->obj  + " chars.", token->fromLine);
+		}
+		*/
+		
+		//Recursively parse Parentheses content:
+		sik::SIKAst* subNode = this->BuildAst(&SubSet);
+		if (!countEle.empty() && (int)subNode->bulk.size() != ((int)countEle.size() + 1)) {
+			throw sik::SIKException("Expected " + sik::SIKLang::toString((int)countEle.size() + 1) + " in array declaration / traverse.", token->fromLine);
+		}
+
+		//Build the node:
+		this->SetNodeFromToken(node, token);
+		sik::SIKAst* numNode = new SIKAst();
+		numNode->line = node->line;
+		numNode->Priority = 0;
+		numNode->Type = sik::NUMBER;
+		numNode->Value = sik::SIKLang::toString((int)subNode->bulk.size());
+		numNode->Parent = node;
+		node->Left = numNode;
+		int theEleSize = (int)subNode->bulk.size();
+		for (int i = theEleSize - 1; i >= 0; i--) {
+			node->bulk.push_back(subNode->bulk[i]);
+		}
+
+		//Clean container:
+		subNode->PreventBulkDelete = true;
+		delete subNode;
+
+		//Is variable traverse or push?
+		if (token->index > 0) {
+			sik::Token* candid = TokenSet->getAtPointer(token->index - 1);
+			if (
+				candid != nullptr && 
+					(
+						candid->type == sik::NAMING || 
+							(
+								candid->type == sik::NODE && 
+								candid->node->Type == sik::DELI_SBRKOPEN && 
+								candid->node->Right != nullptr && 
+								candid->node->Right->Type == sik::NAMING
+							)
+					)
+				) 
+			{
+				sik::SIKAst* varNode = new SIKAst();
+				this->SetNodeFromToken(varNode,candid);
+				varNode->Parent = node;
+				node->Right = varNode;
+				node->Notation = 1;
+				if (node->Left->Value == "0") {
+					delete node->Left;
+					node->Left = node->Right;
+					node->Right = nullptr;
+				}
+			}
+		}
+
+		
+		//Remove The first Definitionand place the node chain:
+		if (node->Notation == 1) {
+			if (!TokenSet->replaceRangeWithNode(token->index - 1, parenthesesEnd, node)) {
+				throw sik::SIKException("Error in token extraction. 876165", token->fromLine);
+			}
+		} else {
+			if (!TokenSet->replaceRangeWithNode(token->index, parenthesesEnd, node)) {
+				throw sik::SIKException("Error in token extraction. 665485", token->fromLine);
+			}
+		}
 		return 1;
 	}
 	int SIKParser::BuildAst_KeyForLoop(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {
@@ -567,7 +676,7 @@ namespace sik {
 
 		//Validate commas and empty parts:
 		bool test = loopSubSet.hasEmptyNestedCommas(0);
-		if (test || loopSubSet.getSetPointer()->back().type == sik::DELI_COMMA) {
+		if (test || loopSubSet.back()->type == sik::DELI_COMMA) {
 			throw sik::SIKException("FOR loop must contain at least two parts seperated by commas and can't be empty between them.", token->fromLine);
 		}
 
@@ -640,13 +749,13 @@ namespace sik {
 		sik::SIKTokens loopSubSet = TokenSet->getFromeSet(token->index + 2, parenthesesEnd - 1);
 
 		//Validate condition:
-		if (loopSubSet.size() < 1) {
+		if (loopSubSet.empty()) {
 			throw sik::SIKException("WHILE statement condition part must contain a statement with one or two part (Condition, [optional integer]Max Iter).", token->fromLine);
 		}
 
 		//Validate commas and empty parts:
 		bool test = loopSubSet.hasEmptyNestedCommas(0);
-		if (test || loopSubSet.getSetPointer()->back().type == sik::DELI_COMMA) {
+		if (test || loopSubSet.back()->type == sik::DELI_COMMA) {
 			throw sik::SIKException("WHILE loop must contain at most two parts seperated by commas and can't be empty between them.", token->fromLine);
 		}
 
@@ -711,13 +820,13 @@ namespace sik {
 		sik::SIKTokens loopSubSet = TokenSet->getFromeSet(token->index + 2, parenthesesEnd - 1);
 
 		//Validate condition:
-		if (loopSubSet.size() < 1) {
+		if (loopSubSet.empty()) {
 			throw sik::SIKException("EACH statement loop must contain a statement with at least two parts and three parts max (Element to Iterate, Index , node Element).", token->fromLine);
 		}
 
 		//Validate commas and empty parts:
 		bool test = loopSubSet.hasEmptyNestedCommas(0);
-		if (test || loopSubSet.getSetPointer()->back().type == sik::DELI_COMMA) {
+		if (test || loopSubSet.back()->type == sik::DELI_COMMA) {
 			throw sik::SIKException("EACH loop must contain at most two parts seperated by commas and can't be empty between them.", token->fromLine);
 		}
 
@@ -772,7 +881,7 @@ namespace sik {
 			if (
 				tokL != nullptr && 
 				(
-				(tokL->type == sik::NODE && (tokL->node->Type == sik::NAMING || tokL->node->Type == sik::NUMBER))
+				(tokL->type == sik::NODE && (tokL->node->Type == sik::NAMING || tokL->node->Type == sik::NUMBER || tokL->node->Type == sik::DELI_SBRKOPEN))
 				||
 				(tokL->type == sik::NAMING || tokL->type == sik::NUMBER)
 				)
@@ -785,7 +894,7 @@ namespace sik {
 			} else if (
 				tokR != nullptr &&
 				(
-				(tokR->type == sik::NODE && (tokR->node->Type == sik::NAMING || tokR->node->Type == sik::NUMBER))
+				(tokR->type == sik::NODE && (tokR->node->Type == sik::NAMING || tokR->node->Type == sik::NUMBER || tokR->node->Type == sik::DELI_SBRKOPEN))
 				||
 				(tokR->type == sik::NAMING || tokR->type == sik::NUMBER)
 				)
@@ -836,7 +945,7 @@ namespace sik {
 		sik::SIKTokens SubSet = TokenSet->getFromeSet(token->index + 1, statementEnd - 1);
 
 		//Parse Howmany part:
-		if (SubSet.size() > 0) {
+		if (!SubSet.empty()) {
 			//handle nested keywords:
 			if (SubSet.hasType(sik::KEYWORD) != -1) {
 				throw sik::SIKException("In " + token->obj + " statement you can't use keywords.", token->fromLine);
@@ -916,7 +1025,7 @@ namespace sik {
 		sik::SIKTokens SubSet = TokenSet->getFromeSet(token->index + 1, statementEnd - 1);
 
 		//Parse Howmany part:
-		if (SubSet.size() > 0) {
+		if (!SubSet.empty()) {
 			//handle nested keywords:
 			if (SubSet.hasType(sik::KEYWORD) != -1) {
 				throw sik::SIKException("In " + token->obj + " statement you can't use keywords.", token->fromLine);
@@ -964,6 +1073,7 @@ namespace sik {
 			node->InternalJumper = tok->node->InternalJumper;
 			node->MyInternalNumber = tok->node->MyInternalNumber;
 			node->preVariable = tok->node->preVariable;
+			node->Notation = tok->node->Notation;
 
 		} else {
 			//Create new copy node:
@@ -1019,6 +1129,10 @@ namespace sik {
 		case sik::BOOLEAN:
 		case sik::NULLTYPE:
 			this->genForPrimitives(nodeParent, nodeChild);
+			nodeChild->Mark = true;
+			break;
+		case sik::DELI_SBRKOPEN:
+			this->genForArray(nodeParent, nodeChild);
 			nodeChild->Mark = true;
 			break;
 		case sik::DELI_EQUAL:
@@ -1274,7 +1388,29 @@ namespace sik {
 			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_DECREMENT), nodeParent);
 		}
 	}
-
+	void SIKParser::genForArray(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild) {
+		if (
+			nodeChild->Notation == 1 && 
+			(
+				nodeChild->Left->Type == sik::NAMING || 
+					(
+						nodeChild->Left->Type == sik::DELI_SBRKOPEN && 
+						nodeChild->Notation == 1)
+				)
+		) {
+			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_ARRP));
+			return;
+		} else if (nodeChild->Notation == 1) {
+			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_ARRT));
+		} else {
+			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_ARRC));
+		}
+		int size = (int)nodeChild->bulk.size();
+		for (int i = 0; i < size; i++) {
+			this->WalkAst(nodeChild, nodeChild->bulk[i]);
+		}
+		this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_ARRD));
+	}
 
 	// Find the maximum height of the binary tree
 	int SIKParser::maxHeight(sik::SIKAst *p) {

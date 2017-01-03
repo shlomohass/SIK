@@ -5,7 +5,7 @@
 */
 
 #include "SIKLang.hpp"
-
+#include <sstream>
 namespace sik {
 
 	//Initialize maps:
@@ -600,6 +600,11 @@ namespace sik {
 	/*
 	* PRINTING STUFF:
 	*/
+	std::string SIKLang::toString(int value) {
+		std::stringstream ss;
+		ss << value;
+		return ss.str();
+	}
 	void SIKLang::printHeader(std::string headername) {
 		std::cout << std::endl << "-------------------------------------------------------------------" << std::endl;
 		std::cout << "| SIK Debugger -> " << headername << std::endl;

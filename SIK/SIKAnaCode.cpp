@@ -166,6 +166,20 @@ namespace sik {
 					nested--;
 				}
 			}
+		} else if (inst->Type == sik::INS_ARRC || inst->Type == sik::INS_ARRT) {
+			for (int j = i + 1; j < size; j++) {
+				sik::SIKInstruct* candid = &_Instructions->at(j);
+				if (candid->Type == sik::INS_ARRC || candid->Type == sik::INS_ARRT) {
+					nested++;
+				}
+				if (candid->Type == sik::INS_ARRD && nested == 0) {
+					inst->InternalJumper = j;
+					return;
+				}
+				else if (candid->Type == sik::INS_ARRD) {
+					nested--;
+				}
+			}
 		}
 	}
 	SIKAnaCode::~SIKAnaCode()
