@@ -71,6 +71,9 @@ namespace sik
 		INS_BRKC,  // BREAK Condition
 		INS_LCON,  // Do a loop continue
 		
+		INS_PRINT,
+		INS_DOPRINT,
+
 		INS_OSBLOCK, //Auto scope block
 		INS_OBLOCK,  //Forced scope block
 		INS_CBLOCK,  //General block close.

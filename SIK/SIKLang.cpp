@@ -60,19 +60,24 @@ namespace sik {
 
 	//Set Keywords:
 	std::map<std::string, std::string> SIKLang::LangKeywords = {
-		{ "variable"     , "let" },
-		{ "unset"        , "unset" },
-		{ "cond-if"      , "if" },
-		{ "cond-else"    , "else" },
-		{ "cond-elseif"  , "elseif" },
-		{ "cond-break"   , "breakif" },
-		{ "loop-while"   , "while" },
-		{ "loop-for"     , "for" },
-		{ "loop-each"    , "each" },
-		{ "loop-break"   , "break" },
+		{ "variable"        , "let" },
+		{ "unset"           , "unset" },
+		{ "cond-if"         , "if" },
+		{ "cond-else"       , "else" },
+		{ "cond-elseif"     , "elseif" },
+		{ "cond-break"      , "breakif" },
+		{ "loop-while"      , "while" },
+		{ "loop-for"        , "for" },
+		{ "loop-each"       , "each" },
+		{ "loop-break"      , "break" },
 		{ "loop-continue"   , "continue" },
-		{ "function"     , "function" },
-		{ "return"       , "return" }
+		{ "function"        , "function" },
+		{ "return"          , "return" },
+		{ "print"           , "print" },
+		{ "get"             , "get" },
+		{ "exit"            , "exit" },
+		{ "sleep"           , "sleep" },
+		{ "pause"           , "pause" },
 	};
 
 	//Set Values - set both smaller case and upper case:
@@ -112,21 +117,20 @@ namespace sik {
 
 	//Set systemCalls extensions:
 	std::map<int, std::string> SIKLang::LangSystemLib = {
-		{ 1,  "print" },
-		{ 2,  "rep" },
-		{ 3,  "length" },
-		{ 4,  "type" },
-		{ 5,  "isNull" },
-		{ 6,  "isPointer" },
-		{ 7,  "isPointed" },
-		{ 8,  "substr" },
-		{ 9,  "join" },
-		{ 10, "split" },
-		{ 11, "sum" },
-		{ 12, "highest" },
-		{ 13, "lowest" },
-		{ 14, "tolower" },
-		{ 15, "toupper" }
+		{ 1,  "rep" },
+		{ 2,  "length" },
+		{ 3,  "type" },
+		{ 4,  "isNull" },
+		{ 5,  "isPointer" },
+		{ 6,  "isPointed" },
+		{ 7,  "substr" },
+		{ 8,  "join" },
+		{ 9,  "split" },
+		{ 10, "sum" },
+		{ 11, "highest" },
+		{ 12, "lowest" },
+		{ 13, "tolower" },
+		{ 14, "toupper" }
 	};
 
 	SIKLang::SIKLang() {
@@ -227,6 +231,11 @@ namespace sik {
 	std::string SIKLang::dicLangKey_loop_continue = "";
 	std::string SIKLang::dicLangKey_function = "";
 	std::string SIKLang::dicLangKey_return = "";
+	std::string SIKLang::dicLangKey_print = "";
+	std::string SIKLang::dicLangKey_get = "";
+	std::string SIKLang::dicLangKey_exit = "";
+	std::string SIKLang::dicLangKey_sleep = "";
+	std::string SIKLang::dicLangKey_pause = "";
 
 	//Values based naming:
 	std::string SIKLang::dicLangValue_true_lower = "";
@@ -318,7 +327,12 @@ namespace sik {
 		dicLangKey_loop_continue = LangFindKeyword("loop-continue");
 		dicLangKey_function = LangFindKeyword("function");
 		dicLangKey_return = LangFindKeyword("return");
-
+		dicLangKey_print = LangFindKeyword("print");
+		dicLangKey_get = LangFindKeyword("get");
+		dicLangKey_exit = LangFindKeyword("exit");
+		dicLangKey_sleep = LangFindKeyword("sleep");
+		dicLangKey_pause = LangFindKeyword("pause");
+		
 		//Values based naming:
 		dicLangValue_true_lower = LangFindValueNaming("true-lower");
 		dicLangValue_true_upper = LangFindValueNaming("true-upper");

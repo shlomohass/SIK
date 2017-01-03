@@ -23,13 +23,17 @@
 [X] Object Instruction debuger output print.
 [ ] DEFER keyword for blocks.
 [ ] Functions + RETRUN keyword decleration.
-[ ] PRINT keyword -> primitive withe comma support.
-[ ] BREAK keyword.
-[ ] BREAKIF keyword.
-[ ] CONTINUE keyword.
-[ ] SKIP key word in loops -> for loop, each loop. jup iterations.
+[X] PRINT keyword -> primitive withe comma support.
+[X] BREAK keyword.
+[X] BREAKIF keyword.
+[X] CONTINUE keyword.
+[ ] SKIP key word in loops -> for loop, each loop. jump iterations.
 [ ] ADD Pointers.
 [ ] ARRAYS.
 [ ] ENUMS.
 [ ] UNSET keyword for variables.
 [ ] NAMING Map for compile check -> seen + declared.
+[ ] GET Keyword -> For user input
+[ ] SLEEP Keyword -> stop program
+[ ] PAUSE Keyword -> Pause until Enter.
+[ ] EXIT Keyword -> Exit Program with Integer code.

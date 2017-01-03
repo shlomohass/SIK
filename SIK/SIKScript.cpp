@@ -92,6 +92,9 @@ namespace sik
 			{ sik::INS_BRKC,		 "BRKC" },
 			{ sik::INS_LCON,		 "LCON" },
 
+			{ sik::INS_PRINT,		 "PRNT" },
+			{ sik::INS_DOPRINT,		 "DPRNT" },
+
 			{ sik::INS_CGRT,		 "CGRT"  },
 			{ sik::INS_CLST,		 "CLST"  },
 			{ sik::INS_CGRTE,		 "CGRTE" },
@@ -198,6 +201,8 @@ namespace sik
 
 		//The parser:
 		sik::SIKParser parser = sik::SIKParser(&this->Instructions, &this->ObjectDefinitions, &this->FunctionInstructions);
+
+		//The codeAnalayzer:
 
 		//Read to create token stream seperate by blocks and by end of statement:
 		std::map<int,std::string> expressionContainer;

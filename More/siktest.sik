@@ -1,8 +1,15 @@
+print a;
+print a,b,4;
+//print "test" + " hello";
+//print { name : "shlomi", last : "hassid"}, 4, true || false;
 
+//print 2+3*45-a, a || (b && true);
 
+/*
 while (a > 3, 10) { break 3 + 2; }
 while (true) { continue; }
 if (test) { breakif; }
+*/
 
 /*
 a = (b++ - 4)*3;
