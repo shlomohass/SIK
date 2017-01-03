@@ -45,6 +45,7 @@ namespace sik {
 					TokenSet->removeFromeSet(tok->index, tok->index, true);
 					break;
 				case sik::DELI_COMMA:
+				case sik::DELI_OPEND:
 					TokenSet->removeFromeSet(tok->index, tok->index, true);
 					break;
 				case sik::DELI_BRKOPEN:
@@ -1136,7 +1137,9 @@ namespace sik {
 		if (nodeChild->Value == SIKLang::dicLangKey_loop_for) {
 			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_FORL));
 				int forPartsCount = nodeChild->bulk.size();
+				int count = 0;
 				for (int i = 0; i < forPartsCount; i++) {
+					count++;
 					switch (i) {
 						case 0:
 							this->WalkAst(nodeChild, nodeChild->bulk[i]);
@@ -1152,27 +1155,41 @@ namespace sik {
 							break;
 					}
 				}
+				if (count < 3) {
+					this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_FRCA));
+				}
 			return;
 		}
 		//Each Loop:
 		if (nodeChild->Value == SIKLang::dicLangKey_loop_each) {
 			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_EACH));
 			int forPartsCount = nodeChild->bulk.size();
+			int count = 0;
 			for (int i = 0; i < forPartsCount; i++) {
 				switch (i) {
 				case 0:
 					this->WalkAst(nodeChild, nodeChild->bulk[i]);
 					break;
 				case 1:
-					this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_EACHI));
-					this->WalkAst(nodeChild, nodeChild->bulk[i]);
-					break;
+					if (forPartsCount == 2) {
+						this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_EACHI));
+						this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_EACHE));
+						this->WalkAst(nodeChild, nodeChild->bulk[i]);
+						return; // max 3 parts -> so go out.
+					} else {
+						this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_EACHI));
+						this->WalkAst(nodeChild, nodeChild->bulk[i]);
+						break;
+					}
 				case 2:
 					this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_EACHE));
 					this->WalkAst(nodeChild, nodeChild->bulk[i]);
 					return; // max 3 parts -> so go out.
 					break;
 				}
+			}
+			if (count < 3) {
+				this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_FRCA));
 			}
 			return;
 		}
@@ -1218,6 +1235,7 @@ namespace sik {
 				break;
 			case sik::DELI_BRCOPEN:
 				this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_OBJCREATE), nodeParent);
+				this->Instructions->back().Block = sik::BLOCK_OBJ;
 				if ((int)nodeChild->bulk.size() > 0) {
 					this->WalkAst(nodeChild);
 				}

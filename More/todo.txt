@@ -37,3 +37,5 @@
 [ ] SLEEP Keyword -> stop program
 [ ] PAUSE Keyword -> Pause until Enter.
 [ ] EXIT Keyword -> Exit Program with Integer code.
+[ ] code Analayzer -> auto set in jumps.
+[ ] code Analayzer -> auto set in blocks + check.

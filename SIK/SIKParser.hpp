@@ -20,9 +20,7 @@ namespace sik {
 
 	class SIKParser
 	{
-		std::vector<sik::BlocksIn> BlockInCheck;
-		int jumperCounter;
-		std::vector<sik::BlocksIn> BlockChunksContainer;
+		
 		//From Script containers:
 		std::vector<sik::SIKInstruct>* Instructions;
 		std::vector<std::vector<sik::SIKInstruct>>* ObjectDefinitions;
@@ -33,6 +31,11 @@ namespace sik {
 		SIKParser();
 		SIKParser(std::vector<sik::SIKInstruct>* _Instructions, std::vector<std::vector<sik::SIKInstruct>>* _ObjectDefinitions, std::vector<std::vector<sik::SIKInstruct>>* _FunctionInstructions);
 		
+		//For code structure
+		int jumperCounter;
+		std::vector<sik::BlocksIn> BlockInCheck;
+		std::vector<sik::BlocksIn> BlockChunksContainer;
+
 		//Operations AST:
 		sik::SIKAst* BuildAst(sik::SIKTokens* TokenSet);
 

@@ -45,6 +45,9 @@
     <ClCompile Include="SIK\SIKInstruct.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SIK\SIKAnaCode.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sik\SIKAdd.hpp">
@@ -78,6 +81,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SIK\SETSIK.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SIK\SIKAnaCode.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

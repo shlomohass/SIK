@@ -98,6 +98,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="SIK\SIKAnaCode.cpp" />
     <ClCompile Include="SIK\argvparser.cpp" />
     <ClCompile Include="sik\main.cpp" />
     <ClCompile Include="SIK\SIKAst.cpp" />
@@ -110,6 +111,7 @@
     <ClCompile Include="sik\SIK_Lex.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="SIK\SIKAnaCode.hpp" />
     <ClInclude Include="SIK\argvparser.hpp" />
     <ClInclude Include="SIK\SETSIK.hpp" />
     <ClInclude Include="SIK\SIKAst.hpp" />

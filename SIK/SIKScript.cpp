@@ -11,6 +11,7 @@
 #include "SIK_Lex.hpp"
 #include "SIKAst.hpp"
 #include "SIKParser.hpp"
+#include "SIKAnaCode.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -118,7 +119,7 @@ namespace sik
 			sik::SIKInstruct* toPrint = &_instruct->at(i);
 			std::cout
 				<< "INS "
-				<< (i + 1)
+				<< (i)
 				<< ": "
 				<< this->InstructionName[toPrint->Type]
 				<< " \t -> V: "
@@ -153,7 +154,7 @@ namespace sik
 		for (int i = 0; i < getSize; i++) {
 			std::cout
 				<< "INS "
-				<< (i + 1)
+				<< (i)
 				<< ": "
 				<< this->InstructionName[this->Instructions[i].Type]
 				<< " \t -> V: "
@@ -201,8 +202,6 @@ namespace sik
 
 		//The parser:
 		sik::SIKParser parser = sik::SIKParser(&this->Instructions, &this->ObjectDefinitions, &this->FunctionInstructions);
-
-		//The codeAnalayzer:
 
 		//Read to create token stream seperate by blocks and by end of statement:
 		std::map<int,std::string> expressionContainer;
@@ -285,6 +284,12 @@ namespace sik
 				return false;
 			}
 		}
+
+		//Run the post compilation:
+		//The codeAnalayzer:
+		sik::SIKAnaCode anacode = sik::SIKAnaCode(&this->Instructions, &this->ObjectDefinitions, &this->FunctionInstructions, parser.jumperCounter);
+
+		anacode.postCompiler(&this->Instructions);
 
 		//Print Instructions:
 		if (this->script_debug_flag && this->script_debug_level > 1) {
