@@ -142,6 +142,7 @@ namespace sik
 		static std::string dicLangKey_loop_for;
 		static std::string dicLangKey_loop_each;
 		static std::string dicLangKey_loop_break;
+		static std::string dicLangKey_loop_continue;
 		static std::string dicLangKey_function;
 		static std::string dicLangKey_return;
 

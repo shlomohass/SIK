@@ -70,6 +70,7 @@ namespace sik {
 		{ "loop-for"     , "for" },
 		{ "loop-each"    , "each" },
 		{ "loop-break"   , "break" },
+		{ "loop-continue"   , "continue" },
 		{ "function"     , "function" },
 		{ "return"       , "return" }
 	};
@@ -223,6 +224,7 @@ namespace sik {
 	std::string SIKLang::dicLangKey_loop_for = "";
 	std::string SIKLang::dicLangKey_loop_each = "";
 	std::string SIKLang::dicLangKey_loop_break = "";
+	std::string SIKLang::dicLangKey_loop_continue = "";
 	std::string SIKLang::dicLangKey_function = "";
 	std::string SIKLang::dicLangKey_return = "";
 
@@ -313,6 +315,7 @@ namespace sik {
 		dicLangKey_loop_for = LangFindKeyword("loop-for");
 		dicLangKey_loop_each = LangFindKeyword("loop-each");
 		dicLangKey_loop_break = LangFindKeyword("loop-break");
+		dicLangKey_loop_continue = LangFindKeyword("loop-continue");
 		dicLangKey_function = LangFindKeyword("function");
 		dicLangKey_return = LangFindKeyword("return");
 
@@ -463,6 +466,7 @@ namespace sik {
 		if (test == dicLang_semicolon[0] && value == dicLang_semicolon) return true;
 		if (test == dicLang_objcall[0] && value == dicLang_objcall) return true;
 		if (test == dicLang_childSet[0] && value == dicLang_childSet) return true;
+		if (test == LangOperationEnd) return true;
 
 		return false;
 	}

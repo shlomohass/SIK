@@ -85,6 +85,18 @@ namespace sik {
 						this->BuildAst_KeyEachLoop(node, tok, TokenSet);
 						this->BlockInCheck.push_back(sik::BLOCK_EACH); //Mark block
 					}
+					//Break loop:
+					else if (tok->obj == SIKLang::dicLangKey_loop_break) {
+						this->BuildAst_KeyBreakLoop(node, tok, TokenSet);
+					}
+					//Break Condition:
+					else if (tok->obj == SIKLang::dicLangKey_cond_break) {
+						this->BuildAst_KeyBreakCond(node, tok, TokenSet);
+					}
+					//Continue loop:
+					else if (tok->obj == SIKLang::dicLangKey_loop_continue) {
+						this->BuildAst_KeyContinueLoop(node, tok, TokenSet);
+					}
 					break;
 				case sik::DELI_BRCOPEN:
 					this->BuildAst_BlockOpen(node, tok, TokenSet);
@@ -127,10 +139,10 @@ namespace sik {
 					this->BuildAst_CondOR(node, tok, TokenSet);
 					break;
 				case sik::NAMING:
-					this->BuildAst_Naming(node, tok, TokenSet);
-					break;
 				case sik::STRING:
 				case sik::NUMBER:
+				case sik::BOOLEAN:
+				case sik::NULLTYPE:
 					this->BuildAst_Naming(node, tok, TokenSet);
 					break;
 			}
@@ -796,6 +808,86 @@ namespace sik {
 		}
 		return 1;
 	}
+	int SIKParser::BuildAst_KeyBreakLoop(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {
+
+		//Break node:
+		this->SetNodeFromToken(node, token);
+
+		//Extract howmany part:
+		int statementEnd = TokenSet->getSatementLast(token->index);
+
+		//Validate BREAK howmany part:
+		if (statementEnd < 0) {
+			switch (statementEnd) {
+			case -1:
+				throw sik::SIKException("Expected Statement End after BREAK keyword.", token->fromLine);
+				break;
+			default:
+				throw sik::SIKException("Expected Statement End after BREAK keyword.", token->fromLine);
+			}
+		}
+
+		//Create Subset:
+		sik::SIKTokens SubSet = TokenSet->getFromeSet(token->index + 1, statementEnd - 1);
+
+		//Parse Howmany part:
+		if (SubSet.size() > 0) {
+			//handle nested keywords:
+			if (SubSet.hasType(sik::KEYWORD) != -1) {
+				throw sik::SIKException("In " + token->obj + " statement you can't use keywords.", token->fromLine);
+			}
+			//Recursively parse subset:
+			sik::SIKAst* subNode = this->BuildAst(&SubSet);
+			int chunks = (int)subNode->bulk.size();
+			if (chunks == 1) {
+				node->bulk.push_back(subNode->bulk[0]);
+			} else {
+				throw sik::SIKException("In " + token->obj + " statement you can't use sub expression or commas.", token->fromLine);
+			}
+
+			//Destroy Container:
+			subNode->PreventBulkDelete = true;
+			delete subNode;
+		}
+
+		//Remove The Definition and place the node chain:
+		if (!TokenSet->replaceRangeWithNode(token->index, statementEnd, node)) {
+			throw sik::SIKException("Error in token extraction. 784516", token->fromLine);
+		}
+
+		return 1;
+	}
+	int SIKParser::BuildAst_KeyBreakCond(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {
+		//Break condition node:
+		this->SetNodeFromToken(node, token);
+
+		//Validate BREAK condition no statement:
+		sik::Token* semiEnd = TokenSet->getAtPointer(token->index + 1);
+		if (semiEnd == nullptr || semiEnd->type != sik::DELI_OPEND) {
+			throw sik::SIKException("Expected Statement End after " + token->obj + " keyword.", token->fromLine);
+		}
+
+		//Remove The Definition and place the node chain:
+		if (!TokenSet->replaceRangeWithNode(token->index, semiEnd->index, node)) {
+			throw sik::SIKException("Error in token extraction. 648548", token->fromLine);
+		}
+
+		return 1;
+	}
+	int SIKParser::BuildAst_KeyContinueLoop(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {
+		//Continue node:
+		this->SetNodeFromToken(node, token);
+		//Validate Continue part  no statement:
+		sik::Token* semiEnd = TokenSet->getAtPointer(token->index + 1);
+		if (semiEnd == nullptr || semiEnd->type != sik::DELI_OPEND) {
+			throw sik::SIKException("Expected Statement End after " + token->obj + " keyword.", token->fromLine);
+		}
+		//Remove The Definition and place the node chain:
+		if (!TokenSet->replaceRangeWithNode(token->index, semiEnd->index, node)) {
+			throw sik::SIKException("Error in token extraction. 6548421", token->fromLine);
+		}
+		return 1;
+	}
 	/* Sets a node from token object:
 	* @param SIKAst* node -> the node
 	* @param Token* tok -> the node
@@ -825,13 +917,6 @@ namespace sik {
 			node->line = tok->fromLine;
 			node->Value = tok->obj;
 		}
-
-		//Set the Block attached:
-		/*
-		if ((int)this->BlockInCheck.size() > 0) {
-			node->Block = this->BlockInCheck.back();
-		}
-		*/
 	}
 
 	/* Apply a node to most left of a node tree
@@ -1037,6 +1122,25 @@ namespace sik {
 			}
 			return;
 		}
+		//Break Loop:
+		if (nodeChild->Value == SIKLang::dicLangKey_loop_break) {
+			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_BRKL));
+			if ((int)nodeChild->bulk.size() == 1) {
+				this->WalkAst(nodeChild, nodeChild->bulk[0]);
+			}
+			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_DOBRK));
+			return;
+		}
+		//Break Condition:
+		if (nodeChild->Value == SIKLang::dicLangKey_cond_break) {
+			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_BRKC));
+			return;
+		}
+		//Continue Loop:
+		if (nodeChild->Value == SIKLang::dicLangKey_loop_continue) {
+			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_LCON));
+			return;
+		}
 	}
 	void SIKParser::genForPrimitives(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild) {
 		switch (nodeChild->Type) {
@@ -1157,6 +1261,9 @@ namespace sik {
 	void SIKParser::printTree(sik::SIKAst *root, int level, int indentSpace, std::ostream& out) {
 		std::vector<SIKAst*> later;
 		if (root->Left == nullptr && root->Right == nullptr && root->bulk.size() > 0) {
+			if (root->Type != sik::NODE && root->Type != sik::NOPE) {
+				std::cout << root->Value << std::endl;
+			}
 			for (int i = 0; i < (int)root->bulk.size(); i++) {
 				this->printTree(root->bulk[i], level, indentSpace, out);
 				SIKLang::printEmpLine(1);

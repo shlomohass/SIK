@@ -55,6 +55,7 @@ namespace sik {
 		bool hasEmptyNestedCommas(int indexStart);
 		int getParenthesesFirstAndLast(int indexStart);
 		int getBlockFirstAndLast(int indexStart);
+		int getSatementLast(int indexStart);
 		bool hasUnparse();
 
 		bool replaceRangeWithNode(int start, int end, sik::SIKAst* node);

@@ -279,6 +279,7 @@ namespace sik
 		if (test == SIKLang::dicLang_c_nequal[0]		&& value == SIKLang::dicLang_c_nequal)		return sik::DELI_CNEQUAL;
 		if (test == SIKLang::dicLang_and[0]				&& value == SIKLang::dicLang_and)			return sik::DELI_CAND;
 		if (test == SIKLang::dicLang_or[0]				&& value == SIKLang::dicLang_or)			return sik::DELI_COR;
+		if (test == SIKLang::LangOperationEnd) return sik::DELI_OPEND;
 		return sik::NOPE;
 	}
 	int SIKLex::evalTokenPriority(sik::Token* token) {

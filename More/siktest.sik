@@ -1,3 +1,9 @@
+
+
+while (a > 3, 10) { break 3 + 2; }
+while (true) { continue; }
+if (test) { breakif; }
+
 /*
 a = (b++ - 4)*3;
 */

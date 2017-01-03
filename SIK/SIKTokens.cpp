@@ -224,6 +224,29 @@ namespace sik {
 		}
 		return -2;
 	}
+	int SIKTokens::getSatementLast(int indexStart) {
+		int countNested = 0;
+
+		//Validate first:
+		if (indexStart + 1 >= this->size() || this->tokenSet[indexStart].type == sik::DELI_OPEND) {
+			return -1;
+		}
+		for (int i = indexStart + 1; i < (int)this->tokenSet.size(); i++) {
+			if (this->tokenSet[i].type == sik::DELI_BRCOPEN) {
+				countNested++;
+				continue;
+			}
+			if (this->tokenSet[i].type == sik::DELI_BRCCLOSE && countNested > 0
+				) {
+				countNested--;
+				continue;
+			}
+			if (this->tokenSet[i].type == sik::DELI_OPEND && countNested == 0) {
+				return i;
+			}
+		}
+		return -1;
+	}
 	bool SIKTokens::hasUnparse() {
 		for (int i = 0; i < (int)this->tokenSet.size(); i++) {
 			if (this->tokenSet[i].node == nullptr) return true;
@@ -379,6 +402,8 @@ namespace sik {
 			return "BRCO";
 		case sik::DELI_BRCCLOSE:
 			return "BRCC";
+		case sik::DELI_OPEND:
+			return "OEND";
 		case sik::NAMING:
 			return "NAME";
 		case sik::STRING:

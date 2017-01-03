@@ -65,6 +65,12 @@ namespace sik
 		INS_EACHI, //EACH Index
 		INS_EACHE, //EACH Element
 
+		INS_BRKL,  // MAke a LOOP break:
+		INS_DOBRK, // Execute Break LOOP
+		 
+		INS_BRKC,  // BREAK Condition
+		INS_LCON,  // Do a loop continue
+		
 		INS_OSBLOCK, //Auto scope block
 		INS_OBLOCK,  //Forced scope block
 		INS_CBLOCK,  //General block close.
@@ -123,7 +129,8 @@ namespace sik
 		DELI_CNEQUAL,
 		DELI_CAND,
 		DELI_COR,
-		DELI_OBJCALL
+		DELI_OBJCALL,
+		DELI_OPEND
 	};
 
 }

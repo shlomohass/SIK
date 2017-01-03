@@ -86,6 +86,12 @@ namespace sik
 			{ sik::INS_EACHI,		 "EACHI" },
 			{ sik::INS_EACHE,		 "EACHE" },
 
+			{ sik::INS_BRKL,		 "BRKL" },
+			{ sik::INS_DOBRK,		 "DOBRK" },
+
+			{ sik::INS_BRKC,		 "BRKC" },
+			{ sik::INS_LCON,		 "LCON" },
+
 			{ sik::INS_CGRT,		 "CGRT"  },
 			{ sik::INS_CLST,		 "CLST"  },
 			{ sik::INS_CGRTE,		 "CGRTE" },
