@@ -19,6 +19,7 @@ namespace sik
 	enum InstructType {
 		INS_NONE,
 		INS_PUSH,
+		INS_ACCESS,
 
 		INS_ADD,
 		INS_SUBTRACT,
@@ -138,7 +139,7 @@ namespace sik
 		DELI_CNEQUAL,
 		DELI_CAND,
 		DELI_COR,
-		DELI_OBJCALL,
+		DELI_MEMACCESS,
 		DELI_OPEND
 	};
 

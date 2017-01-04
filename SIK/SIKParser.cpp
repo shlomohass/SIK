@@ -54,6 +54,8 @@ namespace sik {
 				case sik::DELI_SBRKOPEN:
 					this->BuildAst_SquareBracketOpen(node, tok, TokenSet);
 					break;
+				case sik::DELI_MEMACCESS:
+					this->BuildAst_MemberAccess(node, tok, TokenSet);
 				case sik::KEYWORD:
 					// If statement:
 					if (tok->obj == sik::SIKLang::dicLangKey_cond_if) {
@@ -647,6 +649,49 @@ namespace sik {
 				throw sik::SIKException("Error in token extraction. 665485", token->fromLine);
 			}
 		}
+		return 1;
+	}
+	int SIKParser::BuildAst_MemberAccess(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {
+		
+		Token* tokL = TokenSet->getAtPointer(token->index - 1);
+		Token* tokR = TokenSet->getAtPointer(token->index + 1);
+		sik::SIKAst* leftHand = new SIKAst();
+
+		//Set the member access on the right side:
+		if (
+			tokR != nullptr && tokR->type == sik::NAMING
+			) {
+			this->SetNodeFromToken(node, tokR);
+			node->Notation = 4;
+		}
+		else if (tokR->type == sik::NODE && tokR->node->Type == sik::DELI_SBRKOPEN && tokR->node->Notation == 1)
+		{
+			this->SetNodeFromToken(node, tokR);
+			node->Right->Notation = 4;
+		} else {
+			throw sik::SIKException("Expected name of an object member after " + token->obj + " char.", token->fromLine);
+		}
+		
+		//Apply to the left token 
+		if (tokL == nullptr) {
+			throw sik::SIKException("Expected name of an object before " + token->obj + " char.", token->fromLine);
+		}
+		//Left naming node or primitive naming:
+		if ( tokL->type == sik::NAMING || (tokL->type == sik::NODE && tokL->node->Type == sik::NAMING) ) {
+			this->SetNodeFromToken(leftHand, tokL);
+		}
+		//Left Array traverse:
+		if (tokL->type == sik::NODE && tokL->node->Type == sik::DELI_SBRKOPEN && tokL->node->Notation == 1) {
+			this->SetNodeFromToken(leftHand, tokL);
+		}
+		//Apply the chain:
+		this->applyNodeToMostLeft(leftHand, node);
+
+		//Replace all with the chain:
+		if (!TokenSet->replaceRangeWithNode(token->index - 1, token->index + 1, node)) {
+			throw sik::SIKException("Error in token extraction. 323256", token->fromLine);
+		}
+
 		return 1;
 	}
 	int SIKParser::BuildAst_KeyForLoop(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {

@@ -10,6 +10,7 @@
 #include "SIK_Lex.hpp"
 
 #include <iostream>
+#include <sstream>
 
 namespace sik
 {
@@ -191,14 +192,14 @@ namespace sik
 					prevTwo->type != sik::DELI_BRKCLOSE && 
 					prevTwo->type != sik::DELI_SBRKCLOSE && 
 					prevOne != nullptr &&
-					(prevOne->obj == SIKLang::dicLang_minus || prevOne->obj == SIKLang::dicLang_objcall)
+					(prevOne->obj == SIKLang::dicLang_minus || prevOne->type == sik::DELI_MEMACCESS)
 					) {
 					check = true;
 				} else if (
 					!this->seenSpace &&
 					prevTwo == nullptr &&
 					prevOne != nullptr &&
-					(prevOne->obj == SIKLang::dicLang_minus || prevOne->obj == SIKLang::dicLang_objcall)
+					(prevOne->obj == SIKLang::dicLang_minus || prevOne->type == sik::DELI_MEMACCESS)
 					) {
 					check = true;
 				}
@@ -206,9 +207,11 @@ namespace sik
 					this->tokens.pop(1);
 					token.obj = SIKLang::dicLang_minus + token.obj;
 				}
-				else if (check && prevOne->obj == SIKLang::dicLang_objcall) {
+				else if (check && prevOne->type == sik::DELI_MEMACCESS) {
 					this->tokens.pop(1);
-					token.obj = '0' + SIKLang::dicLang_objcall + token.obj;
+					std::stringstream ss;
+					ss << 0 << "." << token.obj;
+					token.obj = ss.str();
 				}
 			}
 		}
@@ -279,6 +282,7 @@ namespace sik
 		if (test == SIKLang::dicLang_c_nequal[0]		&& value == SIKLang::dicLang_c_nequal)		return sik::DELI_CNEQUAL;
 		if (test == SIKLang::dicLang_and[0]				&& value == SIKLang::dicLang_and)			return sik::DELI_CAND;
 		if (test == SIKLang::dicLang_or[0]				&& value == SIKLang::dicLang_or)			return sik::DELI_COR;
+		if (test == SIKLang::dicLang_member_access[0]	&& value == SIKLang::dicLang_member_access)	return sik::DELI_MEMACCESS;
 		if (test == SIKLang::LangOperationEnd) return sik::DELI_OPEND;
 		return sik::NOPE;
 	}
@@ -291,8 +295,9 @@ namespace sik
 			return 90;
 		case sik::DELI_SBRKOPEN:	// [
 		case sik::DELI_SBRKCLOSE:	// ]
-		case sik::DELI_OBJCALL:
 			return 80;
+		case sik::DELI_MEMACCESS:
+			return 75;
 		case sik::DELI_INCR:		// ++
 		case sik::DELI_DECR:		// --
 			return 70;

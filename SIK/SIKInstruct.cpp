@@ -69,7 +69,7 @@ namespace sik {
 				this->SubType = sik::NULLTYPE;
 				break;
 			case sik::NAMING:
-				this->Type = sik::INS_PUSH;
+				this->Type = node->Notation == 4 ? sik::INS_ACCESS : sik::INS_PUSH;
 				this->SubType = sik::NAMING;
 				break;
 			case sik::DELI_PLUS:
@@ -143,7 +143,7 @@ namespace sik {
 			case sik::DELI_BRKCLOSE:
 			case sik::DELI_SBRKOPEN:
 			case sik::DELI_SBRKCLOSE:
-			case sik::DELI_OBJCALL:
+			case sik::DELI_MEMACCESS:
 			case sik::DELIMITER:
 			case sik::KEYWORD:
 			case sik::NODE:

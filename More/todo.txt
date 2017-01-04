@@ -32,7 +32,12 @@ SIK todo list:
 [ ] SWITCH  keyword.
 [ ] SKIP key word in loops -> for loop, each loop. jump iterations.
 [ ] ADD Pointers.
-[ ] Object Traverse in parser.
+[X] Object Traverse in parser.
+[ ] Function Call in Parser.
+[ ] .. ?: ..
+[ ] .. ? .. : .. 
+[ ] .. !: .. -> if not set or NaN
+[ ] ! .. 
 [X] ARRAYS parser.
 [X] Array travers with multidim support.
 [X] Array quick push support.

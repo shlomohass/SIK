@@ -127,7 +127,7 @@ namespace sik
 		static std::string dicLang_s_and;
 		static std::string dicLang_s_or;
 		static std::string dicLang_semicolon;
-		static std::string dicLang_objcall;
+		static std::string dicLang_member_access;
 		static std::string dicLang_childSet;
 
 		//String based keywords:

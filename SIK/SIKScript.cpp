@@ -45,7 +45,7 @@ namespace sik
 		this->InstructionName = {
 			{ sik::INS_NONE,		"NONE" },
 			{ sik::INS_PUSH,		"PUSH" },
-
+			{ sik::INS_ACCESS,      "ACCE" },
 			{ sik::INS_ADD,			"ADD" },
 			{ sik::INS_SUBTRACT,	"SUB" },
 			{ sik::INS_MULTI,		"MUL" },

@@ -401,8 +401,8 @@ namespace sik {
 			return "SBRO";
 		case sik::DELI_SBRKCLOSE:
 			return "SBRC";
-		case sik::DELI_OBJCALL:
-			return "OBJC";
+		case sik::DELI_MEMACCESS:
+			return "MEMA";
 		case sik::DELI_INCR:
 			return "INCR";
 		case sik::DELI_DECR:

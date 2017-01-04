@@ -50,12 +50,12 @@ namespace sik {
 		{ "and"               , "&&" },
 		{ "single-and"        , "&" },
 		{ "or"                , "||" },
-		{ "single-or"        , "|" },
+		{ "single-or"         , "|" },
 		{ "semicolon"         , ";" },
 		{ "macro-def"		  , "#" },
 		{ "macro-set"		  , ":" },
 		{ "child-set"		  , ":" },
-		{ "object-call"		  , "." }
+		{ "member-access"	  , "." }
 	};
 
 	//Set Keywords:
@@ -213,7 +213,7 @@ namespace sik {
 	std::string SIKLang::dicLang_s_and = "";
 	std::string SIKLang::dicLang_s_or = "";
 	std::string SIKLang::dicLang_semicolon = "";
-	std::string SIKLang::dicLang_objcall = "";
+	std::string SIKLang::dicLang_member_access = "";
 	std::string SIKLang::dicLang_childSet = "";
 
 	//String based keywords:
@@ -309,7 +309,7 @@ namespace sik {
 		dicLang_s_and = LangFindDelimiter("single-and");
 		dicLang_s_or = LangFindDelimiter("single-or");
 		dicLang_semicolon = LangFindDelimiter("semicolon");
-		dicLang_objcall = LangFindDelimiter("object-call");
+		dicLang_member_access = LangFindDelimiter("member-access");
 		dicLang_childSet = LangFindDelimiter("child-set");
 
 		//Keywords:
@@ -478,7 +478,7 @@ namespace sik {
 		if (test == dicLang_s_and[0] && value == dicLang_s_and) return true;
 		if (test == dicLang_s_or[0] && value == dicLang_s_or) return true;
 		if (test == dicLang_semicolon[0] && value == dicLang_semicolon) return true;
-		if (test == dicLang_objcall[0] && value == dicLang_objcall) return true;
+		if (test == dicLang_member_access[0] && value == dicLang_member_access) return true;
 		if (test == dicLang_childSet[0] && value == dicLang_childSet) return true;
 		if (test == LangOperationEnd) return true;
 
@@ -556,7 +556,7 @@ namespace sik {
 	*/
 	bool SIKLang::LangIsObjectCall(const char& value) {
 		std::string str(1, value);
-		if (str == dicLang_objcall) {
+		if (str == dicLang_member_access) {
 			return true;
 		}
 		return false;
