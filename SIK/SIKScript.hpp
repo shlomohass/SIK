@@ -44,6 +44,8 @@ namespace sik
 		SIKScript(bool debugMode, int debugLevel);
 		bool compile(std::string filename);
 		bool compile(sik::SIKLex* lexer, sik::SIKParser* parser, std::map<int,std::string> exp);
+		int  runVm();
+
 		std::string truncateString(const std::string& str, int max);
 
 	};

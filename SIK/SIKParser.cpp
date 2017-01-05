@@ -1272,6 +1272,7 @@ namespace sik {
 		// Variable definition:
 		if (nodeChild->Value == SIKLang::dicLangKey_variable) {
 			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_DEFINE));
+			this->Instructions->back().Value = nodeParent->Value;
 			return;
 		}
 		//While Loop:

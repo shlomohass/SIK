@@ -12,6 +12,7 @@
 #include "SIKAst.hpp"
 #include "SIKParser.hpp"
 #include "SIKAnaCode.hpp"
+#include "SIKVm.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -372,6 +373,20 @@ namespace sik
 		lexer->truncateTokens();
 
 		return true;
+	}
+	int  SIKScript::runVm() {
+
+		//if Debug:
+		if (this->script_debug_flag && this->script_debug_level > 2) {
+			sik::SIKLang::printHeader("VM EXECUTION OUTPUT:");
+		}
+
+		sik::SIKVm vm = sik::SIKVm(&this->Instructions,&this->ObjectDefinitions,&this->FunctionInstructions);
+
+		//Run the code:
+		vm.run();
+
+		return 0;
 	}
 	std::string SIKScript::truncateString(const std::string& str, int max) {
 		if ((int)str.length() > max) {

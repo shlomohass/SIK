@@ -16,6 +16,35 @@ namespace sik
 
     enum ExecCodes { SUCCESS, GENEROOR };
     
+	enum ScopeTypes {
+		SCOPE_GENERAL,
+		SCOPE_MAIN,
+		SCOPE_FOR,
+		SCOPE_WHILE,
+		SCOPE_EACH,
+		SCOPE_IF,
+		SCOPE_FUNCTION,
+
+		SCOPE_F_GENERAL,
+		SCOPE_F_FOR,
+		SCOPE_F_WHILE,
+		SCOPE_F_EACH,
+		SCOPE_F_IF
+	};
+	enum SatckDataTypes {
+		SDT_ATTACHED,
+		SDT_TEMP
+	};
+	enum ObjectTypes {
+		OBJ_NAN,
+		OBJ_NULL,
+		OBJ_BOOL,
+		OBJ_NUMBER,
+		OBJ_STRING,
+		OBJ_OBJ,
+		OBJ_FUNC,
+		OBJ_ARRAY
+	};
 	enum InstructType {
 		INS_NONE,
 		INS_PUSH,

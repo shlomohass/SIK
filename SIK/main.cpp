@@ -32,6 +32,7 @@ int main(int argc, char** argv) {
 	bool enable_debug = SIK_DEBUG;
 	int  debug_level = 1; // 1-> Errors, Warnings : 2-> Opcodes, 3-> Executions, 4-> Tokens, AST, Macros.
 	bool execute_is_requested = false;
+	int  execution_result = 0;
 
 	cmd.addErrorCode(0, "Success");
 	cmd.addErrorCode(1, "Error");
@@ -84,9 +85,9 @@ int main(int argc, char** argv) {
 		bool indicator = script.compile(filepath);
 
 		//Loading success so go and do stuff:
-		//if (indicator) {
-			//s.run(enable_debug);
-		//}
+		if (indicator) {
+			execution_result = script.runVm();
+		}
 
 		delete lang;
 	}
@@ -94,5 +95,5 @@ int main(int argc, char** argv) {
 	if (enable_debug) {
 		system("pause");
 	}
-	return 0;
+	return execution_result;
 }
