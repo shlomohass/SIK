@@ -3,13 +3,14 @@
 //  SIK
 //
 //  Created by Shlomo Hassid on 06/11/2016.
-//  Copyright © 2016 Shlomo Hassid. All rights reserved.
+//  Copyright ï¿½ 2016 Shlomo Hassid. All rights reserved.
 //
 
 #include "SIKParser.hpp"
 #include "SIKLang.hpp"
 #include "SIKException.hpp"
 
+#include <math.h>
 #include <ostream>
 #include <iomanip>
 #include <deque>
@@ -1228,12 +1229,12 @@ namespace sik {
 		
 		//This will start a object definition at the correct place: 
 		if (instruct.Type == sik::INS_OBJCREATE && testForBlocks > 0 && this->BlockChunksContainer[testForBlocks - 1]) {
-			int blockContainer = this->ObjectDefinitions->size();
+			int blockContainer = (int)this->ObjectDefinitions->size();
 			this->ObjectDefinitions->back().back().pointToInstruct = blockContainer;
 			this->BlockChunksContainer.push_back(sik::BLOCK_OBJ);
 			this->ObjectDefinitions->push_back(std::vector<sik::SIKInstruct>());
 		} else if (instruct.Type == sik::INS_OBJCREATE) {
-			int blockContainer = this->ObjectDefinitions->size();
+			int blockContainer = (int)this->ObjectDefinitions->size();
 			this->Instructions->back().pointToInstruct = blockContainer;
 			this->BlockChunksContainer.push_back(sik::BLOCK_OBJ);
 			this->ObjectDefinitions->push_back(std::vector<sik::SIKInstruct>());
@@ -1278,7 +1279,7 @@ namespace sik {
 		//While Loop:
 		if (nodeChild->Value == SIKLang::dicLangKey_loop_while) {
 			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_WHLL));
-			int forPartsCount = nodeChild->bulk.size();
+			int forPartsCount = (int)nodeChild->bulk.size();
 			for (int i = 0; i < forPartsCount; i++) {
 				switch (i) {
 				case 0:
@@ -1296,7 +1297,7 @@ namespace sik {
 		//For Loop:
 		if (nodeChild->Value == SIKLang::dicLangKey_loop_for) {
 			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_FORL));
-				int forPartsCount = nodeChild->bulk.size();
+				int forPartsCount = (int)nodeChild->bulk.size();
 				int count = 0;
 				for (int i = 0; i < forPartsCount; i++) {
 					count++;
@@ -1323,7 +1324,7 @@ namespace sik {
 		//Each Loop:
 		if (nodeChild->Value == SIKLang::dicLangKey_loop_each) {
 			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_EACH));
-			int forPartsCount = nodeChild->bulk.size();
+			int forPartsCount = (int)nodeChild->bulk.size();
 			int count = 0;
 			for (int i = 0; i < forPartsCount; i++) {
 				switch (i) {
@@ -1374,7 +1375,7 @@ namespace sik {
 		}
 		//Print:
 		if (nodeChild->Value == SIKLang::dicLangKey_print) {
-			int forPartsCount = nodeChild->bulk.size();
+			int forPartsCount = (int)nodeChild->bulk.size();
 			for (int i = 0; i < forPartsCount; i++) {
 				this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_PRINT));
 				this->WalkAst(nodeChild, nodeChild->bulk[i]);
@@ -1537,7 +1538,7 @@ namespace sik {
 			int h = maxHeight(root);
 			int nodesInThisLevel = 1;
 
-			int branchLen = 2 * ((int)pow(2.0, h) - 1) - (3 - level)*(int)pow(2.0, h - 1);  // eq of the length of branch for each node of each level
+            int branchLen = 2 * ((int)pow(2.0, h) - 1) - (3 - level)*(int)pow(2.0, h - 1);  // eq of the length of branch for each node of each level
 			int nodeSpaceLen = 2 + (level + 1)*(int)pow(2.0, h);  // distance between left neighbor node's right arm and right neighbor node's left arm
 			int startLen = branchLen + (3 - level) + indentSpace;  // starting space to the first node to print of each level (for the left most node of each level only)
 

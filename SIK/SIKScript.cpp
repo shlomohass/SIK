@@ -315,7 +315,6 @@ namespace sik
 		//Pre compile: macros, expnsions.
 
 		//Generate tokens:
-		sik::SIKLang::printEmpLine(1);
 		typedef std::map<int,std::string>::iterator it_type;
 		for (it_type iterator = exp.begin(); iterator != exp.end(); iterator++) {
 			lexer->parse(iterator->second, iterator->first);
@@ -324,6 +323,7 @@ namespace sik
 
 		//Log tokens by debug:
 		if (this->script_debug_flag && this->script_debug_level > 3) {
+            sik::SIKLang::printEmpLine(1);
 			std::string singleLineExpression = "";
 			int smallestLine = 10000;
 			int biggestLine = 0;
@@ -383,9 +383,17 @@ namespace sik
 
 		sik::SIKVm vm = sik::SIKVm(&this->Instructions,&this->ObjectDefinitions,&this->FunctionInstructions);
 
-		//Run the code:
-		vm.run();
-
+		//Run the code with Exception Handling:
+        //Walk tree and evaluate:
+        /**/
+        try {
+            vm.run();
+        }
+        catch (sik::SIKException& ex)
+        {
+            ex.render(this->script_debug_level);
+            return 1;
+        }
 		return 0;
 	}
 	std::string SIKScript::truncateString(const std::string& str, int max) {

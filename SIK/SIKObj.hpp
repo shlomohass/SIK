@@ -3,7 +3,7 @@
 //  SIK
 //
 //  Created by Shlomo Hassid on 06/11/2016 .
-//  Copyright © 2016 Shlomo Hassid. All rights reserved.
+//  Copyright ï¿½ 2016 Shlomo Hassid. All rights reserved.
 //
 
 #ifndef SIKObj_hpp
@@ -20,16 +20,22 @@ namespace sik
 	public:
 
 		sik::ObjectTypes Type;
-		float			 Number;
+		double			 Number;
 		std::string      String;
 
 
 		SIKObj();
 		SIKObj(int value);
-		SIKObj(float value);
+		SIKObj(double value);
 		SIKObj(std::string value);
-		SIKObj::SIKObj(sik::ObjectTypes, std::string value);
-
+		SIKObj(sik::ObjectTypes, std::string value);
+        
+        //Methods:
+        double getAsNumber();
+        std::string getAsString();
+        double getAsBool();
+        
+        void mutate(SIKObj* obj);
 		virtual ~SIKObj();
 	};
 }

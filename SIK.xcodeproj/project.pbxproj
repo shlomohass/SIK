@@ -7,6 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		351CA7451E1FB7B0002EA450 /* argvparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 351CA7301E1FB7B0002EA450 /* argvparser.cpp */; };
+		351CA7461E1FB7B0002EA450 /* SIKAnaCode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 351CA7331E1FB7B0002EA450 /* SIKAnaCode.cpp */; };
+		351CA7471E1FB7B0002EA450 /* SIKAst.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 351CA7351E1FB7B0002EA450 /* SIKAst.cpp */; };
+		351CA7481E1FB7B0002EA450 /* SIKException.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 351CA7371E1FB7B0002EA450 /* SIKException.cpp */; };
+		351CA7491E1FB7B0002EA450 /* SIKInstruct.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 351CA7391E1FB7B0002EA450 /* SIKInstruct.cpp */; };
+		351CA74A1E1FB7B0002EA450 /* SIKLang.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 351CA73B1E1FB7B0002EA450 /* SIKLang.cpp */; };
+		351CA74B1E1FB7B0002EA450 /* SIKObj.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 351CA73D1E1FB7B0002EA450 /* SIKObj.cpp */; };
+		351CA74C1E1FB7B0002EA450 /* SIKParser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 351CA73F1E1FB7B0002EA450 /* SIKParser.cpp */; };
+		351CA74D1E1FB7B0002EA450 /* SIKScript.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 351CA7411E1FB7B0002EA450 /* SIKScript.cpp */; };
+		351CA74E1E1FB7B0002EA450 /* SIKVm.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 351CA7431E1FB7B0002EA450 /* SIKVm.cpp */; };
 		3557FF091DCE9177003B2CD5 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3557FF081DCE9177003B2CD5 /* main.cpp */; };
 		3557FF111DCE91C6003B2CD5 /* SIK_Lex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3557FF0F1DCE91C6003B2CD5 /* SIK_Lex.cpp */; };
 		3557FF131DCE94C5003B2CD5 /* SIKAdd.hpp in Sources */ = {isa = PBXBuildFile; fileRef = 3557FF121DCE94C5003B2CD5 /* SIKAdd.hpp */; };
@@ -16,16 +26,39 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		3557FF031DCE9177003B2CD5 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
+			buildActionMask = 12;
+			dstPath = /usr/share/man/man1;
 			dstSubfolderSpec = 0;
 			files = (
 			);
-			runOnlyForDeploymentPostprocessing = 1;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		351CA7301E1FB7B0002EA450 /* argvparser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = argvparser.cpp; sourceTree = "<group>"; };
+		351CA7311E1FB7B0002EA450 /* argvparser.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = argvparser.hpp; sourceTree = "<group>"; };
+		351CA7321E1FB7B0002EA450 /* SETSIK.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SETSIK.hpp; sourceTree = "<group>"; };
+		351CA7331E1FB7B0002EA450 /* SIKAnaCode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SIKAnaCode.cpp; sourceTree = "<group>"; };
+		351CA7341E1FB7B0002EA450 /* SIKAnaCode.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SIKAnaCode.hpp; sourceTree = "<group>"; };
+		351CA7351E1FB7B0002EA450 /* SIKAst.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SIKAst.cpp; sourceTree = "<group>"; };
+		351CA7361E1FB7B0002EA450 /* SIKAst.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SIKAst.hpp; sourceTree = "<group>"; };
+		351CA7371E1FB7B0002EA450 /* SIKException.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SIKException.cpp; sourceTree = "<group>"; };
+		351CA7381E1FB7B0002EA450 /* SIKException.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SIKException.hpp; sourceTree = "<group>"; };
+		351CA7391E1FB7B0002EA450 /* SIKInstruct.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SIKInstruct.cpp; sourceTree = "<group>"; };
+		351CA73A1E1FB7B0002EA450 /* SIKInstruct.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SIKInstruct.hpp; sourceTree = "<group>"; };
+		351CA73B1E1FB7B0002EA450 /* SIKLang.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SIKLang.cpp; sourceTree = "<group>"; };
+		351CA73C1E1FB7B0002EA450 /* SIKLang.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SIKLang.hpp; sourceTree = "<group>"; };
+		351CA73D1E1FB7B0002EA450 /* SIKObj.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SIKObj.cpp; sourceTree = "<group>"; };
+		351CA73E1E1FB7B0002EA450 /* SIKObj.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SIKObj.hpp; sourceTree = "<group>"; };
+		351CA73F1E1FB7B0002EA450 /* SIKParser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SIKParser.cpp; sourceTree = "<group>"; };
+		351CA7401E1FB7B0002EA450 /* SIKParser.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SIKParser.hpp; sourceTree = "<group>"; };
+		351CA7411E1FB7B0002EA450 /* SIKScript.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SIKScript.cpp; sourceTree = "<group>"; };
+		351CA7421E1FB7B0002EA450 /* SIKScript.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SIKScript.hpp; sourceTree = "<group>"; };
+		351CA7431E1FB7B0002EA450 /* SIKVm.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SIKVm.cpp; sourceTree = "<group>"; };
+		351CA7441E1FB7B0002EA450 /* SIKVm.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SIKVm.hpp; sourceTree = "<group>"; };
+		351CA74F1E1FB7CB002EA450 /* More */ = {isa = PBXFileReference; lastKnownFileType = folder; path = More; sourceTree = "<group>"; };
+		351CA7511E1FBC2F002EA450 /* siktest.sik */ = {isa = PBXFileReference; lastKnownFileType = text; name = siktest.sik; path = More/siktest.sik; sourceTree = "<group>"; };
 		3557FF051DCE9177003B2CD5 /* SIK */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SIK; sourceTree = BUILT_PRODUCTS_DIR; };
 		3557FF081DCE9177003B2CD5 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		3557FF0F1DCE91C6003B2CD5 /* SIK_Lex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SIK_Lex.cpp; sourceTree = "<group>"; };
@@ -49,6 +82,8 @@
 		3557FEFC1DCE9177003B2CD5 = {
 			isa = PBXGroup;
 			children = (
+				351CA7511E1FBC2F002EA450 /* siktest.sik */,
+				351CA74F1E1FB7CB002EA450 /* More */,
 				3557FF071DCE9177003B2CD5 /* SIK */,
 				3557FF061DCE9177003B2CD5 /* Products */,
 			);
@@ -65,6 +100,27 @@
 		3557FF071DCE9177003B2CD5 /* SIK */ = {
 			isa = PBXGroup;
 			children = (
+				351CA7301E1FB7B0002EA450 /* argvparser.cpp */,
+				351CA7311E1FB7B0002EA450 /* argvparser.hpp */,
+				351CA7321E1FB7B0002EA450 /* SETSIK.hpp */,
+				351CA7331E1FB7B0002EA450 /* SIKAnaCode.cpp */,
+				351CA7341E1FB7B0002EA450 /* SIKAnaCode.hpp */,
+				351CA7351E1FB7B0002EA450 /* SIKAst.cpp */,
+				351CA7361E1FB7B0002EA450 /* SIKAst.hpp */,
+				351CA7371E1FB7B0002EA450 /* SIKException.cpp */,
+				351CA7381E1FB7B0002EA450 /* SIKException.hpp */,
+				351CA7391E1FB7B0002EA450 /* SIKInstruct.cpp */,
+				351CA73A1E1FB7B0002EA450 /* SIKInstruct.hpp */,
+				351CA73B1E1FB7B0002EA450 /* SIKLang.cpp */,
+				351CA73C1E1FB7B0002EA450 /* SIKLang.hpp */,
+				351CA73D1E1FB7B0002EA450 /* SIKObj.cpp */,
+				351CA73E1E1FB7B0002EA450 /* SIKObj.hpp */,
+				351CA73F1E1FB7B0002EA450 /* SIKParser.cpp */,
+				351CA7401E1FB7B0002EA450 /* SIKParser.hpp */,
+				351CA7411E1FB7B0002EA450 /* SIKScript.cpp */,
+				351CA7421E1FB7B0002EA450 /* SIKScript.hpp */,
+				351CA7431E1FB7B0002EA450 /* SIKVm.cpp */,
+				351CA7441E1FB7B0002EA450 /* SIKVm.hpp */,
 				3557FF081DCE9177003B2CD5 /* main.cpp */,
 				3557FF0F1DCE91C6003B2CD5 /* SIK_Lex.cpp */,
 				3557FF101DCE91C6003B2CD5 /* SIK_Lex.hpp */,
@@ -131,10 +187,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				351CA7471E1FB7B0002EA450 /* SIKAst.cpp in Sources */,
+				351CA74B1E1FB7B0002EA450 /* SIKObj.cpp in Sources */,
+				351CA74A1E1FB7B0002EA450 /* SIKLang.cpp in Sources */,
 				3557FF111DCE91C6003B2CD5 /* SIK_Lex.cpp in Sources */,
+				351CA7461E1FB7B0002EA450 /* SIKAnaCode.cpp in Sources */,
 				3557FF161DCEA26A003B2CD5 /* SIKTokens.cpp in Sources */,
+				351CA74E1E1FB7B0002EA450 /* SIKVm.cpp in Sources */,
+				351CA74C1E1FB7B0002EA450 /* SIKParser.cpp in Sources */,
+				351CA7491E1FB7B0002EA450 /* SIKInstruct.cpp in Sources */,
+				351CA74D1E1FB7B0002EA450 /* SIKScript.cpp in Sources */,
+				351CA7451E1FB7B0002EA450 /* argvparser.cpp in Sources */,
 				3557FF131DCE94C5003B2CD5 /* SIKAdd.hpp in Sources */,
 				3557FF091DCE9177003B2CD5 /* main.cpp in Sources */,
+				351CA7481E1FB7B0002EA450 /* SIKException.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -253,6 +319,7 @@
 				3557FF0E1DCE9177003B2CD5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

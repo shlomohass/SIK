@@ -6,6 +6,10 @@
 //  Copyright © 2016 Shlomo Hassid. All rights reserved.
 //
 
+#ifndef SIK_NAN
+#define SIK_NAN -3231307.6790
+#endif
+
 #ifndef SIKAdd_hpp
 #define SIKAdd_hpp
 

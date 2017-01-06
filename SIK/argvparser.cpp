@@ -309,7 +309,7 @@ ArgvParser::parse(int _argc, char ** _argv)
 
 unsigned int ArgvParser::arguments() const
 {
-	return(argument_container.size());
+	return((int)argument_container.size());
 }
 
 string ArgvParser::argument(unsigned int _id) const

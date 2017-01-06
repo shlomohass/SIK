@@ -3,7 +3,7 @@
 //  SIK
 //
 //  Created by Shlomo Hassid on 06/11/2016 .
-//  Copyright © 2016 Shlomo Hassid. All rights reserved.
+//  Copyright ï¿½ 2016 Shlomo Hassid. All rights reserved.
 //
 
 #ifndef SIKVm_hpp
@@ -31,7 +31,7 @@ namespace sik
 			this->obj = _obj;
 		}
 		~SIKStackData() {
-			std::cout << "destroy StackData" << std::endl;
+			// std::cout << "destroy StackData" << std::endl;
 			if (this->objectType == sik::SDT_TEMP && this->obj != nullptr) {
 				delete this->obj;
 			}
@@ -43,9 +43,9 @@ namespace sik
 			this->Stack.reserve(50);
 		}
 		~SIKStack() {
-			std::cout << "destroy Stack" << std::endl;
-			for (int i = 0; i < (int)Stack.size(); i++) {
-				std::cout << i << " - ";
+			// std::cout << "destroy Stack" << std::endl;
+			for (int i = (int)Stack.size() - 1; i >= 0; i++) {
+				// std::cout << i << " - ";
 				delete Stack.at(i);
 			}
 		}
@@ -63,7 +63,7 @@ namespace sik
 			this->Stack = new SIKStack();
 		}
 		~SIKScope() {
-			std::cout << "destroy scope" << std::endl;
+			// std::cout << "destroy scope" << std::endl;
 			delete this->Stack;
 		}
 	};
@@ -101,7 +101,10 @@ namespace sik
 		bool scopeIsForced();
 		sik::SIKObj* getNameFromScope(const std::string& name);
 		void pushToStack(sik::SIKStackData* STData);
-
+        sik::SIKStackData* popFromStack(); //will earasse the mem too.
+        sik::SIKStackData* getFromStack();
+        void clearCurrentStack();
+        
 		//Vm Helpers
 		sik::SIKInstruct getInst(int pos);
 		sik::SIKInstruct* getInstPointer(int pos);
@@ -111,7 +114,23 @@ namespace sik
 		//Execution and Operations:
 		void exec_push(sik::SIKInstruct* Inst);
 		void exec_define(sik::SIKInstruct* Inst);
-
+        void exec_assign(sik::SIKInstruct* Inst);
+        void exec_Math_addition(sik::SIKInstruct* Inst);
+        void exec_Math_subtraction(sik::SIKInstruct* Inst);
+        void exec_Math_multiplication(sik::SIKInstruct* Inst);
+        void exec_print(sik::SIKInstruct* Inst);
+        
+        //Validation Methods:
+        bool validateStackDataForMathOp(sik::SIKStackData* Left, sik::SIKStackData* Right, bool preventExcep);
+        bool validateStackDataIsAttached(sik::SIKStackData* Left, bool preventExcep);
+        bool validateStackDataAvailable(sik::SIKStackData* sd, bool preventExcep);
+        
+        //Support methods:
+        std::string removeFromString(const std::string& str, int num);
+        
+        
+        
+        
 		virtual ~SIKVm();
 	};
 }

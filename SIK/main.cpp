@@ -14,11 +14,6 @@
 #include "SIKLang.hpp"
 #include "SIKScript.hpp"
 
-
-#ifndef SIK_NAN
-#define SIK_NAN -3231307.6790
-#endif
-
 namespace cm = CommandLineProcessing;
 
 int main(int argc, char** argv) {

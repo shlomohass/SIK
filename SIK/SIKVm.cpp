@@ -3,7 +3,7 @@
 //  SIK
 //
 //  Created by Shlomo Hassid on 06/11/2016.
-//  Copyright © 2016 Shlomo Hassid. All rights reserved.
+//  Copyright ï¿½ 2016 Shlomo Hassid. All rights reserved.
 //
 
 #include "SIKVm.hpp"
@@ -38,7 +38,7 @@ namespace sik {
 
 		this->createContainers();
 		int exitCode = -1;
-
+        if (this->InstructionsSize() <= 0) return exitCode;
 		while (exitCode == -1) {
 			sik::SIKInstruct* Inst = this->getInstPointer(this->InstPointer);
 			switch (Inst->Type) {
@@ -46,20 +46,31 @@ namespace sik {
 					this->exec_push(Inst);
 					break;
 				case sik::INS_ADD:
+                    this->exec_Math_addition(Inst);
 					break;
+                case sik::INS_SUBTRACT:
+                    this->exec_Math_subtraction(Inst);
+                    break;
+                case sik::INS_MULTI:
+                    this->exec_Math_multiplication(Inst);
+                    break;
 				case sik::INS_ASSIGN:
+                    this->exec_assign(Inst);
+                    break;
 				case sik::INS_DEFINE:
 					this->exec_define(Inst);
 					break;
-				case sik::INS_ADD:
+                case sik::INS_DOPRINT:
 				case sik::INS_PRINT:
+                    this->exec_print(Inst);
+                    break;
 			}
 
 			//Advance the pointer:
 			this->InstPointer++;
 
 			//If we finished auto exit:
-			if (this->InstPointer > this->InstSize) { break; }
+			if (this->InstPointer >= this->InstSize) { break; }
 		}
 		return exitCode;
 	}
@@ -140,6 +151,33 @@ namespace sik {
 	void SIKVm::pushToStack(sik::SIKStackData* STData) {
 		this->scopes.back()->Stack->Stack.push_back(STData);
 	}
+    /* Pop from current active stack -> will remove the stackdata too
+     */
+    sik::SIKStackData* SIKVm::popFromStack() {
+        if (this->scopes.back()->Stack->Stack.empty()) {
+            return nullptr;
+        }
+        SIKStackData* data = this->scopes.back()->Stack->Stack.back();
+        this->scopes.back()->Stack->Stack.pop_back();
+        return data;
+    }
+    /* Get from current active stack the latest stackdata
+     */
+    sik::SIKStackData* SIKVm::getFromStack() {
+        if (this->scopes.back()->Stack->Stack.empty()) {
+            return nullptr;
+        }
+        return this->scopes.back()->Stack->Stack.back();
+    }
+    void SIKVm::clearCurrentStack() {
+        SIKStack* curStack = this->scopes.back()->Stack;
+        //Release Data:
+        for (int i = (int)curStack->Stack.size() - 1; i >= 0; i--) {
+            delete curStack->Stack.at(i);
+        }
+        //Empty Stack:
+        curStack->Stack.clear();
+    }
 	/* Get an Instruction at a specific Index.
 	*/
 	sik::SIKInstruct SIKVm::getInst(int pos) {
@@ -190,10 +228,177 @@ namespace sik {
 	void SIKVm::exec_define(sik::SIKInstruct* Inst) {
 		this->createNameInScope(Inst->Value);
 	}
+    void SIKVm::exec_assign(SIKInstruct* Inst) {
+        
+        //Pop From stack:
+        sik::SIKStackData* right = this->popFromStack();
+        sik::SIKStackData* left = this->popFromStack();
+        
+        //Validate the Stack data:
+        if (this->validateStackDataIsAttached(left, false) && this->validateStackDataAvailable(right, false)) {
+            left->obj->mutate(right->obj);
+        }
+        
+        //Release mem:
+        delete right;
+        delete left;
+    }
+    void SIKVm::exec_Math_addition(sik::SIKInstruct* Inst) {
+        
+        //Pop From stack:
+        sik::SIKStackData* right = this->popFromStack();
+        sik::SIKStackData* left = this->popFromStack();
+        
+        //Create a Temp StackData:
+        sik::SIKStackData *STData = new sik::SIKStackData();
+        
+        //Validate the stack data:
+        if (this->validateStackDataForMathOp(left, right, false)) {
+            
+            //Number,Any
+            if (left->obj->Type == sik::OBJ_NUMBER) {
+                STData->obj = new SIKObj(left->obj->Number + right->obj->getAsNumber());
+            }
+            //String, Any
+            if (left->obj->Type == sik::OBJ_STRING) {
+                STData->obj = new SIKObj(left->obj->String + right->obj->getAsString());
+            }
+            //Bool, Any
+            if (left->obj->Type == sik::OBJ_BOOL) {
+                STData->obj = new SIKObj(left->obj->Number + right->obj->getAsBool());
+            }
+        }
+        
+        //Release mem:
+        delete left;
+        delete right;
+        
+        //Push new created:
+        this->pushToStack(STData);
+    }
+    void SIKVm::exec_Math_subtraction(sik::SIKInstruct* Inst) {
+        
+        //Pop From stack:
+        sik::SIKStackData* right = this->popFromStack();
+        sik::SIKStackData* left = this->popFromStack();
+        
+        //Create a Temp StackData:
+        sik::SIKStackData *STData = new sik::SIKStackData();
+        
+        //Validate the stack data:
+        if (this->validateStackDataForMathOp(left, right, false)) {
+            
+            //Number,Any
+            if (left->obj->Type == sik::OBJ_NUMBER) {
+                STData->obj = new SIKObj(left->obj->Number - right->obj->getAsNumber());
+            }
+            //String, Any
+            if (left->obj->Type == sik::OBJ_STRING) {
+                STData->obj = new SIKObj(this->removeFromString(left->obj->String, right->obj->getAsNumber()));
+            }
+            //Bool, Any
+            if (left->obj->Type == sik::OBJ_BOOL) {
+                STData->obj = new SIKObj(left->obj->Number - right->obj->getAsBool());
+            }
+        }
+        
+        //Release mem:
+        delete left;
+        delete right;
+        
+        //Push new created:
+        this->pushToStack(STData);
+    }
+    void SIKVm::exec_Math_multiplication(sik::SIKInstruct* Inst) {
+        
+        //Pop From stack:
+        sik::SIKStackData* right = this->popFromStack();
+        sik::SIKStackData* left = this->popFromStack();
+        
+        //Create a Temp StackData:
+        sik::SIKStackData *STData = new sik::SIKStackData();
+        
+        //Validate the stack data:
+        if (this->validateStackDataForMathOp(left, right, false)) {
+            
+            //Number,Any
+            if (left->obj->Type == sik::OBJ_NUMBER) {
+                STData->obj = new SIKObj(left->obj->Number * right->obj->getAsNumber());
+            }
+            //String, Any
+            if (left->obj->Type == sik::OBJ_STRING) {
+                STData->obj = new SIKObj(left->obj->getAsNumber() * right->obj->getAsNumber());
+            }
+            //Bool, Any
+            if (left->obj->Type == sik::OBJ_BOOL) {
+                STData->obj = new SIKObj(left->obj->Number * right->obj->getAsBool());
+            }
+        }
+        
+        //Release mem:
+        delete left;
+        delete right;
+        
+        //Push new created:
+        this->pushToStack(STData);
+    }
+    void SIKVm::exec_print(sik::SIKInstruct* Inst) {
+        //Only prepare stack:
+        if (Inst->Type == sik::INS_PRINT && (int)this->scopes.back()->Stack->Stack.size() > 0) {
+            this->clearCurrentStack();
+        //Do a print:
+        } else if (Inst->Type == sik::INS_DOPRINT){
+            //Pop From stack:
+            sik::SIKStackData* right = this->popFromStack();
+            //Validate first and then perform print:
+            if (this->validateStackDataAvailable(right, false)) {
+                std::cout << right->obj->getAsString() << std::endl;
+            }
+            //release:
+            delete right;
+        }
+    }
+    bool SIKVm::validateStackDataForMathOp(sik::SIKStackData* Left, sik::SIKStackData* Right, bool preventExcep) {
+        if (Left == nullptr || Right == nullptr) {
+            if (preventExcep) return false;
+            throw sik::SIKException("SIK RunTime Error - Null Stack. 54343555", this->getCurrentLineOrigin());
+        }
+        if (Left->obj->Type == sik::OBJ_FUNC || Left->obj->Type == sik::OBJ_OBJ || Left->obj->Type == sik::OBJ_NAN) {
+            if (preventExcep) return false;
+            throw sik::SIKException("SIK RunTime Error - Math with unsupported types. 54343556", this->getCurrentLineOrigin());
+        }
+        if (Right->obj->Type == sik::OBJ_FUNC || Right->obj->Type == sik::OBJ_OBJ || Right->obj->Type == sik::OBJ_NAN) {
+            if (preventExcep) return false;
+            throw sik::SIKException("SIK RunTime Error - Math with unsupported types. 54343557", this->getCurrentLineOrigin());
+        }
+        return true;
+    }
+    bool SIKVm::validateStackDataIsAttached(sik::SIKStackData* Left, bool preventExcep) {
+        if (Left == nullptr) {
+            if (preventExcep) return false;
+            throw sik::SIKException("SIK RunTime Error - Null Stack. 54343558", this->getCurrentLineOrigin());
+        }
+        if (Left->objectType != sik::SDT_ATTACHED || Left->obj == nullptr) {
+            if (preventExcep) return false;
+            throw sik::SIKException("SIK RunTime Error - Trying to opperate on an undeclared object. 54343559", this->getCurrentLineOrigin());
+        }
+        return true;
+    }
+    bool SIKVm::validateStackDataAvailable(sik::SIKStackData* sd, bool preventExcep) {
+        if (sd == nullptr) {
+            if (preventExcep) return false;
+            throw sik::SIKException("SIK RunTime Error - Null Stack. 5434360", this->getCurrentLineOrigin());
+        }
+        return true;
+    }
 
-
-
-
+    std::string SIKVm::removeFromString(const std::string& str, int num) {
+        if ((int)str.length() - num <= 0) {
+            return "";
+        }
+        return std::string(str.begin(), str.end() - num);
+    }
+    
 	SIKVm::~SIKVm()
 	{
 
