@@ -31,7 +31,7 @@ namespace sik
 			this->obj = _obj;
 		}
 		~SIKStackData() {
-			// std::cout << "destroy StackData" << std::endl;
+			//std::cout << "destroy StackData" << std::endl;
 			if (this->objectType == sik::SDT_TEMP && this->obj != nullptr) {
 				delete this->obj;
 			}
@@ -43,9 +43,9 @@ namespace sik
 			this->Stack.reserve(50);
 		}
 		~SIKStack() {
-			// std::cout << "destroy Stack" << std::endl;
+			//std::cout << "destroy Stack" << std::endl;
 			for (int i = (int)Stack.size() - 1; i >= 0; i++) {
-				// std::cout << i << " - ";
+				//std::cout << i << " - ";
 				delete Stack.at(i);
 			}
 		}
@@ -63,7 +63,7 @@ namespace sik
 			this->Stack = new SIKStack();
 		}
 		~SIKScope() {
-			// std::cout << "destroy scope" << std::endl;
+			//std::cout << "destroy scope" << std::endl;
 			delete this->Stack;
 		}
 	};
@@ -115,13 +115,17 @@ namespace sik
 		void exec_push(sik::SIKInstruct* Inst);
 		void exec_define(sik::SIKInstruct* Inst);
         void exec_assign(sik::SIKInstruct* Inst);
+        void exec_assignAdd(sik::SIKInstruct* Inst);
+        void exec_assignSub(sik::SIKInstruct* Inst);
         void exec_Math_addition(sik::SIKInstruct* Inst);
         void exec_Math_subtraction(sik::SIKInstruct* Inst);
         void exec_Math_multiplication(sik::SIKInstruct* Inst);
+        void exec_Math_division(sik::SIKInstruct* Inst);
         void exec_print(sik::SIKInstruct* Inst);
         
         //Validation Methods:
         bool validateStackDataForMathOp(sik::SIKStackData* Left, sik::SIKStackData* Right, bool preventExcep);
+        bool validateStackDataForMathOpNumbers(sik::SIKStackData* Left, sik::SIKStackData* Right, bool preventExcep);
         bool validateStackDataIsAttached(sik::SIKStackData* Left, bool preventExcep);
         bool validateStackDataAvailable(sik::SIKStackData* sd, bool preventExcep);
         

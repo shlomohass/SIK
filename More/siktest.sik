@@ -1,5 +1,19 @@
 
-let b = a + 1; // Will throw a definition Exception.
+//print "shlomi" / 3;
+//print 3 / "shlomi";"
+//let b = 0; print b / 2;
+//let a, b, a; // Exception.
+
+/*
+let a = 10, b = 5;
+a += b;
+b -= a;
+print a,b;
+*/
+
+//print 4 * 3 / 2 + 4;
+//print 2/3;
+// let b = a + 1; // Will throw a definition Exception.
 // print 451*-342*-1;
 // print 3*2,-2*3,4+3*2,"sh"*"lert",3*"sh","lom" - 1 + 2 * "lo";
 

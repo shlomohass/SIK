@@ -1188,7 +1188,7 @@ namespace sik {
 		case sik::DELI_PLUS:
 		case sik::DELI_MINUS:
 		case sik::DELI_MULTI:
-
+        case sik::DELI_DIVIDE:
 		case sik::DELI_CEQUAL:
 		case sik::DELI_CNEQUAL:
 		case sik::DELI_CTEQUAL:

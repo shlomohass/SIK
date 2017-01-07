@@ -100,6 +100,6 @@ namespace sik {
     }
 	SIKObj::~SIKObj()
 	{
-        // std::cout << "delete obj " << this->Type << std::endl;
+        //std::cout << "delete obj " << this->Type << std::endl;
 	}
 }
