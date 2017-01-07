@@ -172,7 +172,7 @@ namespace sik {
 		this->SetNodeFromToken(node, token);
 		//Remove Both and replace:
 		if (!TokenSet->replaceRangeWithNode(token->index, token->index, node)) {
-			throw SIKException("Expected value before and after " + token->obj + " delimiter.", token->fromLine);
+            throw SIKException(sik::EXC_COMPILATION, "Expected value before and after " + token->obj + " delimiter.", token->fromLine);
 		}
 		return 1;
 	}
@@ -181,7 +181,7 @@ namespace sik {
 		Token* tokL = TokenSet->getAtPointer(token->index - 1);
 		Token* tokR = TokenSet->getAtPointer(token->index + 1);
 		if (tokL == nullptr || tokR == nullptr) {
-			throw SIKException("Expected value before and after " + token->obj + " delimiter.", token->fromLine);
+			throw SIKException(sik::EXC_COMPILATION, "Expected value before and after " + token->obj + " delimiter.", token->fromLine);
 		} else {
 			SIKAst* nodeLeft = new SIKAst();
 			SIKAst* nodeRight = new SIKAst();
@@ -192,7 +192,7 @@ namespace sik {
 
 			//Remove Both and replace:
 			if (!TokenSet->replaceRangeWithNode(tokL->index, tokR->index, node)) {
-				throw SIKException("Expected value before and after " + token->obj + " delimiter.", token->fromLine);
+				throw SIKException(sik::EXC_COMPILATION, "Expected value before and after " + token->obj + " delimiter.", token->fromLine);
 			}
 		}
 		return 1;
@@ -202,7 +202,7 @@ namespace sik {
 		Token* tokL = TokenSet->getAtPointer(token->index - 1);
 		Token* tokR = TokenSet->getAtPointer(token->index + 1);
 		if (tokL == nullptr || tokR == nullptr) {
-			throw SIKException("Expected value before and after " + token->obj + " delimiter.", token->fromLine);
+			throw SIKException(sik::EXC_COMPILATION, "Expected value before and after " + token->obj + " delimiter.", token->fromLine);
 		} else {
 			SIKAst* nodeLeft = new SIKAst();
 			SIKAst* nodeRight = new SIKAst();
@@ -213,7 +213,7 @@ namespace sik {
 
 			//Remove Both and replace:
 			if (!TokenSet->replaceRangeWithNode(tokL->index, tokR->index, node)) {
-				throw SIKException("Expected value before and after " + token->obj + " delimiter.", token->fromLine);
+				throw SIKException(sik::EXC_COMPILATION, "Expected value before and after " + token->obj + " delimiter.", token->fromLine);
 			}
 		}
 		return 1;
@@ -223,7 +223,7 @@ namespace sik {
 		Token* tokL = TokenSet->getAtPointer(token->index - 1);
 		Token* tokR = TokenSet->getAtPointer(token->index + 1);
 		if (tokL == nullptr || tokR == nullptr) {
-			throw SIKException("Expected value before and after " + token->obj + " delimiter.", token->fromLine);
+			throw SIKException(sik::EXC_COMPILATION, "Expected value before and after " + token->obj + " delimiter.", token->fromLine);
 		}
 		else {
 			SIKAst* nodeLeft = new SIKAst();
@@ -235,7 +235,7 @@ namespace sik {
 
 			//Remove Both and replace:
 			if (!TokenSet->replaceRangeWithNode(tokL->index, tokR->index, node)) {
-				throw SIKException("Expected value before and after " + token->obj + " delimiter.", token->fromLine);
+				throw SIKException(sik::EXC_COMPILATION, "Expected value before and after " + token->obj + " delimiter.", token->fromLine);
 			}
 		}
 		return 1;
@@ -246,7 +246,7 @@ namespace sik {
 		Token* tokL = TokenSet->getAtPointer(token->index - 1);
 		Token* tokR = TokenSet->getAtPointer(token->index + 1);
 		if (tokL == nullptr || tokR == nullptr) {
-			throw SIKException("Expected value before and after " + token->obj + " delimiter.", token->fromLine);
+			throw SIKException(sik::EXC_COMPILATION, "Expected value before and after " + token->obj + " delimiter.", token->fromLine);
 		} else {
 			SIKAst* nodeLeft = new SIKAst();
 			SIKAst* nodeRight = new SIKAst();
@@ -258,7 +258,7 @@ namespace sik {
 
 			//Remove Both and replace:
 			if (!TokenSet->replaceRangeWithNode(tokL->index, tokR->index, node)) {
-				throw SIKException("Expected value before and after " + token->obj + " delimiter.", token->fromLine);
+				throw SIKException(sik::EXC_COMPILATION, "Expected value before and after " + token->obj + " delimiter.", token->fromLine);
 			}
 		}
 		return 1;
@@ -269,7 +269,7 @@ namespace sik {
 		Token* tokL = TokenSet->getAtPointer(token->index - 1);
 		Token* tokR = TokenSet->getAtPointer(token->index + 1);
 		if (tokL == nullptr || tokR == nullptr) {
-			throw SIKException("Expected value before and after " + token->obj + " delimiter.", token->fromLine);
+			throw SIKException(sik::EXC_COMPILATION, "Expected value before and after " + token->obj + " delimiter.", token->fromLine);
 		} else {
 			SIKAst* nodeLeft = new SIKAst();
 			SIKAst* nodeRight = new SIKAst();
@@ -281,7 +281,7 @@ namespace sik {
 
 			//Remove Both and replace:
 			if (!TokenSet->replaceRangeWithNode(tokL->index, tokR->index, node)) {
-				throw SIKException("Expected value before and after " + token->obj + " delimiter.", token->fromLine);
+				throw SIKException(sik::EXC_COMPILATION, "Expected value before and after " + token->obj + " delimiter.", token->fromLine);
 			}
 		}
 		return 1;
@@ -293,14 +293,14 @@ namespace sik {
 		Token* tokR = TokenSet->getAtPointer(token->index + 1);
 
 		if (tokL == nullptr || tokR == nullptr) {
-			throw SIKException("Expected Variable Before assigning sign and value or object after.", token->fromLine);
+			throw SIKException(sik::EXC_COMPILATION, "Expected Variable Before assigning sign and value or object after.", token->fromLine);
 		} else if (node->Type == sik::DELI_CHILDSET && tokL != nullptr) {
 			Token* tokLL = TokenSet->getAtPointer(token->index - 2);
 			if (tokL->type != NAMING) {
-				throw SIKException("In Object definition property must be a valid variable name.", tokL->fromLine);
+				throw SIKException(sik::EXC_COMPILATION, "In Object definition property must be a valid variable name.", tokL->fromLine);
 			}
 			if (tokLL != nullptr && tokLL->type != sik::NODE && tokLL->type != sik::DELI_BRCOPEN && tokLL->type != sik::DELI_COMMA) {
-				throw SIKException("In Object definition properties must be seperated by commas.", tokL->fromLine);
+				throw SIKException(sik::EXC_COMPILATION, "In Object definition properties must be seperated by commas.", tokL->fromLine);
 			}
 		}
 
@@ -313,7 +313,7 @@ namespace sik {
 
 		//Remove Both and replace:
 		if (!TokenSet->replaceRangeWithNode(tokL->index, tokR->index, node)) {
-			throw SIKException("Expected Variable Before assigning sign and value or object after.", token->fromLine);
+			throw SIKException(sik::EXC_COMPILATION, "Expected Variable Before assigning sign and value or object after.", token->fromLine);
 		}
 
 		return 1;
@@ -326,7 +326,7 @@ namespace sik {
 		//Get parent:
 		sik::Token* tokP = TokenSet->getAtPointer(token->index + 1);
 		if (tokP == nullptr || (tokP->node == nullptr && tokP->type != NAMING)) {
-			throw sik::SIKException("Expected Variable name after Definition.", tokP->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "Expected Variable name after Definition.", tokP->fromLine);
 		} else {
 
 			//Set the parent:
@@ -349,16 +349,16 @@ namespace sik {
 					nodeDefinintion->Parent = nodeDefineName;
 					//Replace tokens:
 					if (!TokenSet->replaceRangeWithNode(testNested[i], tokMore->index, nodeDefineName)) {
-						throw sik::SIKException("Error in token extraction. 11", tokMore->fromLine);
+						throw sik::SIKException(sik::EXC_COMPILATION, "Error in token extraction. 11", tokMore->fromLine);
 					}
 				} else {
-					throw sik::SIKException("Expected Variable name after Definition.", tokMore->fromLine);
+					throw sik::SIKException(sik::EXC_COMPILATION, "Expected Variable name after Definition.", tokMore->fromLine);
 				}
 			}
 
 			//Remove The first Definitionand place the node chain:
 			if (!TokenSet->replaceRangeWithNode(token->index, tokP->index, node)) {
-				throw sik::SIKException("Error in token extraction. 22", tokP->fromLine);
+				throw sik::SIKException(sik::EXC_COMPILATION, "Error in token extraction. 22", tokP->fromLine);
 			}
 		}
 		return 1;
@@ -372,11 +372,11 @@ namespace sik {
 		if (parenthesesEnd < 0) {
 			switch (parenthesesEnd) {
 			case -1:
-				throw sik::SIKException("Expected Parentheses after " + token->obj + " keyword.", token->fromLine);
+				throw sik::SIKException(sik::EXC_COMPILATION, "Expected Parentheses after " + token->obj + " keyword.", token->fromLine);
 				break;
 			case -2:
 			default:
-				throw sik::SIKException("Missing closing Parentheses in " + token->obj + " statement.", token->fromLine);
+				throw sik::SIKException(sik::EXC_COMPILATION, "Missing closing Parentheses in " + token->obj + " statement.", token->fromLine);
 
 			}
 		}
@@ -386,13 +386,13 @@ namespace sik {
 
 		//Validate condition:
 		if (condSubSet.empty()) {
-			throw sik::SIKException(token->obj + " statement condition part must contain a statement. 11", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, token->obj + " statement condition part must contain a statement. 11", token->fromLine);
 		}
 
 		//Validate Check for Block:
 		sik::Token* openBlockToken = TokenSet->getAtPointer(parenthesesEnd + 1);
 		if (openBlockToken == nullptr || openBlockToken->type != sik::DELI_BRCOPEN) {
-			throw sik::SIKException(token->obj + " statement condition must have a block body.", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, token->obj + " statement condition must have a block body.", token->fromLine);
 		}
 
 		//Add the Block open
@@ -415,7 +415,7 @@ namespace sik {
 			this->applyNodeToMostLeft(IfNode, node);
 
 		} else {
-			throw sik::SIKException(token->obj + " statement condition part must contain a statement. 22", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, token->obj + " statement condition part must contain a statement. 22", token->fromLine);
 		}
 
 		//Destroy Container:
@@ -424,7 +424,7 @@ namespace sik {
 
 		//Remove The first Definitionand place the node chain:
 		if (!TokenSet->replaceRangeWithNode(token->index, parenthesesEnd + 1, node)) {
-			throw sik::SIKException("Error in token extraction. 22", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "Error in token extraction. 22", token->fromLine);
 		}
 		return 1;
 	}
@@ -433,7 +433,7 @@ namespace sik {
 		//Validate Check for Block:
 		sik::Token* openBlockToken = TokenSet->getAtPointer(token->index + 1);
 		if (openBlockToken == nullptr || openBlockToken->type != sik::DELI_BRCOPEN) {
-			throw sik::SIKException("ELSE statement condition must have a block body.", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "ELSE statement condition must have a block body.", token->fromLine);
 		}
 
 		//Add the Block open
@@ -452,7 +452,7 @@ namespace sik {
 
 		//Remove The first Definitionand place the node chain:
 		if (!TokenSet->replaceRangeWithNode(token->index, token->index + 1, node)) {
-			throw sik::SIKException("Error in token extraction. 33", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "Error in token extraction. 33", token->fromLine);
 		}
 		return 1;
 	}
@@ -467,7 +467,7 @@ namespace sik {
 
 		//Validate condition:
 		if (BlockEnd < 0) {
-			throw sik::SIKException("No matching closing block braces. 1123", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "No matching closing block braces. 1123", token->fromLine);
 		}
 		sik::SIKTokens blockSubSet = TokenSet->getFromeSet(token->index + 1, BlockEnd);
 
@@ -480,19 +480,19 @@ namespace sik {
 			blockNode->PreventBulkDelete = true;
 			delete blockNode;
 		} else {
-			throw sik::SIKException("Block Open Must Contain Atleast a closing statement. 22", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "Block Open Must Contain Atleast a closing statement. 22", token->fromLine);
 		}
 
 		//Remove Open and replace:
 		if (!TokenSet->replaceRangeWithNode(token->index, BlockEnd, node)) {
-			throw SIKException("Expected value before and after " + token->obj + " delimiter.", token->fromLine);
+			throw SIKException(sik::EXC_COMPILATION, "Expected value before and after " + token->obj + " delimiter.", token->fromLine);
 		}
 		return 1;
 	}
 	int SIKParser::BuildAst_BlockClose(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {
 		//Check if we had any openning:
 		if ((int)this->BlockInCheck.size() <= 0) {
-			throw SIKException("Unexpected " + token->obj + " delimiter - no opening found.", token->fromLine);
+			throw SIKException(sik::EXC_COMPILATION, "Unexpected " + token->obj + " delimiter - no opening found.", token->fromLine);
 		}
 
 		//Set:
@@ -501,7 +501,7 @@ namespace sik {
 
 		//Remove Both and replace:
 		if (!TokenSet->replaceRangeWithNode(token->index, token->index, node)) {
-			throw SIKException("Expected value before and after " + token->obj + " delimiter.", token->fromLine);
+			throw SIKException(sik::EXC_COMPILATION, "Expected value before and after " + token->obj + " delimiter.", token->fromLine);
 		}
 		return 1;
 	}
@@ -512,11 +512,11 @@ namespace sik {
 		if (parenthesesEnd < 0) {
 			switch (parenthesesEnd) {
 			case -1:
-				throw sik::SIKException("Expected Open Parentheses.", token->fromLine);
+				throw sik::SIKException(sik::EXC_COMPILATION, "Expected Open Parentheses.", token->fromLine);
 				break;
 			case -2:
 			default:
-				throw sik::SIKException("Missing closing Parentheses in statement.", token->fromLine);
+				throw sik::SIKException(sik::EXC_COMPILATION, "Missing closing Parentheses in statement.", token->fromLine);
 
 			}
 		}
@@ -524,7 +524,7 @@ namespace sik {
 		sik::SIKTokens condSubSet = TokenSet->getFromeSet(token->index + 1, parenthesesEnd - 1);
 		//Validate Subset:
 		if (condSubSet.empty()) {
-			throw sik::SIKException("Parentheses In statement must contain a statement. 11", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "Parentheses In statement must contain a statement. 11", token->fromLine);
 		}
 
 		//Recursively parse Parentheses content:
@@ -532,7 +532,7 @@ namespace sik {
 		if ((int)condNode->bulk.size() > 0) {
 			node->mutateTo(condNode->bulk[0]);
 		} else {
-			throw sik::SIKException("IF statement condition part must contain a statement. 22", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "IF statement condition part must contain a statement. 22", token->fromLine);
 		}
 
 		//Clean container:
@@ -541,7 +541,7 @@ namespace sik {
 
 		//Remove The first Definitionand place the node chain:
 		if (!TokenSet->replaceRangeWithNode(token->index, parenthesesEnd, node)) {
-			throw sik::SIKException("Error in token extraction. 22", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "Error in token extraction. 22", token->fromLine);
 		}
 
 		return 1;
@@ -554,11 +554,11 @@ namespace sik {
 		if (parenthesesEnd < 0) {
 			switch (parenthesesEnd) {
 			case -1:
-				throw sik::SIKException("Expected Open Array char" + token->obj + ".", token->fromLine);
+				throw sik::SIKException(sik::EXC_COMPILATION, "Expected Open Array char" + token->obj + ".", token->fromLine);
 				break;
 			case -2:
 			default:
-				throw sik::SIKException("Missing closing Array char" + token->obj + ".", token->fromLine);
+				throw sik::SIKException(sik::EXC_COMPILATION, "Missing closing Array char" + token->obj + ".", token->fromLine);
 
 			}
 		}
@@ -576,7 +576,7 @@ namespace sik {
 
 		//Validate cells:
 		if (!countEle.empty() && (SubSet.hasEmptyNestedCommas(0) || countEle[0] == 0 || countEle.back() == SubSet.size() - 1)) {
-			throw sik::SIKException("Missing value in array declaration / traverse.", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "Missing value in array declaration / traverse.", token->fromLine);
 		}
 		
 		//Validate key words & blocks:
@@ -589,7 +589,7 @@ namespace sik {
 		//Recursively parse Parentheses content:
 		sik::SIKAst* subNode = this->BuildAst(&SubSet);
 		if (!countEle.empty() && (int)subNode->bulk.size() != ((int)countEle.size() + 1)) {
-			throw sik::SIKException("Expected " + sik::SIKLang::toString((int)countEle.size() + 1) + " in array declaration / traverse.", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "Expected " + sik::SIKLang::toString((int)countEle.size() + 1) + " in array declaration / traverse.", token->fromLine);
 		}
 
 		//Build the node:
@@ -643,11 +643,11 @@ namespace sik {
 		//Remove The first Definitionand place the node chain:
 		if (node->Notation == 1) {
 			if (!TokenSet->replaceRangeWithNode(token->index - 1, parenthesesEnd, node)) {
-				throw sik::SIKException("Error in token extraction. 876165", token->fromLine);
+				throw sik::SIKException(sik::EXC_COMPILATION, "Error in token extraction. 876165", token->fromLine);
 			}
 		} else {
 			if (!TokenSet->replaceRangeWithNode(token->index, parenthesesEnd, node)) {
-				throw sik::SIKException("Error in token extraction. 665485", token->fromLine);
+				throw sik::SIKException(sik::EXC_COMPILATION, "Error in token extraction. 665485", token->fromLine);
 			}
 		}
 		return 1;
@@ -670,12 +670,12 @@ namespace sik {
 			this->SetNodeFromToken(node, tokR);
 			node->Right->Notation = 4;
 		} else {
-			throw sik::SIKException("Expected name of an object member after " + token->obj + " char.", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "Expected name of an object member after " + token->obj + " char.", token->fromLine);
 		}
 		
 		//Apply to the left token 
 		if (tokL == nullptr) {
-			throw sik::SIKException("Expected name of an object before " + token->obj + " char.", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "Expected name of an object before " + token->obj + " char.", token->fromLine);
 		}
 		//Left naming node or primitive naming:
 		if ( tokL->type == sik::NAMING || (tokL->type == sik::NODE && tokL->node->Type == sik::NAMING) ) {
@@ -690,7 +690,7 @@ namespace sik {
 
 		//Replace all with the chain:
 		if (!TokenSet->replaceRangeWithNode(token->index - 1, token->index + 1, node)) {
-			throw sik::SIKException("Error in token extraction. 323256", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "Error in token extraction. 323256", token->fromLine);
 		}
 
 		return 1;
@@ -704,11 +704,11 @@ namespace sik {
 		if (parenthesesEnd < 0) {
 			switch (parenthesesEnd) {
 				case -1:
-					throw sik::SIKException("Expected Parentheses after FOR keyword.", token->fromLine);
+					throw sik::SIKException(sik::EXC_COMPILATION, "Expected Parentheses after FOR keyword.", token->fromLine);
 				break;
 					case -2:
 				default:
-					throw sik::SIKException("Missing closing Parentheses in FOR statement.", token->fromLine);
+					throw sik::SIKException(sik::EXC_COMPILATION, "Missing closing Parentheses in FOR statement.", token->fromLine);
 			}
 		}
 
@@ -717,19 +717,19 @@ namespace sik {
 
 		//Validate condition:
 		if (loopSubSet.size() < 3) {
-			throw sik::SIKException("FOR statement condition part must contain a statement with at least two parts (Definition, Condition, [optional]Callback).", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "FOR statement condition part must contain a statement with at least two parts (Definition, Condition, [optional]Callback).", token->fromLine);
 		}
 
 		//Validate commas and empty parts:
 		bool test = loopSubSet.hasEmptyNestedCommas(0);
 		if (test || loopSubSet.back()->type == sik::DELI_COMMA) {
-			throw sik::SIKException("FOR loop must contain at least two parts seperated by commas and can't be empty between them.", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "FOR loop must contain at least two parts seperated by commas and can't be empty between them.", token->fromLine);
 		}
 
 		//Validate Check for Block:
 		sik::Token* openBlockToken = TokenSet->getAtPointer(parenthesesEnd + 1);
 		if (openBlockToken == nullptr || openBlockToken->type != sik::DELI_BRCOPEN) {
-			throw sik::SIKException("FOR statement condition must have a block body.", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "FOR statement condition must have a block body.", token->fromLine);
 		}
 
 		//Add the Block open
@@ -747,7 +747,7 @@ namespace sik {
 			loopSubSet.removeFromeSet(0, 0, true);
 		}
 		if (loopSubSet.hasType(sik::KEYWORD) != -1) {
-			throw sik::SIKException("In FOR Loop you can't use keywords expect of a variable declaration in the declration part.", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "In FOR Loop you can't use keywords expect of a variable declaration in the declration part.", token->fromLine);
 		}
 
 		//Recursively parse condition:
@@ -758,7 +758,7 @@ namespace sik {
 			node->Left = forNode;
 			forNode->Parent = node;
 		} else {
-			throw sik::SIKException("FOR loop must contain at least two parts (Definition, Condition, [optional]Callback).", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "FOR loop must contain at least two parts (Definition, Condition, [optional]Callback).", token->fromLine);
 		}
 
 		//Validate parts and add definition if needed:
@@ -771,7 +771,7 @@ namespace sik {
 		}
 		//Remove The first Definitionand place the node chain:
 		if (!TokenSet->replaceRangeWithNode(token->index, parenthesesEnd + 1, node)) {
-			throw sik::SIKException("Error in token extraction. 656", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "Error in token extraction. 656", token->fromLine);
 		}
 		return 1;
 	}
@@ -783,11 +783,11 @@ namespace sik {
 		if (parenthesesEnd < 0) {
 			switch (parenthesesEnd) {
 			case -1:
-				throw sik::SIKException("Expected Parentheses after WHILE keyword.", token->fromLine);
+				throw sik::SIKException(sik::EXC_COMPILATION, "Expected Parentheses after WHILE keyword.", token->fromLine);
 				break;
 			case -2:
 			default:
-				throw sik::SIKException("Missing closing Parentheses in WHILE condition statement.", token->fromLine);
+				throw sik::SIKException(sik::EXC_COMPILATION, "Missing closing Parentheses in WHILE condition statement.", token->fromLine);
 			}
 		}
 
@@ -796,19 +796,19 @@ namespace sik {
 
 		//Validate condition:
 		if (loopSubSet.empty()) {
-			throw sik::SIKException("WHILE statement condition part must contain a statement with one or two part (Condition, [optional integer]Max Iter).", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "WHILE statement condition part must contain a statement with one or two part (Condition, [optional integer]Max Iter).", token->fromLine);
 		}
 
 		//Validate commas and empty parts:
 		bool test = loopSubSet.hasEmptyNestedCommas(0);
 		if (test || loopSubSet.back()->type == sik::DELI_COMMA) {
-			throw sik::SIKException("WHILE loop must contain at most two parts seperated by commas and can't be empty between them.", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "WHILE loop must contain at most two parts seperated by commas and can't be empty between them.", token->fromLine);
 		}
 
 		//Validate Check for Block:
 		sik::Token* openBlockToken = TokenSet->getAtPointer(parenthesesEnd + 1);
 		if (openBlockToken == nullptr || openBlockToken->type != sik::DELI_BRCOPEN) {
-			throw sik::SIKException("WHILE statement condition must have a block body.", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "WHILE statement condition must have a block body.", token->fromLine);
 		}
 
 		//Add the Block open
@@ -820,7 +820,7 @@ namespace sik {
 
 		//handle nested keywords:
 		if (loopSubSet.hasType(sik::KEYWORD) != -1) {
-			throw sik::SIKException("In WHILE Loop Definition you can't use keywords in the condition part.", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "In WHILE Loop Definition you can't use keywords in the condition part.", token->fromLine);
 		}
 
 		//Recursively parse condition:
@@ -831,7 +831,7 @@ namespace sik {
 			node->Left = whileNode;
 			whileNode->Parent = node;
 		} else {
-			throw sik::SIKException("WHILE loop must contain one or two parts (Condition, [optional integer]Max Iter).", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "WHILE loop must contain one or two parts (Condition, [optional integer]Max Iter).", token->fromLine);
 		}
 
 		//Validate parts and add definition if needed:
@@ -841,7 +841,7 @@ namespace sik {
 
 		//Remove The first Definition and place the node chain:
 		if (!TokenSet->replaceRangeWithNode(token->index, parenthesesEnd + 1, node)) {
-			throw sik::SIKException("Error in token extraction. 73456", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "Error in token extraction. 73456", token->fromLine);
 		}
 		return 1;
 	}
@@ -854,11 +854,11 @@ namespace sik {
 		if (parenthesesEnd < 0) {
 			switch (parenthesesEnd) {
 			case -1:
-				throw sik::SIKException("Expected Parentheses after EACH keyword.", token->fromLine);
+				throw sik::SIKException(sik::EXC_COMPILATION, "Expected Parentheses after EACH keyword.", token->fromLine);
 				break;
 			case -2:
 			default:
-				throw sik::SIKException("Missing closing Parentheses in EACH condition statement.", token->fromLine);
+				throw sik::SIKException(sik::EXC_COMPILATION, "Missing closing Parentheses in EACH condition statement.", token->fromLine);
 			}
 		}
 
@@ -867,19 +867,19 @@ namespace sik {
 
 		//Validate condition:
 		if (loopSubSet.empty()) {
-			throw sik::SIKException("EACH statement loop must contain a statement with at least two parts and three parts max (Element to Iterate, Index , node Element).", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "EACH statement loop must contain a statement with at least two parts and three parts max (Element to Iterate, Index , node Element).", token->fromLine);
 		}
 
 		//Validate commas and empty parts:
 		bool test = loopSubSet.hasEmptyNestedCommas(0);
 		if (test || loopSubSet.back()->type == sik::DELI_COMMA) {
-			throw sik::SIKException("EACH loop must contain at most two parts seperated by commas and can't be empty between them.", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "EACH loop must contain at most two parts seperated by commas and can't be empty between them.", token->fromLine);
 		}
 
 		//Validate Check for Block:
 		sik::Token* openBlockToken = TokenSet->getAtPointer(parenthesesEnd + 1);
 		if (openBlockToken == nullptr || openBlockToken->type != sik::DELI_BRCOPEN) {
-			throw sik::SIKException("EACH statement condition must have a block body.", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "EACH statement condition must have a block body.", token->fromLine);
 		}
 
 		//Add the Block open
@@ -891,7 +891,7 @@ namespace sik {
 
 		//handle nested keywords:
 		if (loopSubSet.hasType(sik::KEYWORD) != -1) {
-			throw sik::SIKException("In EACH Loop Definition you can't use keywords in the condition part.", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "In EACH Loop Definition you can't use keywords in the condition part.", token->fromLine);
 		}
 
 		//Recursively parse condition:
@@ -902,7 +902,7 @@ namespace sik {
 			node->Left = eachNode;
 			eachNode->Parent = node;
 		} else {
-			throw sik::SIKException("EACH loop must contain one or two parts (Element to Iterate, Index , node Element).", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "EACH loop must contain one or two parts (Element to Iterate, Index , node Element).", token->fromLine);
 		}
 
 		//Validate parts and add definition if needed:
@@ -912,7 +912,7 @@ namespace sik {
 
 		//Remove The first Definition and place the node chain:
 		if (!TokenSet->replaceRangeWithNode(token->index, parenthesesEnd + 1, node)) {
-			throw sik::SIKException("Error in token extraction. 73456", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "Error in token extraction. 73456", token->fromLine);
 		}
 
 		return 1;
@@ -922,7 +922,7 @@ namespace sik {
 		Token* tokL = TokenSet->getAtPointer(token->index - 1);
 		Token* tokR = TokenSet->getAtPointer(token->index + 1);
 		if (tokL == nullptr && tokR == nullptr) {
-			throw SIKException("Expected number or variable before or after " + token->obj + " delimiter.", token->fromLine);
+			throw SIKException(sik::EXC_COMPILATION, "Expected number or variable before or after " + token->obj + " delimiter.", token->fromLine);
 		} else {
 			if (
 				tokL != nullptr && 
@@ -951,17 +951,17 @@ namespace sik {
 				node->preVariable = true;
 				nodeRight->Parent = node;
 			} else {
-				throw SIKException("Expected number or variable before or after " + token->obj + " delimiter 11.", token->fromLine);
+				throw SIKException(sik::EXC_COMPILATION, "Expected number or variable before or after " + token->obj + " delimiter 11.", token->fromLine);
 			}
 			if (node->preVariable) {
 				//Remove Both and replace:
 				if (!TokenSet->replaceRangeWithNode(token->index, tokR->index, node)) {
-					throw SIKException("Expected value before or after " + token->obj + " delimiter. 33", token->fromLine);
+					throw SIKException(sik::EXC_COMPILATION, "Expected value before or after " + token->obj + " delimiter. 33", token->fromLine);
 				}
 			} else {
 				//Remove Both and replace:
 				if (!TokenSet->replaceRangeWithNode(tokL->index, token->index, node)) {
-					throw SIKException("Expected value before or after " + token->obj + " delimiter. 44", token->fromLine);
+					throw SIKException(sik::EXC_COMPILATION, "Expected value before or after " + token->obj + " delimiter. 44", token->fromLine);
 				}
 			}
 			
@@ -980,10 +980,10 @@ namespace sik {
 		if (statementEnd < 0) {
 			switch (statementEnd) {
 			case -1:
-				throw sik::SIKException("Expected Statement End after BREAK keyword.", token->fromLine);
+				throw sik::SIKException(sik::EXC_COMPILATION, "Expected Statement End after BREAK keyword.", token->fromLine);
 				break;
 			default:
-				throw sik::SIKException("Expected Statement End after BREAK keyword.", token->fromLine);
+				throw sik::SIKException(sik::EXC_COMPILATION, "Expected Statement End after BREAK keyword.", token->fromLine);
 			}
 		}
 
@@ -994,7 +994,7 @@ namespace sik {
 		if (!SubSet.empty()) {
 			//handle nested keywords:
 			if (SubSet.hasType(sik::KEYWORD) != -1) {
-				throw sik::SIKException("In " + token->obj + " statement you can't use keywords.", token->fromLine);
+				throw sik::SIKException(sik::EXC_COMPILATION, "In " + token->obj + " statement you can't use keywords.", token->fromLine);
 			}
 			//Recursively parse subset:
 			sik::SIKAst* subNode = this->BuildAst(&SubSet);
@@ -1002,7 +1002,7 @@ namespace sik {
 			if (chunks == 1) {
 				node->bulk.push_back(subNode->bulk[0]);
 			} else {
-				throw sik::SIKException("In " + token->obj + " statement you can't use sub expression or commas.", token->fromLine);
+				throw sik::SIKException(sik::EXC_COMPILATION, "In " + token->obj + " statement you can't use sub expression or commas.", token->fromLine);
 			}
 
 			//Destroy Container:
@@ -1012,7 +1012,7 @@ namespace sik {
 
 		//Remove The Definition and place the node chain:
 		if (!TokenSet->replaceRangeWithNode(token->index, statementEnd, node)) {
-			throw sik::SIKException("Error in token extraction. 784516", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "Error in token extraction. 784516", token->fromLine);
 		}
 
 		return 1;
@@ -1024,12 +1024,12 @@ namespace sik {
 		//Validate BREAK condition no statement:
 		sik::Token* semiEnd = TokenSet->getAtPointer(token->index + 1);
 		if (semiEnd == nullptr || semiEnd->type != sik::DELI_OPEND) {
-			throw sik::SIKException("Expected Statement End after " + token->obj + " keyword.", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "Expected Statement End after " + token->obj + " keyword.", token->fromLine);
 		}
 
 		//Remove The Definition and place the node chain:
 		if (!TokenSet->replaceRangeWithNode(token->index, semiEnd->index, node)) {
-			throw sik::SIKException("Error in token extraction. 648548", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "Error in token extraction. 648548", token->fromLine);
 		}
 
 		return 1;
@@ -1040,11 +1040,11 @@ namespace sik {
 		//Validate Continue part  no statement:
 		sik::Token* semiEnd = TokenSet->getAtPointer(token->index + 1);
 		if (semiEnd == nullptr || semiEnd->type != sik::DELI_OPEND) {
-			throw sik::SIKException("Expected Statement End after " + token->obj + " keyword.", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "Expected Statement End after " + token->obj + " keyword.", token->fromLine);
 		}
 		//Remove The Definition and place the node chain:
 		if (!TokenSet->replaceRangeWithNode(token->index, semiEnd->index, node)) {
-			throw sik::SIKException("Error in token extraction. 6548421", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "Error in token extraction. 6548421", token->fromLine);
 		}
 		return 1;
 	}
@@ -1060,10 +1060,10 @@ namespace sik {
 		if (statementEnd < 0) {
 			switch (statementEnd) {
 			case -1:
-				throw sik::SIKException("Expected Statement End after " + token->obj + " keyword.", token->fromLine);
+				throw sik::SIKException(sik::EXC_COMPILATION, "Expected Statement End after " + token->obj + " keyword.", token->fromLine);
 				break;
 			default:
-				throw sik::SIKException("Expected Statement End after " + token->obj + " keyword.", token->fromLine);
+				throw sik::SIKException(sik::EXC_COMPILATION, "Expected Statement End after " + token->obj + " keyword.", token->fromLine);
 			}
 		}
 
@@ -1074,7 +1074,7 @@ namespace sik {
 		if (!SubSet.empty()) {
 			//handle nested keywords:
 			if (SubSet.hasType(sik::KEYWORD) != -1) {
-				throw sik::SIKException("In " + token->obj + " statement you can't use keywords.", token->fromLine);
+				throw sik::SIKException(sik::EXC_COMPILATION, "In " + token->obj + " statement you can't use keywords.", token->fromLine);
 			}
 			//Recursively parse subset:
 			sik::SIKAst* subNode = this->BuildAst(&SubSet);
@@ -1088,12 +1088,12 @@ namespace sik {
 			delete subNode;
 
 		} else {
-			throw sik::SIKException("Expected a Statement after the " + token->obj + " keyword.", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "Expected a Statement after the " + token->obj + " keyword.", token->fromLine);
 		}
 
 		//Remove The Keyword and place the node chain:
 		if (!TokenSet->replaceRangeWithNode(token->index, statementEnd, node)) {
-			throw sik::SIKException("Error in token extraction. 325648", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "Error in token extraction. 325648", token->fromLine);
 		}
 
 		return 1;

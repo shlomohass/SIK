@@ -106,7 +106,7 @@ namespace sik {
 	void SIKVm::createNameInScope(const std::string& name) {
 		//Validate Names:
 		if (this->scopeHasName(name)) {
-			throw sik::SIKException("SIK RunTime Error - Tried to redefine a variable. 323256", this->getCurrentLineOrigin());
+            throw sik::SIKException(sik::EXC_RUNTIME, "Tried to redefine a variable. 323256", this->getCurrentLineOrigin());
 		}
 		//Create Object:
 		sik::SIKObj* obj = new SIKObj();
@@ -211,7 +211,7 @@ namespace sik {
 				STData->obj = this->getNameFromScope(Inst->Value);
 				STData->objectType = sik::SDT_ATTACHED;
 				if (STData->obj == nullptr) {
-					throw sik::SIKException("SIK RunTime Error - Called to undifined variable. 987544", Inst->lineOrigin);
+					throw sik::SIKException(sik::EXC_RUNTIME, "Called to undifined variable. 987544", Inst->lineOrigin);
 				}
 				break;
 			case NUMBER:
@@ -361,33 +361,33 @@ namespace sik {
     bool SIKVm::validateStackDataForMathOp(sik::SIKStackData* Left, sik::SIKStackData* Right, bool preventExcep) {
         if (Left == nullptr || Right == nullptr) {
             if (preventExcep) return false;
-            throw sik::SIKException("SIK RunTime Error - Null Stack. 54343555", this->getCurrentLineOrigin());
+            throw sik::SIKException(sik::EXC_RUNTIME, "Null Stack. 54343555", this->getCurrentLineOrigin());
         }
         if (Left->obj->Type == sik::OBJ_FUNC || Left->obj->Type == sik::OBJ_OBJ || Left->obj->Type == sik::OBJ_NAN) {
             if (preventExcep) return false;
-            throw sik::SIKException("SIK RunTime Error - Math with unsupported types. 54343556", this->getCurrentLineOrigin());
+            throw sik::SIKException(sik::EXC_RUNTIME, "Math with unsupported types. 54343556", this->getCurrentLineOrigin());
         }
         if (Right->obj->Type == sik::OBJ_FUNC || Right->obj->Type == sik::OBJ_OBJ || Right->obj->Type == sik::OBJ_NAN) {
             if (preventExcep) return false;
-            throw sik::SIKException("SIK RunTime Error - Math with unsupported types. 54343557", this->getCurrentLineOrigin());
+            throw sik::SIKException(sik::EXC_RUNTIME, "Math with unsupported types. 54343557", this->getCurrentLineOrigin());
         }
         return true;
     }
     bool SIKVm::validateStackDataIsAttached(sik::SIKStackData* Left, bool preventExcep) {
         if (Left == nullptr) {
             if (preventExcep) return false;
-            throw sik::SIKException("SIK RunTime Error - Null Stack. 54343558", this->getCurrentLineOrigin());
+            throw sik::SIKException(sik::EXC_RUNTIME, "Null Stack. 54343558", this->getCurrentLineOrigin());
         }
         if (Left->objectType != sik::SDT_ATTACHED || Left->obj == nullptr) {
             if (preventExcep) return false;
-            throw sik::SIKException("SIK RunTime Error - Trying to opperate on an undeclared object. 54343559", this->getCurrentLineOrigin());
+            throw sik::SIKException(sik::EXC_RUNTIME, "Trying to opperate on an undeclared object. 54343559", this->getCurrentLineOrigin());
         }
         return true;
     }
     bool SIKVm::validateStackDataAvailable(sik::SIKStackData* sd, bool preventExcep) {
         if (sd == nullptr) {
             if (preventExcep) return false;
-            throw sik::SIKException("SIK RunTime Error - Null Stack. 5434360", this->getCurrentLineOrigin());
+            throw sik::SIKException(sik::EXC_RUNTIME, "Null Stack. 5434360", this->getCurrentLineOrigin());
         }
         return true;
     }

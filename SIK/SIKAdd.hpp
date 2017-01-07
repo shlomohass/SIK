@@ -20,6 +20,11 @@ namespace sik
 
     enum ExecCodes { SUCCESS, GENEROOR };
     
+    enum ExcepTypes {
+        EXC_GENERAL,
+        EXC_COMPILATION,
+        EXC_RUNTIME
+    };
 	enum ScopeTypes {
 		SCOPE_GENERAL,
 		SCOPE_MAIN,

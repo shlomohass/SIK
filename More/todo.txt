@@ -53,3 +53,27 @@ SIK todo list:
 [X] code Analayzer -> auto set in jumps.
 [X] code Analayzer -> auto set in blocks + check.
 [ ] chunks - quick page chunks methods.
+[X] Add Run time to exception class.
+[X] Base VM
+[X] Vm Data structure.
+[X] Vm -> Push.
+[X] Vm -> Variable Declaration.
+[X] Vm -> Scopes with nested scopes support.
+[X] Vm -> Addition.
+[X] Vm -> Subraction.
+[X] Vm -> Multiplication.
+[X] Vm -> Assign.
+
+
+
+
+
+
+
+
+
+
+
+
+
+

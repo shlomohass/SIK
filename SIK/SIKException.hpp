@@ -3,7 +3,7 @@
 //  SIK
 //
 //  Created by Shlomo Hassid on 06/11/2016.
-//  Copyright © 2016 Shlomo Hassid. All rights reserved.
+//  Copyright ï¿½ 2016 Shlomo Hassid. All rights reserved.
 //
 
 #ifndef SIKException_hpp
@@ -16,14 +16,16 @@ namespace sik {
 
 	class SIKException
 	{
-		std::string message;
-		int line;
+		std::string Message;
+		int Line;
+        sik::ExcepTypes Type;
 
 	public:
 
 		SIKException();
-		SIKException(const std::string& message);
-		SIKException(const std::string& message, int line);
+        SIKException(sik::ExcepTypes type);
+		SIKException(sik::ExcepTypes type, const std::string& message);
+		SIKException(sik::ExcepTypes type, const std::string& message, int line);
 		std::string what();
 		std::string where();
 		void render(int debug);
