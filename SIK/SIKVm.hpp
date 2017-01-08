@@ -90,6 +90,8 @@ namespace sik
 		
 		//Vm controls:
 		int run();
+		int execute();
+		int execute(int uptoIndex);
 		void createContainers();
 
 		//Vm Componenets controls:
@@ -121,13 +123,19 @@ namespace sik
         void exec_Math_subtraction(sik::SIKInstruct* Inst);
         void exec_Math_multiplication(sik::SIKInstruct* Inst);
         void exec_Math_division(sik::SIKInstruct* Inst);
+		void exec_comparison_equality(sik::SIKInstruct* Inst);
+		void exec_comparison_nequality(sik::SIKInstruct* Inst);
+		void exec_comparison_tequality(sik::SIKInstruct* Inst);
+		void exec_comparison_ntequality(sik::SIKInstruct* Inst);
         void exec_print(sik::SIKInstruct* Inst);
-        
+	    int exec_ifcondition(sik::SIKInstruct* Inst);
+
         //Validation Methods:
         bool validateStackDataForMathOp(sik::SIKStackData* Left, sik::SIKStackData* Right, bool preventExcep);
         bool validateStackDataForMathOpNumbers(sik::SIKStackData* Left, sik::SIKStackData* Right, bool preventExcep);
         bool validateStackDataIsAttached(sik::SIKStackData* Left, bool preventExcep);
         bool validateStackDataAvailable(sik::SIKStackData* sd, bool preventExcep);
+		bool validateStackDataCanBeBool(sik::SIKStackData* sd, bool preventExcep);
         
         //Support methods:
         std::string removeFromString(const std::string& str, int num);

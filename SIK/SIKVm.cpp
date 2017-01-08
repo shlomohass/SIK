@@ -36,52 +36,92 @@ namespace sik {
 	*/
 	int SIKVm::run() {
 
+		//Set Vm:
 		this->createContainers();
+
+		//Loop through Instructions:
 		int exitCode = -1;
         if (this->InstructionsSize() <= 0) return exitCode;
 		while (exitCode == -1) {
-			sik::SIKInstruct* Inst = this->getInstPointer(this->InstPointer);
-			switch (Inst->Type) {
-				case sik::INS_PUSH:
-					this->exec_push(Inst);
-					break;
-				case sik::INS_ADD:
-                    this->exec_Math_addition(Inst);
-					break;
-                case sik::INS_SUBTRACT:
-                    this->exec_Math_subtraction(Inst);
-                    break;
-                case sik::INS_MULTI:
-                    this->exec_Math_multiplication(Inst);
-                    break;
-                case sik::INS_DEVIDE:
-                    this->exec_Math_division(Inst);
-                    break;
-				case sik::INS_ASSIGN:
-                    this->exec_assign(Inst);
-                    break;
-                case sik::INS_ASSIGNADD:
-                    this->exec_assignAdd(Inst);
-                    break;
-                case sik::INS_ASSIGNSUB:
-                    this->exec_assignSub(Inst);
-                    break;
-				case sik::INS_DEFINE:
-					this->exec_define(Inst);
-					break;
-                case sik::INS_DOPRINT:
-				case sik::INS_PRINT:
-                    this->exec_print(Inst);
-                    break;
-			}
-
-			//Advance the pointer:
-			this->InstPointer++;
-
-			//If we finished auto exit:
-			if (this->InstPointer >= this->InstSize) { break; }
+			exitCode = this->execute();
 		}
+
+		//return with exit code:
 		return exitCode;
+	}
+	/* Execute an Instruction and advaced Internal pointer 
+	 * Also can auto execute several Instructions up to an index.
+	*/
+	int SIKVm::execute() {
+		return this->execute(-1);
+	}
+	int SIKVm::execute(int uptoIndex) {
+		sik::SIKInstruct* Inst = this->getInstPointer(this->InstPointer);
+		switch (Inst->Type) {
+		case sik::INS_PUSH:
+			this->exec_push(Inst);
+			break;
+		case sik::INS_ADD:
+			this->exec_Math_addition(Inst);
+			break;
+		case sik::INS_SUBTRACT:
+			this->exec_Math_subtraction(Inst);
+			break;
+		case sik::INS_MULTI:
+			this->exec_Math_multiplication(Inst);
+			break;
+		case sik::INS_DEVIDE:
+			this->exec_Math_division(Inst);
+			break;
+		case sik::INS_ASSIGN:
+			this->exec_assign(Inst);
+			break;
+		case sik::INS_ASSIGNADD:
+			this->exec_assignAdd(Inst);
+			break;
+		case sik::INS_ASSIGNSUB:
+			this->exec_assignSub(Inst);
+			break;
+		case sik::INS_CEQUAL:
+			this->exec_comparison_equality(Inst);
+			break;
+		case sik::INS_CNEQUAL:
+			this->exec_comparison_nequality(Inst);
+			break;
+		case sik::INS_CTEQUAL:
+			this->exec_comparison_tequality(Inst);
+			break;
+		case sik::INS_CNTEQUAL:
+			this->exec_comparison_ntequality(Inst);
+			break;
+		case sik::INS_DEFINE:
+			this->exec_define(Inst);
+			break;
+		case sik::INS_DOPRINT:
+		case sik::INS_PRINT:
+			this->exec_print(Inst);
+			break;
+		case sik::INS_IF:
+			this->exec_ifcondition(Inst);
+			break;
+		}
+
+		//Advance the pointer or stop:
+		if (uptoIndex > -1) {
+			if (this->InstPointer + 1 < uptoIndex) {
+				this->InstPointer++;
+				return this->execute(uptoIndex);
+			} else {
+				return -1;
+			}
+		} else {
+			this->InstPointer++;
+		}
+
+		//If we finished auto exit:
+		if (this->InstPointer >= this->InstSize) { return 0; }
+
+		return -1;
 	}
 	/* First Env creation.
 	*/
@@ -230,6 +270,9 @@ namespace sik {
 			case STRING:
 				STData->obj = new SIKObj(sik::OBJ_STRING, Inst->Value);
 				break;
+			case BOOLEAN:
+				STData->obj = new SIKObj(Inst->cache == 1 ? true : false);
+				break;
 		}
 
 		//Make the Push:
@@ -311,7 +354,7 @@ namespace sik {
             }
             //String, Any
             if (left->obj->Type == sik::OBJ_STRING) {
-                STData.obj = new SIKObj(this->removeFromString(left->obj->String, right->obj->getAsNumber()));
+                STData.obj = new SIKObj(this->removeFromString(left->obj->String, (int)right->obj->getAsNumber()));
             }
             //Bool, Any
             if (left->obj->Type == sik::OBJ_BOOL) {
@@ -377,7 +420,7 @@ namespace sik {
             }
             //String, Any
             if (left->obj->Type == sik::OBJ_STRING) {
-                STData->obj = new SIKObj(this->removeFromString(left->obj->String, right->obj->getAsNumber()));
+                STData->obj = new SIKObj(this->removeFromString(left->obj->String, (int)right->obj->getAsNumber()));
             }
             //Bool, Any
             if (left->obj->Type == sik::OBJ_BOOL) {
@@ -453,6 +496,132 @@ namespace sik {
         //Push new created:
         this->pushToStack(STData);
     }
+	void SIKVm::exec_comparison_equality(sik::SIKInstruct* Inst) {
+
+		//Pop From stack:
+		sik::SIKStackData* right = this->popFromStack();
+		sik::SIKStackData* left = this->popFromStack();
+
+		//Create a Temp StackData:
+		sik::SIKStackData *STData = new sik::SIKStackData();
+
+		//Validate the stack data:
+		if (this->validateStackDataAvailable(left, false) && this->validateStackDataAvailable(right, false)) {
+
+			//Base type:
+			STData->obj = new SIKObj(false);
+
+			if (
+				left->obj->Type != sik::OBJ_ARRAY && left->obj->Type != sik::OBJ_FUNC && left->obj->Type != sik::OBJ_OBJ && left->obj->Type != sik::OBJ_NAN &&
+				right->obj->Type != sik::OBJ_ARRAY && right->obj->Type != sik::OBJ_FUNC && right->obj->Type != sik::OBJ_OBJ && right->obj->Type != sik::OBJ_NAN
+				) {
+
+				if (left->obj->Type == sik::OBJ_BOOL) {
+					STData->obj->Number = left->obj->Number == right->obj->getAsBool() ? 1 : 0;
+				} else if (left->obj->Type == sik::OBJ_NUMBER) {
+					STData->obj->Number = left->obj->Number == right->obj->getAsNumber() ? 1 : 0;
+				} else if (left->obj->Type == sik::OBJ_STRING) {
+					STData->obj->Number = left->obj->String == right->obj->getAsString() ? 1 : 0;
+				} else if (left->obj->Type == sik::OBJ_NULL) {
+					STData->obj->Number = left->obj->Type == right->obj->Type ? 1 : 0;
+				}
+			}
+
+			//Release mem:
+			delete left;
+			delete right;
+		}
+
+		//Push new created:
+		this->pushToStack(STData);
+
+	}
+	void SIKVm::exec_comparison_nequality(sik::SIKInstruct* Inst) {
+
+		//Pop From stack:
+		sik::SIKStackData* right = this->popFromStack();
+		sik::SIKStackData* left = this->popFromStack();
+
+		//Create a Temp StackData:
+		sik::SIKStackData *STData = new sik::SIKStackData();
+
+		//Validate the stack data:
+		if (this->validateStackDataAvailable(left, false) && this->validateStackDataAvailable(right, false)) {
+
+			//Base type:
+			STData->obj = new SIKObj(false);
+
+			if (left->obj->Type != sik::OBJ_ARRAY && left->obj->Type != sik::OBJ_FUNC && left->obj->Type != sik::OBJ_OBJ && left->obj->Type != sik::OBJ_NAN &&
+				right->obj->Type != sik::OBJ_ARRAY && right->obj->Type != sik::OBJ_FUNC && right->obj->Type != sik::OBJ_OBJ && right->obj->Type != sik::OBJ_NAN
+				) {
+
+				if (left->obj->Type == sik::OBJ_BOOL) {
+					STData->obj->Number = left->obj->Number != right->obj->getAsBool() ? 1 : 0;
+				}
+				else if (left->obj->Type == sik::OBJ_NUMBER) {
+					STData->obj->Number = left->obj->Number != right->obj->getAsNumber() ? 1 : 0;
+				}
+				else if (left->obj->Type == sik::OBJ_STRING) {
+					STData->obj->Number = left->obj->String != right->obj->getAsString() ? 1 : 0;
+				}
+				else if (left->obj->Type == sik::OBJ_NULL) {
+					STData->obj->Number = left->obj->Type != right->obj->Type ? 1 : 0;
+				}
+			}
+
+			//Release mem:
+			delete left;
+			delete right;
+		}
+
+		//Push new created:
+		this->pushToStack(STData);
+	}
+	void SIKVm::exec_comparison_tequality(sik::SIKInstruct* Inst) {
+		//Pop From stack:
+		sik::SIKStackData* right = this->popFromStack();
+		sik::SIKStackData* left = this->popFromStack();
+
+		//Create a Temp StackData:
+		sik::SIKStackData *STData = new sik::SIKStackData();
+
+		//Validate the stack data:
+		if (this->validateStackDataAvailable(left, false) && this->validateStackDataAvailable(right, false)) {
+
+			//Base type:
+			STData->obj = new SIKObj(left->obj->Type == right->obj->Type ? true : false);
+
+			//Release mem:
+			delete left;
+			delete right;
+		}
+
+		//Push new created:
+		this->pushToStack(STData);
+	}
+	void SIKVm::exec_comparison_ntequality(sik::SIKInstruct* Inst) {
+
+		//Pop From stack:
+		sik::SIKStackData* right = this->popFromStack();
+		sik::SIKStackData* left = this->popFromStack();
+
+		//Create a Temp StackData:
+		sik::SIKStackData *STData = new sik::SIKStackData();
+
+		//Validate the stack data:
+		if (this->validateStackDataAvailable(left, false) && this->validateStackDataAvailable(right, false)) {
+
+			//Base type:
+			STData->obj = new SIKObj(left->obj->Type != right->obj->Type ? true : false);
+
+			//Release mem:
+			delete left;
+			delete right;
+		}
+
+		//Push new created:
+		this->pushToStack(STData);
+	}
     void SIKVm::exec_print(sik::SIKInstruct* Inst) {
         //Only prepare stack:
         if (Inst->Type == sik::INS_PRINT && (int)this->scopes.back()->Stack->Stack.size() > 0) {
@@ -469,7 +638,34 @@ namespace sik {
             delete right;
         }
     }
-    
+	int SIKVm::exec_ifcondition(sik::SIKInstruct* Inst) {
+		//Prepare stack:
+		if ((int)this->scopes.back()->Stack->Stack.size() > 0) {
+			this->clearCurrentStack();
+		}
+		
+		//Execute condition:
+		this->InstPointer++;
+		int returnCode = this->execute(Inst->InternalJumper);
+		if (returnCode != -1) { return returnCode; }
+
+		//Pop From stack:
+		sik::SIKStackData* left = this->popFromStack();
+		
+		//Validate first and then perform print:
+		if (this->validateStackDataCanBeBool(left, false)) {
+			//Number,Any
+			if (left->obj->getAsBool() == 0) {
+				//Move pointer to end of If true block:
+				this->InstPointer = this->Instructions->at(Inst->InternalJumper).InternalJumper;
+			}
+		}
+		
+		//release:
+		delete left;
+
+		return -1;
+	}
     
     
     bool SIKVm::validateStackDataForMathOp(sik::SIKStackData* Left, sik::SIKStackData* Right, bool preventExcep) {
@@ -520,6 +716,17 @@ namespace sik {
         }
         return true;
     }
+	bool SIKVm::validateStackDataCanBeBool(sik::SIKStackData* sd, bool preventExcep) {
+		if (sd == nullptr) {
+			if (preventExcep) return false;
+			throw sik::SIKException(sik::EXC_RUNTIME, "Null Stack. 65326773", this->getCurrentLineOrigin());
+		}
+		if (sd->obj->Type == sik::OBJ_NAN || sd->obj->Type == sik::OBJ_FUNC || sd->obj->Type == sik::OBJ_NULL || sd->obj->Type == sik::OBJ_OBJ) {
+			if (preventExcep) return false;
+			throw sik::SIKException(sik::EXC_RUNTIME, "Expected Boolean Value Instead a none boolean and none primitive type. 9878877", this->getCurrentLineOrigin());
+		}
+		return true;
+	}
 
     std::string SIKVm::removeFromString(const std::string& str, int num) {
         if ((int)str.length() - num <= 0) {

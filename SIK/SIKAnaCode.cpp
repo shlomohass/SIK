@@ -62,7 +62,14 @@ namespace sik {
 		bool found = false;
 		int size = (int)_Instructions->size();
 		int nested = 0;
-		if (inst->Type == sik::INS_PRINT) {
+		if (inst->Type == sik::INS_IF) {
+			for (int j = i + 1; j < size; j++) {
+				if (_Instructions->at(j).Type == sik::INS_OBLOCK || _Instructions->at(j).Type == sik::INS_OSBLOCK) {
+					inst->InternalJumper = j;
+					return;
+				}
+			}
+		} else if (inst->Type == sik::INS_PRINT) {
 			for (int j = i + 1; j < size; j++) {
 				if (_Instructions->at(j).Type == sik::INS_DOPRINT) {
 					inst->InternalJumper = j;

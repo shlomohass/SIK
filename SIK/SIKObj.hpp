@@ -28,6 +28,7 @@ namespace sik
 		SIKObj(int value);
 		SIKObj(double value);
 		SIKObj(std::string value);
+		SIKObj(bool value);
 		SIKObj(sik::ObjectTypes, std::string value);
         
         //Methods:

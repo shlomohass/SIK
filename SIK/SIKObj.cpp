@@ -31,6 +31,10 @@ namespace sik {
 		this->String = value;
         this->Number = SIK_NAN;
 	}
+	SIKObj::SIKObj(bool value) {
+		this->Type = sik::OBJ_BOOL;
+		this->Number = value ? 1 : 0;
+	}
 	SIKObj::SIKObj(sik::ObjectTypes _type, std::string value) {
 		this->Type = _type;
 		switch (_type) {
@@ -86,11 +90,14 @@ namespace sik {
         switch (this->Type) {
             case sik::OBJ_BOOL:
                 return this->Number;
-            case sik::OBJ_NAN:
-            case sik::OBJ_NULL:
-                return 0;
+			case sik::OBJ_NUMBER:
+				return this->Number == 0 ? 0 : 1;
+			case sik::OBJ_STRING:
+				return this->String.length() > 0 ? 1 : 0;
+			case sik::OBJ_ARRAY:
+				return 1;
             default:
-                return 1.0;
+                return 0;
         }
     }
     void SIKObj::mutate(SIKObj* obj) {
