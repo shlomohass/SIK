@@ -5,6 +5,9 @@
 //  Created by Shlomo Hassid on 06/11/2016.
 //  Copyright © 2016 Shlomo Hassid. All rights reserved.
 //
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
 
 #include <iostream>
 
@@ -88,7 +91,10 @@ int main(int argc, char** argv) {
 	}
 
 	if (enable_debug) {
+		_CrtDumpMemoryLeaks();
 		system("pause");
 	}
+
+	
 	return execution_result;
 }

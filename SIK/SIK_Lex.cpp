@@ -103,9 +103,8 @@ namespace sik
 			else if (this->inString || this->isQstring(code[expIndex])) {
 				//Grab entire string:
 				char addChar = code[expIndex];
-				if (addChar == '\n' || addChar == '\t' || addChar == '\r' || addChar == '\0') {
-					addChar = ' ';
-				}
+
+				//Open the string start:
 				this->currentToken.insert(this->currentToken.end(), 1, addChar);
 				if (this->inString && addChar == '"') {
 					this->inString = false;
@@ -113,24 +112,16 @@ namespace sik
 					expIndex++;
 				}
 				bool avoid = false;
+
+				//Grab the entire string:
 				while (!isQstring(code[expIndex])) {
 					this->inString = false;
-					if (code[expIndex] == '\\') {
+					char addCharMore = code[expIndex];
+					this->currentToken.insert(this->currentToken.end(), 1, addCharMore);
+					expIndex++;
+					if (expIndex < (int)code.length() && addCharMore == '\\' && (code[expIndex] == '"' || code[expIndex] == '\\')) {
+						this->currentToken.pop_back();
 						this->currentToken.insert(this->currentToken.end(), 1, code[expIndex]);
-						expIndex++;
-						if (expIndex >= (int)code.length()) {
-							//Throw error -> string is not encapsulated.
-							this->currentToken = "";
-							break;
-						}
-						this->currentToken.insert(this->currentToken.end(), 1, code[expIndex]);
-						expIndex++;
-					} else {
-						char addCharMore = code[expIndex];
-						if (addCharMore == '\n' || addCharMore == '\t' || addCharMore == '\r' || addCharMore == '\0') {
-							addCharMore = ' ';
-						}
-						this->currentToken.insert(this->currentToken.end(), 1, addCharMore);
 						expIndex++;
 					}
 					if (expIndex >= (int)code.length()) {

@@ -1,11 +1,13 @@
 
+//print "s\"\\\nh\n";
+/*
 let a = "no";
 if (true) ~{
     let a = "yes";
     print a;
 }
 print a;
-
+*/
 /*
 let a = 3, b = "sik";
 if (a) { print 1; }

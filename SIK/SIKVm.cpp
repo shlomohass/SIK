@@ -647,7 +647,7 @@ namespace sik {
             sik::SIKStackData* right = this->popFromStack();
             //Validate first and then perform print:
             if (this->validateStackDataAvailable(right, false)) {
-                std::cout << right->obj->getAsString() << std::endl;
+                std::cout << right->obj->getAsString();
             }
             //release:
             delete right;

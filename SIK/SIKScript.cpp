@@ -220,6 +220,7 @@ namespace sik
 		bool singleComment = false;
 		bool multicomment = false;
 		bool inString = false;
+		bool specChar = false;
 		int block = 0;
 		//Lex the lines:  
 		while (input >> std::noskipws >> cbuffer) {
@@ -229,6 +230,7 @@ namespace sik
 				expbuffer = "";
 				line++;
 				singleComment = false;
+				specChar = false;
 				continue;
 			}
 			//Handle comments:
@@ -255,9 +257,14 @@ namespace sik
 				expbuffer = expbuffer.substr(0, expbuffer.size() - 1);
 				continue;
 			}
-			if (cbuffer == '"' && prevbuff != '\\') {
+			if (inString && cbuffer == '\\' && !specChar) {
+				specChar = true;
+				continue;
+			}
+			if (cbuffer == '"' && !specChar) {
 				inString = inString ? false : true;
 			}
+			
 			if (cbuffer == '{' && !inString) {
 				block++;
 			}
@@ -265,7 +272,52 @@ namespace sik
 				block--;
 			}
 			//Build Expression:
-			expbuffer += cbuffer;
+			if (specChar) {
+				//For escaped chars:
+				switch (cbuffer) {
+					case 'n':
+						expbuffer += '\n';
+						break;
+					case 't':
+						expbuffer += '\t';
+						break;
+					case 'a':
+						expbuffer += '\a';
+						break;
+					case 'b':
+						expbuffer += '\b';
+						break;
+					case 'f':
+						expbuffer += '\f';
+						break;
+					case 'v':
+						expbuffer += '\v';
+						break;
+					case 'r':
+						expbuffer += '\r';
+						break;
+					default: {
+						expbuffer += '\\';
+						expbuffer += cbuffer;
+					}
+				}
+				specChar = false;
+			} else {
+				//Avoid crap:
+				switch (cbuffer) {
+				case '\n':
+				case '\t':
+				case '\a':
+				case '\b':
+				case '\f':
+				case '\v':
+				case '\r':
+					cbuffer = ' ';
+					break;
+				}
+				expbuffer += cbuffer;
+			}
+			
 
 			//Check whether we are ready to pass the statement:
 			//if (cbuffer == sik::SIKLang::LangOperationEnd || cbuffer == sik::SIKLang::LangBlockOpenChar || cbuffer == sik::SIKLang::LangBlockCloseChar) {
