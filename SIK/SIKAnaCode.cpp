@@ -168,6 +168,7 @@ namespace sik {
 				}
 				if (candid->Type == sik::INS_CBLOCK && nested == 0) {
 					inst->InternalJumper = j;
+					candid->cache = inst->Type == sik::INS_OSBLOCK ? 1 : 0;
 					return;
 				} else if (candid->Type == sik::INS_CBLOCK) {
 					nested--;

@@ -28,17 +28,10 @@ namespace sik
 	enum ScopeTypes {
 		SCOPE_GENERAL,
 		SCOPE_MAIN,
-		SCOPE_FOR,
-		SCOPE_WHILE,
-		SCOPE_EACH,
-		SCOPE_IF,
+		SCOPE_LOOP,
+		SCOPE_COND,
 		SCOPE_FUNCTION,
-
-		SCOPE_F_GENERAL,
-		SCOPE_F_FOR,
-		SCOPE_F_WHILE,
-		SCOPE_F_EACH,
-		SCOPE_F_IF
+		SCOPE_FORCE
 	};
 	enum SatckDataTypes {
 		SDT_ATTACHED,

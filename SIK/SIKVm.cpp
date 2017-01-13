@@ -58,6 +58,13 @@ namespace sik {
 	int SIKVm::execute(int uptoIndex) {
 		sik::SIKInstruct* Inst = this->getInstPointer(this->InstPointer);
 		switch (Inst->Type) {
+		case sik::INS_OBLOCK:
+		case sik::INS_OSBLOCK:
+			this->exec_block(Inst);
+			break;
+		case sik::INS_CBLOCK:
+			this->exec_exit_block(Inst);
+			break;
 		case sik::INS_PUSH:
 			this->exec_push(Inst);
 			break;
@@ -145,9 +152,20 @@ namespace sik {
 	*/
 	void SIKVm::removeScope(int num) {
 		for (int i = 0; i < num; i++) {
-			if (this->scopes.at(i)->Type == sik::SCOPE_MAIN) break;
-			delete this->scopes.at(i);
+			if (this->scopes.back()->Type == sik::SCOPE_MAIN) break;
+			delete this->scopes.back();
 			this->scopes.pop_back();
+		}
+	}
+	/* Remove Names from current scope and release objects:
+	*/
+	void SIKVm::deleteNamesInScope() {
+		std::map<std::string, sik::SIKObj*>* naming = &this->scopes.back()->objects;
+		typedef std::map<std::string, sik::SIKObj*>::iterator it_type;
+		for (it_type iterator = naming->begin(); iterator != naming->end(); iterator++) {
+			// iterator->first = key
+			// iterator->second = value
+			delete iterator->second;
 		}
 	}
 	/* Create a name in the scope
@@ -166,11 +184,8 @@ namespace sik {
 	bool SIKVm::scopeIsForced() {
 		switch (this->scopes.back()->Type) {
 			case sik::SCOPE_FUNCTION:
-			case sik::SCOPE_F_GENERAL:
-			case sik::SCOPE_F_FOR:
-			case sik::SCOPE_F_WHILE:
-			case sik::SCOPE_F_EACH:
-			case sik::SCOPE_F_IF:
+			case sik::SCOPE_FORCE:
+			case sik::SCOPE_MAIN:
 				return true;
 			default:
 				return false;
@@ -658,6 +673,9 @@ namespace sik {
 			if (left->obj->getAsBool() == 0) {
 				//Move pointer to end of If true block:
 				this->InstPointer = this->Instructions->at(Inst->InternalJumper).InternalJumper;
+			} else {
+				//We move to the true body so decrement to execute the block openning:
+				//this->InstPointer--;
 			}
 		}
 		
@@ -666,8 +684,52 @@ namespace sik {
 
 		return -1;
 	}
-    
-    
+	void SIKVm::exec_block(sik::SIKInstruct* Inst) {
+		if (Inst->Type == sik::INS_OBLOCK) {
+			switch (Inst->Block) {
+				case sik::BLOCK_WHILE:
+				case sik::BLOCK_EACH:
+				case sik::BLOCK_FOR:
+					break;
+				case sik::BLOCK_FUNC:
+					break;
+				default: return;
+			}
+		} else {
+
+			//Forced closed block 
+			this->createScope(sik::SCOPE_FORCE);
+			switch (Inst->Block) {
+				case sik::BLOCK_WHILE:
+				case sik::BLOCK_EACH:
+				case sik::BLOCK_FOR:
+					break;
+				case sik::BLOCK_FUNC:
+					break;
+				default: return;
+			}
+
+			
+		}
+		return;
+	}
+	void SIKVm::exec_exit_block(sik::SIKInstruct* Inst) {
+		switch (Inst->Block) {
+			case sik::BLOCK_WHILE:
+			case sik::BLOCK_EACH:
+			case sik::BLOCK_FOR:
+				break;
+			case sik::BLOCK_FUNC:
+				break;
+			default: {
+				if (Inst->cache == 1) { // cache 1 means forced
+					//Destroy the scope:
+					this->deleteNamesInScope();
+					this->removeScope(1);
+				}
+			};
+		}
+	}
     bool SIKVm::validateStackDataForMathOp(sik::SIKStackData* Left, sik::SIKStackData* Right, bool preventExcep) {
         if (Left == nullptr || Right == nullptr) {
             if (preventExcep) return false;
