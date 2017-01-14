@@ -1,0 +1,11 @@
+
+print 2 == 4 || 3 =~ 6 && 1 == "5", " ";
+print true || 2 && false, " ";
+print false || 0 && true, " ";
+print true || true || false, " ";
+print 2 + 2 || 2 + 4 * 5 - 1;
+/*
+@expected-output
+TRUE TRUE FALSE TRUE TRUE
+@end-expected-output
+*/

@@ -21,6 +21,7 @@ namespace sik {
 		this->Instructions = nullptr;
 		this->ObjectDefinitions = nullptr;
 		this->FunctionInstructions = nullptr;
+		this->jumperFired = false;
 	}
 
 	SIKVm::SIKVm(std::vector<sik::SIKInstruct>* _Instructions, std::vector<std::vector<sik::SIKInstruct>>* _ObjectDefinitions, std::vector<std::vector<sik::SIKInstruct>>* _FunctionInstructions)
@@ -31,6 +32,7 @@ namespace sik {
 		this->FunctionInstructions = _FunctionInstructions;
 		this->InstSize = (int)_Instructions->size();
 		this->scopes.reserve(20);
+		this->jumperFired = false;
 	}
 	/* Run the program.
 	*/
@@ -100,6 +102,10 @@ namespace sik {
 			break;
 		case sik::INS_CNTEQUAL:
 			this->exec_comparison_ntequality(Inst);
+			break;
+		case sik::INS_CAND:
+		case sik::INS_COR:
+			this->exec_cond_andor(Inst);
 			break;
 		case sik::INS_DEFINE:
 			this->exec_define(Inst);
@@ -263,10 +269,44 @@ namespace sik {
 		sik::SIKInstruct* Inst = this->getInstPointer(this->InstPointer);
 		return Inst != nullptr ? Inst->lineOrigin : -1;
 	}
+	/* find a internal jumper
+	*/
+	int SIKVm::getInternalJumper(int jumpto) {
+		for (int i = this->InstPointer + 1; i < this->InstSize; i++) {
+			if (this->Instructions->at(i).MyInternalNumber == jumpto) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	/* test for Internal jumping:
+	*/
+	bool SIKVm::testForInternalNeedJump(sik::SIKInstruct* Inst) {
+		if (Inst->InternalJumper > -1) {
+			int jump = this->getInternalJumper(Inst->InternalJumper);
+			if (jump > -1) {
+				sik::SIKInstruct* candid = &this->Instructions->at(jump);
+				sik::SIKStackData* data = this->getFromStack();
+				if (data != nullptr && candid->Type == sik::INS_CAND && data->obj->getAsBool() < 1) {
+					this->InstPointer = jump - 1;
+					this->jumperFired = true;
+					return true;
+				}
+				else if (data != nullptr && candid->Type == sik::INS_COR && data->obj->getAsBool() > 0) {
+					this->InstPointer = jump - 1;
+					this->jumperFired = true;
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
     /* All the execution operations:
      */
 	void SIKVm::exec_push(sik::SIKInstruct* Inst) {
+
 		//Create a Temp StachData:
 		sik::SIKStackData *STData = new sik::SIKStackData();
 
@@ -292,6 +332,10 @@ namespace sik {
 
 		//Make the Push:
 		this->pushToStack(STData);
+
+		//Try to injump for skipping CAND COR:
+		this->testForInternalNeedJump(Inst);
+		
 	}
 	void SIKVm::exec_define(sik::SIKInstruct* Inst) {
 		this->createNameInScope(Inst->Value);
@@ -416,6 +460,10 @@ namespace sik {
         
         //Push new created:
         this->pushToStack(STData);
+
+		//Try to injump for skipping CAND COR:
+		this->testForInternalNeedJump(Inst);
+
     }
     void SIKVm::exec_Math_subtraction(sik::SIKInstruct* Inst) {
         
@@ -449,6 +497,9 @@ namespace sik {
         
         //Push new created:
         this->pushToStack(STData);
+
+		//Try to injump for skipping CAND COR:
+		this->testForInternalNeedJump(Inst);
     }
     void SIKVm::exec_Math_multiplication(sik::SIKInstruct* Inst) {
         
@@ -482,6 +533,9 @@ namespace sik {
         
         //Push new created:
         this->pushToStack(STData);
+
+		//Try to injump for skipping CAND COR:
+		this->testForInternalNeedJump(Inst);
     }
     void SIKVm::exec_Math_division(sik::SIKInstruct* Inst) {
         
@@ -510,6 +564,10 @@ namespace sik {
         
         //Push new created:
         this->pushToStack(STData);
+
+		//Try to injump for skipping CAND COR:
+		this->testForInternalNeedJump(Inst);
+
     }
 	void SIKVm::exec_comparison_equality(sik::SIKInstruct* Inst) {
 
@@ -549,6 +607,9 @@ namespace sik {
 
 		//Push new created:
 		this->pushToStack(STData);
+
+		//Try to injump for skipping CAND COR:
+		this->testForInternalNeedJump(Inst);
 
 	}
 	void SIKVm::exec_comparison_nequality(sik::SIKInstruct* Inst) {
@@ -591,6 +652,9 @@ namespace sik {
 
 		//Push new created:
 		this->pushToStack(STData);
+
+		//Try to injump for skipping CAND COR:
+		this->testForInternalNeedJump(Inst);
 	}
 	void SIKVm::exec_comparison_tequality(sik::SIKInstruct* Inst) {
 		//Pop From stack:
@@ -613,6 +677,9 @@ namespace sik {
 
 		//Push new created:
 		this->pushToStack(STData);
+
+		//Try to injump for skipping CAND COR:
+		this->testForInternalNeedJump(Inst);
 	}
 	void SIKVm::exec_comparison_ntequality(sik::SIKInstruct* Inst) {
 
@@ -636,6 +703,68 @@ namespace sik {
 
 		//Push new created:
 		this->pushToStack(STData);
+
+		//Try to injump for skipping CAND COR:
+		this->testForInternalNeedJump(Inst);
+	}
+	void SIKVm::exec_cond_andor(sik::SIKInstruct* Inst) {
+
+		sik::SIKStackData* left;
+		sik::SIKStackData* right;
+		
+
+		//Create a Temp StackData:
+		sik::SIKStackData *STData = new sik::SIKStackData();
+
+		if (this->jumperFired) {
+
+			//Base type:
+			STData->obj = new SIKObj(false);
+			left = this->popFromStack();
+			int boolTest = left->obj->getAsBool();
+			if (boolTest < 1 && Inst->Type == sik::INS_CAND) {
+				delete left;
+				this->pushToStack(STData);
+			} else if (boolTest > 0 && Inst->Type == sik::INS_COR) {
+				STData->obj->Number = 1;
+				delete left;
+				this->pushToStack(STData);
+			}
+			this->jumperFired = false;
+			this->testForInternalNeedJump(Inst);
+			return;
+
+		} else {
+
+			right = this->popFromStack();
+			left = this->popFromStack();
+
+		}
+
+		//Validate the stack data:
+		if (this->validateStackDataCanBeBool(left, false) && this->validateStackDataCanBeBool(right, false)) {
+
+			//Base type:
+			STData->obj = new SIKObj(false);
+			int boolTestRight = right->obj->getAsBool();
+			int boolTestLeft = left->obj->getAsBool();
+			if (
+				(Inst->Type == sik::INS_CAND && boolTestLeft > 0 && boolTestRight > 0)
+				||
+				(Inst->Type == sik::INS_COR && (boolTestLeft > 0 || boolTestRight > 0))
+			) {
+				STData->obj->Number = 1;
+			}
+			//Release mem:
+			delete left;
+			delete right;
+		}
+
+		//Push new created:
+		this->pushToStack(STData);
+
+		//Try to injump for skipping CAND COR:
+		this->testForInternalNeedJump(Inst);
 	}
     void SIKVm::exec_print(sik::SIKInstruct* Inst) {
         //Only prepare stack:
