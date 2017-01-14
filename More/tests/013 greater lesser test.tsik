@@ -1,0 +1,16 @@
+print
+    3 > 2, " ",
+    "test" < "lo", " ",
+    "test" < 6, " ",
+    true > false, " ",
+    false > true, " ",
+    true > 0, " ",
+    3 + "mo" >= 5, " ",
+    true <= true, " ",
+	3 == "tes" && "tes" > 2 && 2*3 < 15/2;
+	
+/*
+@expected-output
+TRUE FALSE TRUE TRUE FALSE TRUE TRUE TRUE TRUE
+@end-expected-output
+*/

@@ -111,6 +111,12 @@ namespace sik {
 		case sik::INS_CNTEQUAL:
 			this->exec_comparison_ntequality(Inst);
 			break;
+		case sik::INS_CGRT:
+		case sik::INS_CGRTE:
+		case sik::INS_CLST:
+		case sik::INS_CLSTE:
+			this->exec_comparison_greatersmaller(Inst);
+			break;
 		case sik::INS_CAND:
 		case sik::INS_COR:
 			this->exec_cond_andor(Inst);
@@ -754,6 +760,43 @@ namespace sik {
 
 			//Base type:
 			STData->obj = new SIKObj(left->obj->Type != right->obj->Type ? true : false);
+
+			//Release mem:
+			delete left;
+			delete right;
+		}
+
+		//Push new created:
+		this->pushToStack(STData);
+
+		//Try to injump for skipping CAND COR:
+		this->testForInternalNeedJump(Inst);
+	}
+	void SIKVm::exec_comparison_greatersmaller(sik::SIKInstruct* Inst) {
+
+		//Pop From stack:
+		sik::SIKStackData* right = this->popFromStack();
+		sik::SIKStackData* left = this->popFromStack();
+
+		//Create a Temp StackData:
+		sik::SIKStackData *STData = new sik::SIKStackData();
+
+		//Validate the stack data:
+		if (this->validateStackDataForMathOp(left, right, false)) {
+
+			//Base type:
+			STData->obj = new SIKObj(false);
+			int leftCandid = left->obj->getAsNumber();
+			int rightCandid = right->obj->getAsNumber();
+			if (Inst->Type == sik::INS_CGRT && leftCandid > rightCandid) {
+				STData->obj->Number = 1;
+			} else if (Inst->Type == sik::INS_CGRTE && leftCandid >= rightCandid) {
+				STData->obj->Number = 1;
+			} else if (Inst->Type == sik::INS_CLST && leftCandid < rightCandid) {
+				STData->obj->Number = 1;
+			} else if (Inst->Type == sik::INS_CLSTE && leftCandid <= rightCandid) {
+				STData->obj->Number = 1;
+			}
 
 			//Release mem:
 			delete left;

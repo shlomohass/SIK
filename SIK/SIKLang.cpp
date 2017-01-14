@@ -16,68 +16,68 @@ namespace sik {
 
 	//Set Delimiters:
 	std::map<std::string, std::string> SIKLang::LangDelimiter = {
-		{ "string"            , "\"" },
-		{ "string-esc"        , "\\" },
-		{ "space"             , " " },
-		{ "plus"              , "+" },
-		{ "minus"             , "-" },
-		{ "inc"			      , "++" },
-		{ "dec"				  , "--" },
-		{ "multi"             , "*" },
-		{ "divide"            , "/" },
-		{ "equal"             , "=" },
-		{ "equal-add"         , "+=" },
-		{ "equal-sub"         , "-=" },
-		{ "pointer"           , "->" },
-		{ "braketOpen"        , "(" },
-		{ "braketClose"       , ")" },
-		{ "bracesOpen"        , "{" },
-		{ "bracesClose"       , "}" },
-		{ "sBraketOpen"       , "[" },
-		{ "sBraketClose"      , "]" },
-		{ "power"             , "^" },
-		{ "exclamation"       , "!" },
-		{ "greater"           , ">" },
-		{ "smaller"           , "<" },
-		{ "greater-equal"     , ">=" },
-		{ "smaller-equal"     , "<=" },
-		{ "comma"             , "," },
-		{ "scope"             , "~" },
-		{ "c-tequal"          , "=~" },
-		{ "c-ntequal"         , "!~" },
-		{ "c-equal"           , "==" },
-		{ "c-nequal"          , "!=" },
-		{ "and"               , "&&" },
-		{ "single-and"        , "&" },
-		{ "or"                , "||" },
-		{ "single-or"         , "|" },
-		{ "semicolon"         , ";" },
-		{ "macro-def"		  , "#" },
-		{ "macro-set"		  , ":" },
-		{ "child-set"		  , ":" },
-		{ "member-access"	  , "." }
+		{ "string"            , "\"" }, // [x]
+		{ "string-esc"        , "\\" }, // [x]
+		{ "space"             , " " },	// [x]
+		{ "plus"              , "+" },	// [x]
+		{ "minus"             , "-" },	// [x]
+		{ "inc"			      , "++" }, // [x]
+		{ "dec"				  , "--" }, // [x]
+		{ "multi"             , "*" },	// [x]
+		{ "divide"            , "/" },	// [x]
+		{ "equal"             , "=" },	// [x]
+		{ "equal-add"         , "+=" }, // [x]
+		{ "equal-sub"         , "-=" }, // [x]
+		{ "pointer"           , "->" }, // []
+		{ "braketOpen"        , "(" },	// [x]
+		{ "braketClose"       , ")" },	// [x]
+		{ "bracesOpen"        , "{" },	// [x]
+		{ "bracesClose"       , "}" },	// [x]
+		{ "sBraketOpen"       , "[" },	// []
+		{ "sBraketClose"      , "]" },	// []
+		{ "power"             , "^" },	// []
+		{ "exclamation"       , "!" },	// []
+		{ "greater"           , ">" },	// []
+		{ "smaller"           , "<" },	// []
+		{ "greater-equal"     , ">=" }, // []
+		{ "smaller-equal"     , "<=" }, // []
+		{ "comma"             , "," },  // [x]
+		{ "scope"             , "~" },	// [x]
+		{ "c-tequal"          , "=~" }, // [x]
+		{ "c-ntequal"         , "!~" }, // [x]
+		{ "c-equal"           , "==" }, // [x]
+		{ "c-nequal"          , "!=" }, // [x]
+		{ "and"               , "&&" }, // [x]
+		{ "single-and"        , "&" },	// []
+		{ "or"                , "||" }, // [x]
+		{ "single-or"         , "|" },	// []
+		{ "semicolon"         , ";" },	// [x]
+		{ "macro-def"		  , "#" },	// []
+		{ "macro-set"		  , ":" },	// []
+		{ "child-set"		  , ":" },	// []
+		{ "member-access"	  , "." }	// []
 	};
 
 	//Set Keywords:
 	std::map<std::string, std::string> SIKLang::LangKeywords = {
-		{ "variable"        , "let" },
-		{ "unset"           , "unset" },
-		{ "cond-if"         , "if" },
-		{ "cond-else"       , "else" },
-		{ "cond-elseif"     , "elseif" },
-		{ "cond-break"      , "breakif" },
-		{ "loop-while"      , "while" },
-		{ "loop-for"        , "for" },
-		{ "loop-each"       , "each" },
-		{ "loop-break"      , "break" },
-		{ "loop-continue"   , "continue" },
-		{ "function"        , "function" },
-		{ "return"          , "return" },
-		{ "print"           , "print" },
-		{ "get"             , "get" },
-		{ "exit"            , "exit" },
-		{ "sleep"           , "sleep" },
-		{ "pause"           , "pause" },
+		{ "variable"        , "let" },		// [x]
+		{ "unset"           , "unset" },	// []
+		{ "cond-if"         , "if" },		// [x]
+		{ "cond-else"       , "else" },		// [x]
+		{ "cond-elseif"     , "elseif" },	// [x]
+		{ "cond-break"      , "breakif" },	// []
+		{ "loop-while"      , "while" },	// []
+		{ "loop-for"        , "for" },		// []
+		{ "loop-each"       , "each" },		// []
+		{ "loop-break"      , "break" },	// []
+		{ "loop-continue"   , "continue" }, // []
+		{ "function"        , "function" }, // []
+		{ "return"          , "return" },	// []
+		{ "print"           , "print" },	// [x]
+		{ "get"             , "get" },		// []
+		{ "exit"            , "exit" },		// []
+		{ "sleep"           , "sleep" },	// []
+		{ "pause"           , "pause" },	// []
 	};
 
 	//Set Values - set both smaller case and upper case:
