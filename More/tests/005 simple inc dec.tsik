@@ -1,0 +1,10 @@
+let a = 10, b = 5;
+a += b;
+b -= a;
+print a,b;
+
+/*
+@expected-output
+15-10
+@end-expected-output
+*/

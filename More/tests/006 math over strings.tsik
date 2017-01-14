@@ -1,0 +1,13 @@
+let a = "shlomi",
+    b = "hassid",
+    c = 5,
+    d;
+a = a + " " + b;
+d = c + 26;
+print a," is", " " + d + " year old.";
+
+/*
+@expected-output
+shlomi hassid is 31 year old.
+@end-expected-output
+*/

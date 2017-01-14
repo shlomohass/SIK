@@ -1,0 +1,9 @@
+print "s\"\\\nh\n";
+
+/*
+@expected-output
+s"\
+h
+
+@end-expected-output
+*/

@@ -1,0 +1,22 @@
+let a = 3, b = "sik";
+if (a) { print 1; }
+if (a == b) { print 2; }
+if (a =~ b) { print 3; }
+if (a !~ b) { print 4; }
+if (a + 2 == 2 + b) { print 5; }
+
+let c = "no";
+if (true) { c = "yes"; }
+print c;
+
+let d = "no";
+if (true) ~{
+    let d = "yes";
+    print d;
+}
+print d;
+/*
+@expected-output
+1245yesyesno
+@end-expected-output
+*/

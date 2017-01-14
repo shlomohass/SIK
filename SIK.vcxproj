@@ -127,6 +127,7 @@
     <ClInclude Include="sik\SIKTokens.hpp" />
     <ClInclude Include="SIK\SIKVm.hpp" />
     <ClInclude Include="sik\SIK_Lex.hpp" />
+    <ClInclude Include="SIK\tinydir.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="More\siktest.sik" />

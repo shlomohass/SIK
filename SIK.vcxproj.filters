@@ -98,6 +98,9 @@
     <ClInclude Include="SIK\SIKObj.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SIK\tinydir.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="More\siktest.sik" />

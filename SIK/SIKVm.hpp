@@ -31,7 +31,7 @@ namespace sik
 			this->obj = _obj;
 		}
 		~SIKStackData() {
-			std::cout << "destroy StackData - " << this->obj->getAsString() << std::endl;
+			//std::cout << "destroy StackData - " << this->obj->getAsString() << std::endl;
 			if (this->objectType == sik::SDT_TEMP && this->obj != nullptr) {
 				delete this->obj;
 			}
@@ -43,7 +43,7 @@ namespace sik
 			this->Stack.reserve(50);
 		}
 		~SIKStack() {
-			std::cout << "destroy Stack" << std::endl;
+			//std::cout << "destroy Stack" << std::endl;
 			for (int i = (int)Stack.size() - 1; i >= 0; i++) {
 				std::cout << i << " - ";
 				delete Stack.at(i);
@@ -63,7 +63,7 @@ namespace sik
 			this->Stack = new SIKStack();
 		}
 		~SIKScope() {
-			std::cout << "destroy scope" << std::endl;
+			//std::cout << "destroy scope" << std::endl;
 			delete this->Stack;
 		}
 	};

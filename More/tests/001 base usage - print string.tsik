@@ -1,0 +1,8 @@
+let a = "shlomi";
+print a;
+
+/*
+@expected-output
+shlomi
+@end-expected-output
+*/

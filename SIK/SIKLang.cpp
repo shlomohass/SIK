@@ -112,7 +112,8 @@ namespace sik {
 	std::vector<std::string> SIKLang::extensionLib = {
 		"sik",
 		"SIK",
-		"tsik"
+		"tsik",
+		"TSIK"
 	};
 
 	//Set systemCalls extensions:

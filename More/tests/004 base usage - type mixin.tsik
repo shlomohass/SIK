@@ -1,0 +1,10 @@
+print 4 * 3 / 2 + 4," ";
+print 2/4," ";
+print 451*-342*-1," ";
+print 3*2,-2*3,4+3*2,"sh"*"lert",3*"sh","lom" - 1 + 2 * "lo";
+
+/*
+@expected-output
+10 0.5 154242 6-61086lo4
+@end-expected-output
+*/

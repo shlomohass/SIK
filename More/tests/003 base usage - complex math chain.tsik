@@ -1,0 +1,9 @@
+
+let a = 1 + 2 + (((2 * (3 + 5)) * 4 ) - 4) * 6 * 5;
+print a;
+
+/*
+@expected-output
+1803
+@end-expected-output
+*/
