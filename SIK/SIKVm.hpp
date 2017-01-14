@@ -127,11 +127,11 @@ namespace sik
         void exec_Math_subtraction(sik::SIKInstruct* Inst);
         void exec_Math_multiplication(sik::SIKInstruct* Inst);
         void exec_Math_division(sik::SIKInstruct* Inst);
+		void exec_Math_IncDec(sik::SIKInstruct* Inst);
 		void exec_comparison_equality(sik::SIKInstruct* Inst);
 		void exec_comparison_nequality(sik::SIKInstruct* Inst);
 		void exec_comparison_tequality(sik::SIKInstruct* Inst);
 		void exec_comparison_ntequality(sik::SIKInstruct* Inst);
-
 		void exec_cond_andor(sik::SIKInstruct* Inst);
 
         void exec_print(sik::SIKInstruct* Inst);

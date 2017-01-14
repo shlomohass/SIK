@@ -82,6 +82,12 @@ namespace sik {
 		case sik::INS_DEVIDE:
 			this->exec_Math_division(Inst);
 			break;
+		case sik::INS_INCREMENT:
+		case sik::INS_DECREMENT:
+		case sik::INS_PINCREMENT:
+		case sik::INS_PDECREMENT:
+			this->exec_Math_IncDec(Inst);
+			break;
 		case sik::INS_ASSIGN:
 			this->exec_assign(Inst);
 			break;
@@ -569,6 +575,48 @@ namespace sik {
 		this->testForInternalNeedJump(Inst);
 
     }
+	void SIKVm::exec_Math_IncDec(sik::SIKInstruct* Inst) {
+
+		//Pop From stack:
+		sik::SIKStackData* candid = this->getFromStack();
+
+		//Create a Temp StackData:
+		sik::SIKStackData *STData = new sik::SIKStackData();
+
+		//Validate the stack data:
+		if (this->validateStackDataAvailable(candid, false)) {
+			if (candid->obj->Type == sik::OBJ_NUMBER) {
+
+				if (Inst->Type == sik::INS_PDECREMENT) {
+					candid->obj->Number--;
+				} else if (Inst->Type == sik::INS_PINCREMENT) {
+					candid->obj->Number++;
+				} else if (Inst->Type == sik::INS_DECREMENT && candid->objectType == sik::SDT_ATTACHED) {
+					STData->obj = new SIKObj(candid->obj->Number);
+					candid->obj->Number--;
+				} else if (Inst->Type == sik::INS_INCREMENT && candid->objectType == sik::SDT_ATTACHED) {
+					STData->obj = new SIKObj(candid->obj->Number);
+					candid->obj->Number++;
+				}
+
+			} else {
+				throw sik::SIKException(sik::EXC_RUNTIME, "Trying to opperate on not numeric value. 65484", Inst->lineOrigin);
+			}
+		}
+
+		if (STData->obj != nullptr) {
+			//release mem:
+			delete candid;
+			this->popFromStack();
+			//Push new created:
+			this->pushToStack(STData);
+		} else {
+			delete STData;
+		}
+
+		//Try to injump for skipping CAND COR:
+		this->testForInternalNeedJump(Inst);
+	}
 	void SIKVm::exec_comparison_equality(sik::SIKInstruct* Inst) {
 
 		//Pop From stack:

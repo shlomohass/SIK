@@ -1,3 +1,11 @@
+let a = 6;
+print a, a++, ++a, --a; // 6687
+print ++1,1++;
+let b = 1;
+b = 2 * ++3 - 9 * --7 + b++;
+print b;
+
+
 
 // a = bob.age++;
 //b = --sed[i].age;
