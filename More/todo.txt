@@ -20,7 +20,7 @@ SIK todo list:
 [X] INC DEC operations -> support also primitive numbers.
 [X] Scoping engine to force block scope.
 [X] WHILE loop.
-[X] IF and ELSEIF statement.
+[X] IF, ELSEIF, ELSE statement.
 [X] EACH loop.
 [X] Improved negative number handler. <- handle check for space before negativity.
 [X] Object Instruction debuger output print.

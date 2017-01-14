@@ -1,0 +1,32 @@
+let a = true,
+    b = "sh",
+	c = 3;
+if (true) { print "S"; }
+if (false) { print "no1"; } else { print "I"; }
+if (2 && 4) { print "K"; } else { print "no2"; }
+if (true || false) ~{ print " "; } else ~{ print "no3"; }
+if ( b == c ) { print "no4"; } elseif ( b !~ c) { print "I"; } else { print "no5"; }
+if ( c == 1 + b) { print "S"; } elseif (true) { print "no6"; }
+if ( a && b && c) {
+	if (c !~ b && c !~ a) {
+		print " ";
+	}
+	if (c =~ b) {
+		print "no7";
+	} elseif ( b == "shl" ) {
+		print "no8";
+	} elseif ( c - 1 == b && a == true) {
+		print "GREA";
+	} else {
+		print "no9";
+	}
+	print "T!";
+} else ~{
+	let a = "bad";
+	print a;
+}
+/*
+@expected-output
+SIK IS GREAT!
+@end-expected-output
+*/

@@ -81,7 +81,7 @@ namespace sik
 		int InstPointer;
 		int InstSize;
 		bool jumperFired;
-
+		bool allowElseIf;
 		//Vm containers:
 		std::vector<SIKScope*> scopes;
 
@@ -133,9 +133,10 @@ namespace sik
 		void exec_comparison_tequality(sik::SIKInstruct* Inst);
 		void exec_comparison_ntequality(sik::SIKInstruct* Inst);
 		void exec_cond_andor(sik::SIKInstruct* Inst);
-
+		
         void exec_print(sik::SIKInstruct* Inst);
 	    int  exec_ifcondition(sik::SIKInstruct* Inst);
+		void exec_jumpCondBlock(sik::SIKInstruct* Inst);
 		void exec_block(sik::SIKInstruct* Inst);
 		void exec_exit_block(sik::SIKInstruct* Inst);
 

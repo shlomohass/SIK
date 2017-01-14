@@ -22,6 +22,7 @@ namespace sik {
 		this->ObjectDefinitions = nullptr;
 		this->FunctionInstructions = nullptr;
 		this->jumperFired = false;
+		this->allowElseIf = false;
 	}
 
 	SIKVm::SIKVm(std::vector<sik::SIKInstruct>* _Instructions, std::vector<std::vector<sik::SIKInstruct>>* _ObjectDefinitions, std::vector<std::vector<sik::SIKInstruct>>* _FunctionInstructions)
@@ -33,6 +34,7 @@ namespace sik {
 		this->InstSize = (int)_Instructions->size();
 		this->scopes.reserve(20);
 		this->jumperFired = false;
+		this->allowElseIf = false;
 	}
 	/* Run the program.
 	*/
@@ -120,6 +122,15 @@ namespace sik {
 		case sik::INS_PRINT:
 			this->exec_print(Inst);
 			break;
+		case sik::INS_ELSEIF:
+		case sik::INS_ELSE: {
+			if (this->allowElseIf && Inst->Type == sik::INS_ELSEIF) {
+				this->allowElseIf = false;
+				this->exec_ifcondition(Inst);
+			} else {
+				this->exec_jumpCondBlock(Inst);
+			}
+		} break;
 		case sik::INS_IF:
 			this->exec_ifcondition(Inst);
 			break;
@@ -844,15 +855,20 @@ namespace sik {
 		//Pop From stack:
 		sik::SIKStackData* left = this->popFromStack();
 		
-		//Validate first and then perform print:
+		//Validate first and then perform:
 		if (this->validateStackDataCanBeBool(left, false)) {
 			//Number,Any
 			if (left->obj->getAsBool() == 0) {
 				//Move pointer to end of If true block:
 				this->InstPointer = this->Instructions->at(Inst->InternalJumper).InternalJumper;
+				//Check Whether has an else:
+				if (this->Instructions->at(this->InstPointer + 1).Type == sik::INS_ELSE) {
+					this->InstPointer++;
+				} else if (this->Instructions->at(this->InstPointer + 1).Type == sik::INS_ELSEIF) {
+					this->allowElseIf = true;
+				}
 			} else {
 				//We move to the true body so decrement to execute the block openning:
-				//this->InstPointer--;
 			}
 		}
 		
@@ -860,6 +876,13 @@ namespace sik {
 		delete left;
 
 		return -1;
+	}
+	void SIKVm::exec_jumpCondBlock(sik::SIKInstruct* Inst) {
+		if (Inst->Type == sik::INS_ELSE) {
+			this->InstPointer = this->Instructions->at(this->InstPointer + 1).InternalJumper;
+		} else if (Inst->Type == sik::INS_ELSEIF) {
+			this->InstPointer = this->Instructions->at(Inst->InternalJumper).InternalJumper;
+		}
 	}
 	void SIKVm::exec_block(sik::SIKInstruct* Inst) {
 		if (Inst->Type == sik::INS_OBLOCK) {
