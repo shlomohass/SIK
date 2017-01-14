@@ -4,9 +4,16 @@ print ++1,1++;
 let b = 1;
 b = 2 * ++3 - 9 * --7 + b++;
 print b; // - 45
-
+let z = 0;
+print " ", false || true && z++;
+print " ", false || true && ++z, " ";
+let s = 3;
+print ++(s + 3);
+print ++1++;
+let t = 5;
+print t, ++t++, t, --t--, t;
 /*
 @expected-output
-668721-45
+668721-45 FALSE TRUE 7256765
 @end-expected-output
 */

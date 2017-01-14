@@ -600,7 +600,7 @@ namespace sik {
 				}
 
 			} else {
-				throw sik::SIKException(sik::EXC_RUNTIME, "Trying to opperate on not numeric value. 65484", Inst->lineOrigin);
+				throw sik::SIKException(sik::EXC_RUNTIME, "Trying to opperate on a none numeric value. 65484", Inst->lineOrigin);
 			}
 		}
 

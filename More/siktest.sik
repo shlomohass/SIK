@@ -1,12 +1,8 @@
-let a = 6;
-print a, a++, ++a, --a; // 6687
-print ++1,1++;
-let b = 1;
-b = 2 * ++3 - 9 * --7 + b++;
-print b;
-
-
-
+//let s = 3;
+//print ++(s + 3);
+//print ++1++;
+let t = 5;
+print t, ++t++, t, --t--, t;
 // a = bob.age++;
 //b = --sed[i].age;
 //a = bob[2].name.test + shl.has;

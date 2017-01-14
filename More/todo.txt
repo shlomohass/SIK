@@ -10,6 +10,7 @@ SIK todo list:
 [ ] Build Basic Precompiler -> Macros, Extenders, Includes.
 [X] Parse Types boolean.
 [X] Build Basic AST from token collection.
+[X] Build Test Engine.
 [X] Exception Class handlers.
 [X] Bulk AST support for complex parsing.
 [X] Variable declaration lookahead for nested.
@@ -63,7 +64,8 @@ SIK todo list:
 [X] Vm -> Subraction.
 [X] Vm -> Multiplication.
 [X] Vm -> Assign.
-
+[X] Vm -> Added Inc and Dec
+[X] Vm -> Added CAND and COR with early jump support.
 
 
 
