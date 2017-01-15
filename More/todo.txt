@@ -66,8 +66,10 @@ SIK todo list:
 [X] Vm -> Assign.
 [X] Vm -> Added Inc and Dec
 [X] Vm -> Added CAND and COR with early jump support.
-
-
+[X] Vm -> Added CGRT CLST support.
+[X] Vm -> Added Array create + container.
+[X] Vm -> Added Array traverse + nested.
+[X] Vm -> Added Array element set + nested traverse support.
 
 
 

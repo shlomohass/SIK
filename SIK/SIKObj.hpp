@@ -11,6 +11,7 @@
 
 #include "SIKAdd.hpp"
 #include <string>
+#include <vector>
 
 namespace sik
 {
@@ -22,20 +23,22 @@ namespace sik
 		sik::ObjectTypes Type;
 		double			 Number;
 		std::string      String;
-
+		std::vector<sik::SIKObj> Array;
 
 		SIKObj();
 		SIKObj(int value);
 		SIKObj(double value);
 		SIKObj(std::string value);
 		SIKObj(bool value);
-		SIKObj(sik::ObjectTypes, std::string value);
+		SIKObj(sik::ObjectTypes _type, std::string value);
+		SIKObj(sik::ObjectTypes _type);
         
         //Methods:
         double getAsNumber();
         std::string getAsString();
         double getAsBool();
-        
+		void pushToArray(sik::SIKObj _obj);
+
         void mutate(SIKObj* obj);
 		virtual ~SIKObj();
 	};

@@ -927,7 +927,7 @@ namespace sik {
 			if (
 				tokL != nullptr && 
 				(
-				(tokL->type == sik::NODE /*&& (tokL->node->Type == sik::NAMING || tokL->node->Type == sik::NUMBER || tokL->node->Type == sik::DELI_SBRKOPEN)*/)
+				(tokL->type == sik::NODE)
 				||
 				(tokL->type == sik::NAMING || tokL->type == sik::NUMBER)
 				)
@@ -940,7 +940,7 @@ namespace sik {
 			} else if (
 				tokR != nullptr &&
 				(
-				(tokR->type == sik::NODE /*&& (tokR->node->Type == sik::NAMING || tokR->node->Type == sik::NUMBER || tokR->node->Type == sik::DELI_SBRKOPEN)*/)
+				(tokR->type == sik::NODE)
 				||
 				(tokR->type == sik::NAMING || tokR->type == sik::NUMBER)
 				)

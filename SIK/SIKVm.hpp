@@ -140,6 +140,9 @@ namespace sik
 		void exec_jumpCondBlock(sik::SIKInstruct* Inst);
 		void exec_block(sik::SIKInstruct* Inst);
 		void exec_exit_block(sik::SIKInstruct* Inst);
+		int exec_createArray(sik::SIKInstruct* Inst);
+		int exec_traverseArray(sik::SIKInstruct* Inst);
+
 
         //Validation Methods:
         bool validateStackDataForMathOp(sik::SIKStackData* Left, sik::SIKStackData* Right, bool preventExcep);

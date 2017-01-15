@@ -50,6 +50,10 @@ namespace sik {
 				this->Type = OBJ_NAN;
 		}
 	}
+	SIKObj::SIKObj(sik::ObjectTypes _type) {
+		this->Type = _type;
+		this->Number = SIK_NAN;
+	}
     /* Always return as a number
      */
     double SIKObj::getAsNumber() {
@@ -57,8 +61,10 @@ namespace sik {
             case sik::OBJ_STRING:
                 return (double)this->String.length();
                 break;
+			case sik::OBJ_ARRAY:
+				return (double)this->Array.size();
+				break;
             case sik::OBJ_BOOL:
-            case sik::OBJ_ARRAY:
             case sik::OBJ_NULL:
             default:
                 return this->Number;
@@ -79,6 +85,11 @@ namespace sik {
                 if (this->Number > 0) { return "TRUE"; }
                 return "FALSE";
                 break;
+			case sik::OBJ_ARRAY: {
+				std::stringstream ss;
+				ss << "ARRAY[" << (int)this->Array.size() << "]";
+				return ss.str();
+			} break;
             case sik::OBJ_NULL:
             default:
                 return this->String;
@@ -93,17 +104,21 @@ namespace sik {
 			case sik::OBJ_NUMBER:
 				return this->Number == 0 ? 0 : 1;
 			case sik::OBJ_STRING:
-				return this->String.length() > 0 ? 1 : 0;
+				return this->String.empty() ? 0 : 1;
 			case sik::OBJ_ARRAY:
-				return 1;
+				return this->Array.empty() ? 0 : 1;
             default:
                 return 0;
         }
     }
+	void SIKObj::pushToArray(sik::SIKObj _obj) {
+		this->Array.push_back(_obj);
+	}
     void SIKObj::mutate(SIKObj* obj) {
         this->Type = obj->Type;
         this->Number = obj->Number;
         this->String = obj->String;
+		this->Array = obj->Array;
     }
 	SIKObj::~SIKObj()
 	{

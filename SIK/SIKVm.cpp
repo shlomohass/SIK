@@ -140,6 +140,12 @@ namespace sik {
 		case sik::INS_IF:
 			this->exec_ifcondition(Inst);
 			break;
+		case sik::INS_ARRC:
+			this->exec_createArray(Inst);
+			break;
+		case sik::INS_ARRT:
+			this->exec_traverseArray(Inst);
+			break;
 		}
 
 		//Advance the pointer or stop:
@@ -973,6 +979,109 @@ namespace sik {
 			};
 		}
 	}
+	int SIKVm::exec_createArray(sik::SIKInstruct* Inst) {
+
+		//How many in the declaration phase:
+		sik::SIKStackData* argNumObj = this->popFromStack();
+		this->validateStackDataAvailable(argNumObj, false);
+		int argNum = argNumObj->obj->Number;
+		delete argNumObj;
+
+		if (argNum > 0) {
+			//Execute condition:
+			this->InstPointer++;
+			int returnCode = this->execute(Inst->InternalJumper);
+			if (returnCode != -1) { return returnCode; }
+		}
+		
+		//Create the array:
+		sik::SIKStackData* STData = new SIKStackData();
+		STData->obj = new SIKObj(sik::OBJ_ARRAY);
+
+		//Push All:
+		for (int i = 0; i < argNum; i++) {
+			sik::SIKStackData* element = this->popFromStack();
+			sik::SIKObj _obj = SIKObj();
+			if (this->validateStackDataAvailable(element, false)) {
+				_obj.mutate(element->obj);
+				STData->obj->pushToArray(_obj);
+			}
+			delete element;
+		}
+
+		//Push new created:
+		this->pushToStack(STData);
+
+		//Try to injump for skipping CAND COR:
+		this->testForInternalNeedJump(Inst);
+
+		return -1;
+	}
+	int SIKVm::exec_traverseArray(sik::SIKInstruct* Inst) {
+
+		//How many in the declaration phase:
+		sik::SIKStackData* nameObj = this->popFromStack();
+		sik::SIKStackData* argNumObj = this->popFromStack();
+		int argNum = 0;
+		//Validate availability:
+		if (
+			this->validateStackDataIsAttached(nameObj, false) &&
+			this->validateStackDataAvailable(argNumObj, false)
+			) {
+			argNum = argNumObj->obj->Number;
+		}
+		//Clear some mem:
+		delete argNumObj;
+		
+		//Validate we are handlig with an array:
+		if (nameObj->obj->Type != sik::OBJ_ARRAY) {
+			throw sik::SIKException(sik::EXC_RUNTIME, "Tried to perform operation on a none array variable. 332254", Inst->lineOrigin);
+		}
+
+		if (argNum > 0) {
+			//Execute condition:
+			this->InstPointer++;
+			int returnCode = this->execute(Inst->InternalJumper);
+			if (returnCode != -1) { return returnCode; }
+		}
+
+		//Create the array:
+		sik::SIKStackData* STData = new SIKStackData();
+		STData->objectType = sik::SDT_ATTACHED;
+
+		//Traverse All:
+		for (int i = 0; i < argNum; i++) {
+			sik::SIKStackData* element = this->popFromStack();
+			if (this->validateStackDataAvailable(element, false)) {
+				int WalkTo = (int)element->obj->getAsNumber();
+				if (i == 0) {
+					if (WalkTo >= (int)nameObj->obj->Array.size()) {
+						throw sik::SIKException(sik::EXC_RUNTIME, "Tried to call to undefined array element. 658475", Inst->lineOrigin);
+					}
+					STData->obj = &nameObj->obj->Array.at(WalkTo);
+				} else {
+					if (WalkTo >= (int)STData->obj->Array.size()) {
+						throw sik::SIKException(sik::EXC_RUNTIME, "Tried to call to undefined array element. 658475", Inst->lineOrigin);
+					}
+					STData->obj = &STData->obj->Array.at(WalkTo);
+				}
+			}
+			delete element;
+		}
+
+		delete nameObj;
+
+		//Push new created:
+		this->pushToStack(STData);
+
+		//Try to injump for skipping CAND COR:
+		this->testForInternalNeedJump(Inst);
+
+		return -1;
+	}
+
+
+
     bool SIKVm::validateStackDataForMathOp(sik::SIKStackData* Left, sik::SIKStackData* Right, bool preventExcep) {
         if (Left == nullptr || Right == nullptr) {
             if (preventExcep) return false;
