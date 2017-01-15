@@ -1,0 +1,7 @@
+let a = 6 * "32" + 4, b = a, c = ++a;
+print a,b,c;
+/*
+@expected-output
+171617
+@end-expected-output
+*/
