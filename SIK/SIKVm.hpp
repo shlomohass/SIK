@@ -22,13 +22,16 @@ namespace sik
 	struct SIKStackData {
 		sik::SatckDataTypes objectType;
 		sik::SIKObj* obj;
+		bool useArrayPush;
 		SIKStackData() {
 			this->objectType = sik::SDT_TEMP;
 			this->obj = nullptr;
+			this->useArrayPush = false;
 		}
 		SIKStackData(sik::SIKObj* _obj) {
 			this->objectType = sik::SDT_ATTACHED;
 			this->obj = _obj;
+			this->useArrayPush = false;
 		}
 		~SIKStackData() {
 			//std::cout << "destroy StackData - " << this->obj->getAsString() << std::endl;
@@ -142,7 +145,7 @@ namespace sik
 		void exec_exit_block(sik::SIKInstruct* Inst);
 		int exec_createArray(sik::SIKInstruct* Inst);
 		int exec_traverseArray(sik::SIKInstruct* Inst);
-
+		void exec_prepareToArrayPush(sik::SIKInstruct* Inst);
 
         //Validation Methods:
         bool validateStackDataForMathOp(sik::SIKStackData* Left, sik::SIKStackData* Right, bool preventExcep);

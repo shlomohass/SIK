@@ -33,6 +33,8 @@ namespace sik
 		SIKObj(sik::ObjectTypes _type, std::string value);
 		SIKObj(sik::ObjectTypes _type);
         
+		//Flags:
+
         //Methods:
         double getAsNumber();
         std::string getAsString();

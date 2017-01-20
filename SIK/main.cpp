@@ -8,7 +8,7 @@
 //  Command Line Examples:
 //  -r "More\siktest.sik" --debug --level 4
 //  -r "More\siktest.sik"
-//  --tin "More\tests" --debug
+//  --tin "More\tests" --texec  "Release\SIK.exe" --debug
 //  -h
 //
 

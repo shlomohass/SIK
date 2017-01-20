@@ -146,6 +146,9 @@ namespace sik {
 		case sik::INS_ARRT:
 			this->exec_traverseArray(Inst);
 			break;
+		case sik::INS_ARRP:
+			this->exec_prepareToArrayPush(Inst);
+			break;
 		}
 
 		//Advance the pointer or stop:
@@ -377,7 +380,15 @@ namespace sik {
         
         //Validate the Stack data:
         if (this->validateStackDataIsAttached(left, false) && this->validateStackDataAvailable(right, false)) {
-            left->obj->mutate(right->obj);
+			if (left->useArrayPush) {
+				//Perform a push:
+				sik::SIKObj _obj = SIKObj();
+				_obj.mutate(right->obj);
+				left->obj->pushToArray(_obj);
+			} else {
+				//Mutate:
+				left->obj->mutate(right->obj);
+			}
         }
         
         //Release mem:
@@ -1079,7 +1090,18 @@ namespace sik {
 
 		return -1;
 	}
+	void SIKVm::exec_prepareToArrayPush(sik::SIKInstruct* Inst) {
 
+		//Pop From stack:
+		sik::SIKStackData* left = this->getFromStack();
+
+		//Validate the Stack data:
+		if (this->validateStackDataIsAttached(left, false) && left->obj->Type == sik::OBJ_ARRAY) {
+			left->useArrayPush = true;
+		} else {
+			throw sik::SIKException(sik::EXC_RUNTIME, "Can't make a push on a none array type variable. 11245", Inst->lineOrigin);
+		}
+	}
 
 
     bool SIKVm::validateStackDataForMathOp(sik::SIKStackData* Left, sik::SIKStackData* Right, bool preventExcep) {
