@@ -29,6 +29,7 @@ namespace sik {
 		this->MyInternalNumber = -1;
 		this->preVariable = false;
 		this->Notation = -1;
+		this->funcName = std::pair<int, std::string>(-1, "");
 	}
 
 	void SIKAst::mutateTo(SIKAst* target) {
@@ -47,6 +48,7 @@ namespace sik {
 		this->MyInternalNumber = target->MyInternalNumber;
 		this->preVariable = target->preVariable;
 		this->Notation = target->Notation;
+		this->funcName = target->funcName;
 	}
 	SIKAst::~SIKAst()
 	{

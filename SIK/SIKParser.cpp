@@ -27,7 +27,7 @@ namespace sik {
 		this->funcAnonName = 0;
 	}
 
-	SIKParser::SIKParser(std::vector<sik::SIKInstruct>* _Instructions, std::vector<std::vector<sik::SIKInstruct>>* _ObjectDefinitions, std::map<std::string, std::vector<sik::SIKInstruct>>* _FunctionInstructions)
+	SIKParser::SIKParser(std::vector<sik::SIKInstruct>* _Instructions, std::vector<std::vector<sik::SIKInstruct>>* _ObjectDefinitions, std::map<std::pair<int, std::string>, std::vector<sik::SIKInstruct>>* _FunctionInstructions)
 	{
 		this->BlockInCheck.reserve(20);
 		this->jumperCounter = 0;
@@ -931,7 +931,7 @@ namespace sik {
 		int blockStart = 0;
 		int blockEnd = 0;
 		int numArgs = 0;
-		std::string nameFunc;
+		std::pair<int,std::string> nameFunc;
 		this->SetNodeFromToken(node, token);
 
 		//Has name ? 
@@ -947,7 +947,7 @@ namespace sik {
 					throw sik::SIKException(sik::EXC_COMPILATION, "Missing closing paren char after function" + token->obj + ".", token->fromLine);
 				}
 			} else {
-				nameFunc = TokenSet->getAt(token->index + 1).obj;
+				nameFunc = this->getAnonFuncName(TokenSet->getAt(token->index + 1).obj);
 				parenthesesStart = token->index + 2;
 			}
 		} else if (parenthesesEnd > 0) {
@@ -962,8 +962,17 @@ namespace sik {
 		}
 
 		//create name in node:
-		node->Value = nameFunc;
+		node->Value = nameFunc.second;
 		node->Block = sik::BLOCK_FUNC;
+		node->funcName = nameFunc;
+
+		//create func space:
+		this->FunctionInstructions->insert(
+			std::pair<std::pair<int, std::string>, std::vector<sik::SIKInstruct>>(
+				nameFunc,
+				std::vector<sik::SIKInstruct>()
+			)
+		);
 
 		//Count args:
 		sik::SIKTokens argsSubSet = TokenSet->getFromeSet(parenthesesStart + 1 , parenthesesEnd - 1);
@@ -1229,6 +1238,7 @@ namespace sik {
 			node->MyInternalNumber = tok->node->MyInternalNumber;
 			node->preVariable = tok->node->preVariable;
 			node->Notation = tok->node->Notation;
+			node->funcName = tok->node->funcName;
 
 		} else {
 			//Create new copy node:
@@ -1237,6 +1247,7 @@ namespace sik {
 			node->line = tok->fromLine;
 			node->Value = tok->obj;
 			node->Block = tok->addBlock;
+			
 		}
 	}
 
@@ -1369,14 +1380,14 @@ namespace sik {
 		// Function Decleration:
 		if (nodeChild->Block == sik::BLOCK_FUNC) {
 			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_FUNC_NAME));
-			//Add the Function space with the name assigned:
-			this->FunctionInstructions->insert(std::pair<std::string, std::vector<sik::SIKInstruct>>(nodeChild->Value, std::vector<sik::SIKInstruct>()));
+
 			//Add Num:
 			sik::SIKInstruct numArgs;
 			numArgs.lineOrigin = nodeChild->line;
 			numArgs.cache = nodeChild->Notation;
 			numArgs.Type = sik::INS_FUNC_NUM;
 			this->AddToInstructions(numArgs);
+
 			//Add definition:
 			numArgs.Type = sik::INS_FUNC_DEF;
 			this->AddToInstructions(numArgs);
@@ -1387,6 +1398,7 @@ namespace sik {
 			//Add definition End:
 			numArgs.Type = sik::INS_FUNC_DEFE;
 			this->AddToInstructions(numArgs);
+
 			//Addt the function Block:	
 			for (int i = numArgs.cache; i < (int)nodeChild->bulk.size(); i++) {
 				this->WalkAst(nodeChild, nodeChild->bulk[i]);
@@ -1734,8 +1746,13 @@ namespace sik {
 		}
 		return str;
 	}
-	std::string SIKParser::getAnonFuncName() {
-		return "_0F_" + SIKLang::toString(this->funcAnonName++);
+	std::pair<int, std::string> SIKParser::getAnonFuncName() {
+		int thenumber = this->funcAnonName++;
+		return std::pair<int, std::string>(thenumber, "_0F_" + SIKLang::toString(thenumber));
+	}
+	std::pair<int, std::string> SIKParser::getAnonFuncName(const std::string& thename) {
+		int thenumber = this->funcAnonName++;
+		return std::pair<int, std::string>(thenumber, thename);
 	}
 	void SIKParser::padFunctionArgs(sik::SIKTokens* TokenSet, std::vector<int>* commas, int line) {
 		if (TokenSet->empty()) {

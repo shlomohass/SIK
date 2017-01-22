@@ -23,7 +23,7 @@ namespace sik {
 		this->FunctionInstructions = nullptr;
 
 	}
-	SIKAnaCode::SIKAnaCode(std::vector<sik::SIKInstruct>* _Instructions, std::vector<std::vector<sik::SIKInstruct>>* _ObjectDefinitions, std::map<std::string, std::vector<sik::SIKInstruct>>* _FunctionInstructions, int jumperSet)
+	SIKAnaCode::SIKAnaCode(std::vector<sik::SIKInstruct>* _Instructions, std::vector<std::vector<sik::SIKInstruct>>* _ObjectDefinitions, std::map<std::pair<int, std::string>, std::vector<sik::SIKInstruct>>* _FunctionInstructions, int jumperSet)
 	{
 		this->InternalJumper = jumperSet;
 		this->BlockInCheck.reserve(20);
@@ -39,7 +39,7 @@ namespace sik {
 			if (inst->Type == sik::INS_FUNC_NAME) {
 				std::pair<int, int> toRem = std::make_pair(i+1, -1);
 				sik::SIKInstruct* instAdd = inst;
-				std::vector<sik::SIKInstruct>* pushTo = &this->FunctionInstructions->at(inst->Value);
+				std::vector<sik::SIKInstruct>* pushTo = &this->FunctionInstructions->at(std::pair<int,std::string>(inst->cache,inst->Value));
 				while (instAdd->Type != sik::INS_FUNC_CBLOCK) {
 					i++;
 					instAdd = &_Instructions->at(i);
@@ -88,6 +88,11 @@ namespace sik {
 			//Go to instructions pool:
 			if (inst->pointToInstruct > -1 && (int)this->ObjectDefinitions->size() > inst->pointToInstruct) {
 				this->postCompiler(&this->ObjectDefinitions->at(inst->pointToInstruct));
+			}
+
+			//Go to Function Definition:
+			if (inst->Type == sik::INS_FUNC_NAME) {
+				this->postCompiler(&this->FunctionInstructions->at(std::pair<int, std::string>(inst->cache, inst->Value)));
 			}
 		}
 	}

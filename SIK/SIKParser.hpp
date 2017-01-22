@@ -25,14 +25,14 @@ namespace sik {
 		//From Script containers:
 		std::vector<sik::SIKInstruct>* Instructions;
 		std::vector<std::vector<sik::SIKInstruct>>* ObjectDefinitions;
-		std::map<std::string, std::vector<sik::SIKInstruct>>* FunctionInstructions;
+		std::map<std::pair<int, std::string>, std::vector<sik::SIKInstruct>>* FunctionInstructions;
 		int funcAnonName;
 		std::string currentFuncSpace;
 
 	public:
 
 		SIKParser();
-		SIKParser(std::vector<sik::SIKInstruct>* _Instructions, std::vector<std::vector<sik::SIKInstruct>>* _ObjectDefinitions, std::map<std::string, std::vector<sik::SIKInstruct>>* _FunctionInstructions);
+		SIKParser(std::vector<sik::SIKInstruct>* _Instructions, std::vector<std::vector<sik::SIKInstruct>>* _ObjectDefinitions, std::map<std::pair<int, std::string>, std::vector<sik::SIKInstruct>>* _FunctionInstructions);
 		
 		//For code structure
 		int jumperCounter;
@@ -93,7 +93,8 @@ namespace sik {
 
 		//Helpers:
 		std::string truncateString(const std::string& str);
-		std::string getAnonFuncName();
+		std::pair<int,std::string> getAnonFuncName();
+		std::pair<int, std::string> getAnonFuncName(const std::string& thename);
 		void padFunctionArgs(sik::SIKTokens* TokenSet, std::vector<int>* commas, int line);
 
 		virtual ~SIKParser();

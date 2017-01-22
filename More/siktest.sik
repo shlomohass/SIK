@@ -1,3 +1,17 @@
+
+let obj = {
+    i : 0,
+    set: function(a) {
+        obj.i = a;
+    },
+    move: function(x) { 
+        obj.i += x;
+    },
+    printAll: function() {
+        print obj.i;
+    }
+};
+
 /*
 if (a == true) {
     print a;
@@ -9,8 +23,8 @@ function test() {
         let b = [1,2];
     }
 };
-*/
-/*
+
+
 let all = {
     add: function (a, b) {
         let s = {

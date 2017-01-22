@@ -72,9 +72,9 @@ SIK todo list:
 [X] Vm -> Added Array traverse + nested.
 [X] Vm -> Added Array element set + nested traverse support.
 [X] Function In object interaction + nested functions in object and object in functions.
-[ ] Improve Function naming for later collision check.
-[ ] Add Code Ana for Function blocks.
-[ ] 
+[X] Improve Function naming for later collision check.
+[X] Add Code Ana for Function blocks.
+[ ] Validate dual function declaration. 
 [ ]
 [ ]
 [ ]

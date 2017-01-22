@@ -24,12 +24,12 @@ namespace sik
 		//From Script containers:
 		std::vector<sik::SIKInstruct>* Instructions;
 		std::vector<std::vector<sik::SIKInstruct>>* ObjectDefinitions;
-		std::map<std::string, std::vector<sik::SIKInstruct>>* FunctionInstructions;
+		std::map<std::pair<int, std::string>, std::vector<sik::SIKInstruct>>* FunctionInstructions;
 
 		public:
 
 		SIKAnaCode();
-		SIKAnaCode(std::vector<sik::SIKInstruct>* _Instructions, std::vector<std::vector<sik::SIKInstruct>>* _ObjectDefinitions, std::map<std::string, std::vector<sik::SIKInstruct>>* _FunctionInstructions, int jumperSet);
+		SIKAnaCode(std::vector<sik::SIKInstruct>* _Instructions, std::vector<std::vector<sik::SIKInstruct>>* _ObjectDefinitions, std::map<std::pair<int, std::string>, std::vector<sik::SIKInstruct>>* _FunctionInstructions, int jumperSet);
 		
 		void splitCodeChunks(std::vector<sik::SIKInstruct>* _Instructions);
 		void postCompiler(std::vector<sik::SIKInstruct>* _Instructions);

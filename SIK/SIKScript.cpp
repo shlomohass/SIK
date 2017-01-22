@@ -164,13 +164,13 @@ namespace sik
 		}
 	}
 	void SIKScript::printFunctionDefinitions() {
-		typedef std::map<std::string, std::vector<sik::SIKInstruct>>::iterator it_type;
+		typedef std::map<std::pair<int, std::string>, std::vector<sik::SIKInstruct>>::iterator it_type;
 		for (it_type iterator = this->FunctionInstructions.begin(); iterator != this->FunctionInstructions.end(); iterator++) {
 			// iterator->first = key
 			// iterator->second = value
 			std::cout
 				<< "FUNCNAME : "
-				<< iterator->first
+				<< iterator->first.first << " " << iterator->first.second
 				<< std::endl;
 			this->printInstructions(&iterator->second);
 		}

@@ -18,22 +18,23 @@ namespace sik {
 	class SIKAst
 	{
 	public:
-		bool				 PreventBulkDelete;
-		sik::TokenTypes		 Type;
-		std::string			 Value;
-		sik::BlocksIn        Block;
-		int					 Priority;
-		int					 line;
-		sik::SIKAst*		 Left;
-		sik::SIKAst*		 Right;
-		sik::SIKAst*		 Parent;
-		std::vector<SIKAst*> bulk;
-		bool				 Mark;
-		int                  InsBlockPointer;
-		int                  InternalJumper;
-		int					 MyInternalNumber;
-		bool				 preVariable;
-		int					 Notation;
+		bool				 PreventBulkDelete; //Prevents Bulk delete in virtual destructor
+		sik::TokenTypes		 Type;				//The node type
+		std::string			 Value;				//Native string value
+		sik::BlocksIn        Block;				//Block definition
+		int					 Priority;			//The token original priority
+		int					 line;				//The source line number
+		sik::SIKAst*		 Left;				// Left hand.
+		sik::SIKAst*		 Right;				// Right hand
+		sik::SIKAst*		 Parent;			// The node parent
+		std::vector<SIKAst*> bulk;				// Bulk nodes to parse
+		std::pair<int, std::string> funcName;	// Use to store the key which we used for the func name store.
+		bool				 Mark;				// Flag when finished parsing
+		int                  InsBlockPointer;	// INSPO -> point to an object deleration space
+		int                  InternalJumper;	// Wher the end of the node finishes
+		int					 MyInternalNumber;	// Gives a unique number as a junper
+		bool				 preVariable;		// Has a variable attached
+		int					 Notation;			// Dynamic space to mark some stuff
 
 		
 		SIKAst();

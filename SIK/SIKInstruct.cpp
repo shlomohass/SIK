@@ -32,6 +32,11 @@ namespace sik {
 		this->pointToInstruct = node->InsBlockPointer;
 		this->InternalJumper = node->InternalJumper;
 		this->MyInternalNumber = node->MyInternalNumber;
+
+		//Store the key only for func names:
+		if (type == sik::INS_FUNC_NAME) {
+			this->cache = node->funcName.first;
+		}
 	}
 	SIKInstruct::SIKInstruct(sik::SIKAst* node)
 	{

@@ -27,7 +27,7 @@ namespace sik
 
 		std::vector<sik::SIKInstruct> Instructions;
 		std::vector<std::vector<sik::SIKInstruct>> ObjectDefinitions;
-		std::map<std::string, std::vector<sik::SIKInstruct>> FunctionInstructions;
+		std::map<std::pair<int, std::string>, std::vector<sik::SIKInstruct>> FunctionInstructions;
 
 		bool script_debug_flag;
 		int  script_debug_level;
