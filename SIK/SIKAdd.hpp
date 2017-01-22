@@ -112,9 +112,16 @@ namespace sik
 		INS_PRINT,
 		INS_DOPRINT,
 
-		INS_OSBLOCK, //Auto scope block
-		INS_OBLOCK,  //Forced scope block
+		INS_OSBLOCK, //Forced scope block
+		INS_OBLOCK,  //Auto scope block
 		INS_CBLOCK,  //General block close.
+
+		INS_FUNC_NAME,
+		INS_FUNC_NUM,
+		INS_FUNC_DEF,
+		INS_FUNC_DEFE,
+		INS_FUNC_BLOCK,
+		INS_FUNC_CBLOCK,
 
 	};
 	enum BlocksIn {

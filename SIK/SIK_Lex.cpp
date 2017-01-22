@@ -165,6 +165,7 @@ namespace sik
         token.type = this->evalTokenType(tok);
 		token.priority = this->evalTokenPriority(&token);
 		token.node = nullptr;
+		token.addBlock = sik::BLOCK_NONE;
 
 		if	(token.type == STRING) {
             this->stripStringQ(&token.obj);

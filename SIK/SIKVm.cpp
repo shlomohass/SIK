@@ -25,7 +25,7 @@ namespace sik {
 		this->allowElseIf = false;
 	}
 
-	SIKVm::SIKVm(std::vector<sik::SIKInstruct>* _Instructions, std::vector<std::vector<sik::SIKInstruct>>* _ObjectDefinitions, std::vector<std::vector<sik::SIKInstruct>>* _FunctionInstructions)
+	SIKVm::SIKVm(std::vector<sik::SIKInstruct>* _Instructions, std::vector<std::vector<sik::SIKInstruct>>* _ObjectDefinitions, std::map<std::string, std::vector<sik::SIKInstruct>>* _FunctionInstructions)
 	{
 		this->InstPointer = 0;
 		this->Instructions = _Instructions;
@@ -803,8 +803,8 @@ namespace sik {
 
 			//Base type:
 			STData->obj = new SIKObj(false);
-			int leftCandid = left->obj->getAsNumber();
-			int rightCandid = right->obj->getAsNumber();
+			int leftCandid = (int)left->obj->getAsNumber();
+			int rightCandid = (int)right->obj->getAsNumber();
 			if (Inst->Type == sik::INS_CGRT && leftCandid > rightCandid) {
 				STData->obj->Number = 1;
 			} else if (Inst->Type == sik::INS_CGRTE && leftCandid >= rightCandid) {
@@ -840,7 +840,7 @@ namespace sik {
 			//Base type:
 			STData->obj = new SIKObj(false);
 			left = this->popFromStack();
-			int boolTest = left->obj->getAsBool();
+			int boolTest = (int)left->obj->getAsBool();
 			if (boolTest < 1 && Inst->Type == sik::INS_CAND) {
 				delete left;
 				this->pushToStack(STData);
@@ -865,8 +865,8 @@ namespace sik {
 
 			//Base type:
 			STData->obj = new SIKObj(false);
-			int boolTestRight = right->obj->getAsBool();
-			int boolTestLeft = left->obj->getAsBool();
+			int boolTestRight = (int)right->obj->getAsBool();
+			int boolTestLeft = (int)left->obj->getAsBool();
 			if (
 				(Inst->Type == sik::INS_CAND && boolTestLeft > 0 && boolTestRight > 0)
 				||
@@ -995,7 +995,7 @@ namespace sik {
 		//How many in the declaration phase:
 		sik::SIKStackData* argNumObj = this->popFromStack();
 		this->validateStackDataAvailable(argNumObj, false);
-		int argNum = argNumObj->obj->Number;
+		int argNum = (int)argNumObj->obj->Number;
 		delete argNumObj;
 
 		if (argNum > 0) {
@@ -1039,7 +1039,7 @@ namespace sik {
 			this->validateStackDataIsAttached(nameObj, false) &&
 			this->validateStackDataAvailable(argNumObj, false)
 			) {
-			argNum = argNumObj->obj->Number;
+			argNum = (int)argNumObj->obj->Number;
 		}
 		//Clear some mem:
 		delete argNumObj;

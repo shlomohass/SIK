@@ -23,6 +23,7 @@ namespace sik {
         sik::TokenTypes type;
         std::string obj;
 		int notation; // to mark early changes.
+		sik::BlocksIn addBlock; // specific block mark.
 		sik::SIKAst* node;
     };
     

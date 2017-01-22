@@ -25,7 +25,8 @@ SIK todo list:
 [X] Improved negative number handler. <- handle check for space before negativity.
 [X] Object Instruction debuger output print.
 [ ] DEFER keyword for blocks.
-[ ] Functions + RETRUN keyword decleration.
+[X] Functions base parser and Ast generator.
+[ ] RETRUN keyword decleration.
 [X] PRINT keyword -> primitive withe comma support.
 [X] BREAK keyword.
 [X] BREAKIF keyword.
@@ -70,14 +71,14 @@ SIK todo list:
 [X] Vm -> Added Array create + container.
 [X] Vm -> Added Array traverse + nested.
 [X] Vm -> Added Array element set + nested traverse support.
-
-
-
-
-
-
-
-
+[X] Function In object interaction + nested functions in object and object in functions.
+[ ] Improve Function naming for later collision check.
+[ ] Add Code Ana for Function blocks.
+[ ] 
+[ ]
+[ ]
+[ ]
+[ ]
 
 
 

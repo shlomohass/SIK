@@ -1,6 +1,7 @@
 let a = [];
 let b = ["sik","great"];
 let c = [2, 3];
+
 c[] = ["sik", "test"];
 c[2][] = ["added"];
 a[] = 3;
@@ -11,6 +12,7 @@ a[3,0] += " new";
 a[3,1] += " new";
 b[0] += " old";
 b[1] += " old";
+
 print a[0], " ",
       a[1], " ",
       a[2], " ",
@@ -20,6 +22,7 @@ print a[0], " ",
       b[0], " ",
       b[1], " ";
 print c[2,0], " ", c[2,1], " ",c[2,2,0];
+
 /*
 @expected-output
 3 a b ARRAY[2] sik new great new sik old great old sik test added

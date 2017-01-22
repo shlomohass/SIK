@@ -14,6 +14,7 @@
 #include "SIKInstruct.hpp"
 #include <ostream>
 #include <vector>
+#include <map>
 #include <deque>
 
 namespace sik {
@@ -24,12 +25,14 @@ namespace sik {
 		//From Script containers:
 		std::vector<sik::SIKInstruct>* Instructions;
 		std::vector<std::vector<sik::SIKInstruct>>* ObjectDefinitions;
-		std::vector<std::vector<sik::SIKInstruct>>* FunctionInstructions;
+		std::map<std::string, std::vector<sik::SIKInstruct>>* FunctionInstructions;
+		int funcAnonName;
+		std::string currentFuncSpace;
 
 	public:
 
 		SIKParser();
-		SIKParser(std::vector<sik::SIKInstruct>* _Instructions, std::vector<std::vector<sik::SIKInstruct>>* _ObjectDefinitions, std::vector<std::vector<sik::SIKInstruct>>* _FunctionInstructions);
+		SIKParser(std::vector<sik::SIKInstruct>* _Instructions, std::vector<std::vector<sik::SIKInstruct>>* _ObjectDefinitions, std::map<std::string, std::vector<sik::SIKInstruct>>* _FunctionInstructions);
 		
 		//For code structure
 		int jumperCounter;
@@ -57,11 +60,13 @@ namespace sik {
 		int BuildAst_KeyForLoop(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
 		int BuildAst_KeyWhileLoop(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
 		int BuildAst_KeyEachLoop(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
+		int BuildAst_KeyFunction(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
 		int BuildAst_OpSingleSide(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
 		int BuildAst_KeyBreakLoop(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
 		int BuildAst_KeyBreakCond(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
 		int BuildAst_KeyContinueLoop(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
 		int BuildAst_KeyPrint(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet);
+		
 		//Operations:
 		void SetNodeFromToken(sik::SIKAst* node, sik::Token* tok);
 		void applyNodeToMostLeft(sik::SIKAst* toApplyNode, sik::SIKAst* applyToNodeTree);
@@ -78,13 +83,18 @@ namespace sik {
 		void genForBlockClose(SIKAst* nodeParent, SIKAst* nodeChild);
 		void genForOpSingleSide(SIKAst* nodeParent, SIKAst* nodeChild);
 		void genForArray(SIKAst* nodeParent, SIKAst* nodeChild);
+		
 		//Printing Trees:
 		int maxHeight(sik::SIKAst *p);
 		void printBranches(int branchLen, int nodeSpaceLen, int startLen, int nodesInThisLevel, const std::deque<sik::SIKAst*>& nodesQueue, std::ostream& out);
 		void printNodes(int level, int indentSpace, int branchLen, int nodeSpaceLen, int startLen, int nodesInThisLevel, const std::deque<sik::SIKAst*>& nodesQueue, std::ostream& out, std::vector<SIKAst*>* later);
 		void printLeaves(int indentSpace, int level, int nodesInThisLevel, const std::deque<sik::SIKAst*>& nodesQueue, std::ostream& out, std::vector<SIKAst*>* later);
 		void printTree(sik::SIKAst *root, int level, int indentSpace, std::ostream& out);
+
+		//Helpers:
 		std::string truncateString(const std::string& str);
+		std::string getAnonFuncName();
+		void padFunctionArgs(sik::SIKTokens* TokenSet, std::vector<int>* commas, int line);
 
 		virtual ~SIKParser();
 

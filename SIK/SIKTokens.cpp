@@ -324,6 +324,7 @@ namespace sik {
 		token.fromLine = -1;
 		token.obj = "\0";
 		token.node = node;
+		token.addBlock = sik::BLOCK_NONE;
 
 		//Will perform the erase:
 		if (!this->removeFromeSet(start, end, false)) { return false; }

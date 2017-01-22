@@ -24,16 +24,17 @@ namespace sik {
 		this->Instructions = nullptr;
 		this->ObjectDefinitions = nullptr;
 		this->FunctionInstructions = nullptr;
-		
+		this->funcAnonName = 0;
 	}
 
-	SIKParser::SIKParser(std::vector<sik::SIKInstruct>* _Instructions, std::vector<std::vector<sik::SIKInstruct>>* _ObjectDefinitions, std::vector<std::vector<sik::SIKInstruct>>* _FunctionInstructions)
+	SIKParser::SIKParser(std::vector<sik::SIKInstruct>* _Instructions, std::vector<std::vector<sik::SIKInstruct>>* _ObjectDefinitions, std::map<std::string, std::vector<sik::SIKInstruct>>* _FunctionInstructions)
 	{
 		this->BlockInCheck.reserve(20);
 		this->jumperCounter = 0;
 		this->Instructions = _Instructions;
 		this->ObjectDefinitions = _ObjectDefinitions;
 		this->FunctionInstructions = _FunctionInstructions;
+		this->funcAnonName = 0;
 	}
 	SIKAst* SIKParser::BuildAst(SIKTokens* TokenSet)
 	{
@@ -107,6 +108,10 @@ namespace sik {
 					//Print:
 					else if (tok->obj == SIKLang::dicLangKey_print) {
 						this->BuildAst_KeyPrint(node, tok, TokenSet);
+					}
+					//Functions:
+					else if (tok->obj == SIKLang::dicLangKey_function) {
+						this->BuildAst_KeyFunction(node, tok, TokenSet);
 					}
 					break;
 				case sik::DELI_BRCOPEN:
@@ -338,6 +343,7 @@ namespace sik {
 			std::vector<int> testNested = TokenSet->hasNestedCommas(tokP->index);
 			for (int i = (int)testNested.size() - 1; i >= 0; i--) {
 				sik::Token* tokMore = TokenSet->getAtPointer(testNested[i] + 1);
+				tokMore->addBlock;
 				if (tokMore != nullptr && tokP->type == NAMING) {
 					//Create definition chain:
 					sik::SIKAst* nodeDefinintion = new sik::SIKAst();
@@ -917,6 +923,109 @@ namespace sik {
 
 		return 1;
 	}
+	int SIKParser::BuildAst_KeyFunction(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {
+
+		//Basic needs for function declaration:
+		int parenthesesEnd = TokenSet->getParenthesesFirstAndLast(token->index);
+		int parenthesesStart = 0;
+		int blockStart = 0;
+		int blockEnd = 0;
+		int numArgs = 0;
+		std::string nameFunc;
+		this->SetNodeFromToken(node, token);
+
+		//Has name ? 
+		if (parenthesesEnd == -1 ) {
+			parenthesesEnd = TokenSet->getParenthesesFirstAndLast(token->index + 1);
+			if (parenthesesEnd < 0) {
+				switch (parenthesesEnd) {
+				case -1:
+					throw sik::SIKException(sik::EXC_COMPILATION, "Expected Open paren after function name" + token->obj + ".", token->fromLine);
+					break;
+				case -2:
+				default:
+					throw sik::SIKException(sik::EXC_COMPILATION, "Missing closing paren char after function" + token->obj + ".", token->fromLine);
+				}
+			} else {
+				nameFunc = TokenSet->getAt(token->index + 1).obj;
+				parenthesesStart = token->index + 2;
+			}
+		} else if (parenthesesEnd > 0) {
+			nameFunc = this->getAnonFuncName();
+			parenthesesStart = token->index + 1;
+			sik::Token* prevAssignCheck = TokenSet->getAtPointer(token->index - 1);
+			if (prevAssignCheck == nullptr || (prevAssignCheck->type != sik::DELI_EQUAL && prevAssignCheck->type != sik::DELI_CHILDSET)) {
+				throw sik::SIKException(sik::EXC_COMPILATION, "Function must have a name or set to a variable / object member.", token->fromLine);
+			}
+		} else {
+			throw sik::SIKException(sik::EXC_COMPILATION, "Expected Parentheses after EACH keyword.", token->fromLine);
+		}
+
+		//create name in node:
+		node->Value = nameFunc;
+		node->Block = sik::BLOCK_FUNC;
+
+		//Count args:
+		sik::SIKTokens argsSubSet = TokenSet->getFromeSet(parenthesesStart + 1 , parenthesesEnd - 1);
+		std::vector<int> testCommas = argsSubSet.hasNestedCommas(0);
+		numArgs = (argsSubSet.size() > 0 && testCommas.size() == 0) ? 1 :
+					(argsSubSet.size() == 0) ? 0 : testCommas.size() + 1;
+		node->Notation = numArgs;
+
+		//Generate func args definition:
+		if (numArgs > 0) {
+			this->padFunctionArgs(&argsSubSet, &testCommas, token->fromLine);
+			sik::SIKAst* argsNode = this->BuildAst(&argsSubSet);
+			argsNode->PreventBulkDelete = true;
+			for (int i = 0; i < (int)argsNode->bulk.size(); i++) {
+				node->bulk.push_back(argsNode->bulk[i]);
+			}
+			//Release container:
+			delete argsNode;
+		}
+
+		//get open brackets:
+		sik::Token* blockOpenToken = TokenSet->getAtPointer(parenthesesEnd + 1);
+		if (blockOpenToken == nullptr || blockOpenToken->type != sik::DELI_BRCOPEN) {
+			throw sik::SIKException(sik::EXC_COMPILATION, "Expected Braces after Function Arguments.", token->fromLine);
+		}
+		blockOpenToken->addBlock = sik::BLOCK_FUNC;
+		blockStart = blockOpenToken->index;
+
+		//get block close:
+		blockEnd = TokenSet->getBlockFirstAndLast(blockStart);
+		sik::Token* blockEndToken = TokenSet->getAtPointer(blockEnd);
+		if (blockEnd < 0 || blockEndToken == nullptr || blockEndToken->type != sik::DELI_BRCCLOSE) {
+			throw sik::SIKException(sik::EXC_COMPILATION, "Missing closing block char in function block.", token->fromLine);
+		}
+		blockEndToken->addBlock = sik::BLOCK_FUNC;
+
+		//Validate closing statement:
+		sik::Token* endTokenAfter = TokenSet->getAtPointer(blockEnd + 1);
+		if (endTokenAfter == nullptr || (endTokenAfter->type != sik::DELI_BRCCLOSE && endTokenAfter->type != sik::DELI_COMMA && endTokenAfter->type != sik::DELI_OPEND)) {
+			throw sik::SIKException(sik::EXC_COMPILATION, "Function Declaration must end by a " + SIKLang::dicLang_semicolon + " or nested in an object definition.", token->fromLine);
+		}
+
+		//Parse the block:
+		sik::SIKTokens blockSubSet = TokenSet->getFromeSet(blockStart, blockEnd);
+		sik::SIKAst* blockNode = this->BuildAst(&blockSubSet);
+		blockNode->PreventBulkDelete = true;
+
+		//Set the parts:
+		for (int i = 0; i < (int)blockNode->bulk.size(); i++) {
+			node->bulk.push_back(blockNode->bulk[i]);
+		}
+
+		//Release container:
+		delete blockNode;
+
+		//Remove The first Definition and place the node chain:
+		if (!TokenSet->replaceRangeWithNode(token->index, blockEnd, node)) {
+			throw sik::SIKException(sik::EXC_COMPILATION, "Error in token extraction. 73456", token->fromLine);
+		}
+
+		return 1;
+	}
 	int SIKParser::BuildAst_OpSingleSide(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {
 		this->SetNodeFromToken(node, token);
 		Token* tokL = TokenSet->getAtPointer(token->index - 1);
@@ -1127,6 +1236,7 @@ namespace sik {
 			node->Priority = -1;
 			node->line = tok->fromLine;
 			node->Value = tok->obj;
+			node->Block = tok->addBlock;
 		}
 	}
 
@@ -1221,9 +1331,10 @@ namespace sik {
 	void SIKParser::AddToInstructions(const sik::SIKInstruct& instruct, sik::SIKAst* nodeParent) {
 		int testForBlocks = (int)this->BlockChunksContainer.size();
 		if (testForBlocks > 0 && this->BlockChunksContainer[testForBlocks - 1] == sik::BLOCK_OBJ) {
+			//Push to objects:
 			this->pushToObjectsInstructions(instruct);
-		//Inside main:
 		} else {
+			//Push to main:
 			this->Instructions->push_back(instruct);
 		}
 		
@@ -1255,6 +1366,33 @@ namespace sik {
 		}
 	}
 	void SIKParser::genForKeywords(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild) {
+		// Function Decleration:
+		if (nodeChild->Block == sik::BLOCK_FUNC) {
+			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_FUNC_NAME));
+			//Add the Function space with the name assigned:
+			this->FunctionInstructions->insert(std::pair<std::string, std::vector<sik::SIKInstruct>>(nodeChild->Value, std::vector<sik::SIKInstruct>()));
+			//Add Num:
+			sik::SIKInstruct numArgs;
+			numArgs.lineOrigin = nodeChild->line;
+			numArgs.cache = nodeChild->Notation;
+			numArgs.Type = sik::INS_FUNC_NUM;
+			this->AddToInstructions(numArgs);
+			//Add definition:
+			numArgs.Type = sik::INS_FUNC_DEF;
+			this->AddToInstructions(numArgs);
+			//Add all definition nodes:
+			for (int i = 0; i < numArgs.cache; i++) {
+				this->WalkAst(nodeChild, nodeChild->bulk[i]);
+			}
+			//Add definition End:
+			numArgs.Type = sik::INS_FUNC_DEFE;
+			this->AddToInstructions(numArgs);
+			//Addt the function Block:	
+			for (int i = numArgs.cache; i < (int)nodeChild->bulk.size(); i++) {
+				this->WalkAst(nodeChild, nodeChild->bulk[i]);
+			}
+			return;
+		}
 		// IF statement:
 		if (nodeChild->Value == SIKLang::dicLangKey_cond_if) {
 			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_IF));
@@ -1395,8 +1533,13 @@ namespace sik {
 				}
 				break;
 			case sik::DELI_BRCOPEN:
-				this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_OBJCREATE), nodeParent);
-				this->Instructions->back().Block = sik::BLOCK_OBJ;
+				if (nodeChild->Block != sik::BLOCK_FUNC) {
+					this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_OBJCREATE), nodeParent);
+					this->Instructions->back().Block = sik::BLOCK_OBJ;
+				} else {
+					this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_FUNC_BLOCK), nodeParent);
+					this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_OBLOCK), nodeParent);
+				}
 				if ((int)nodeChild->bulk.size() > 0) {
 					this->WalkAst(nodeChild);
 				}
@@ -1415,7 +1558,10 @@ namespace sik {
 	}
 	void SIKParser::genForBlockClose(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild) {
 		//Incase we are wrapping an Object definition:
-		if ((int)this->BlockChunksContainer.size() > 0 && this->BlockChunksContainer.back() == sik::BLOCK_OBJ) {
+		if (nodeChild->Block == sik::BLOCK_FUNC) {
+			this->AddToInstructions(sik::SIKInstruct(nodeChild));
+			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_FUNC_CBLOCK));
+		} else if ((int)this->BlockChunksContainer.size() > 0 && this->BlockChunksContainer.back() == sik::BLOCK_OBJ) {
 			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_OBJDONE));
 			this->BlockChunksContainer.pop_back();
 		//Normal Object:
@@ -1580,11 +1726,43 @@ namespace sik {
 			}
 		}
 	}
+
+
 	std::string SIKParser::truncateString(const std::string& str) {
 		if (str.length() > 3) {
 			return std::string(str.begin(), str.begin() + 2) + ">";
 		}
 		return str;
+	}
+	std::string SIKParser::getAnonFuncName() {
+		return "_0F_" + SIKLang::toString(this->funcAnonName++);
+	}
+	void SIKParser::padFunctionArgs(sik::SIKTokens* TokenSet, std::vector<int>* commas, int line) {
+		if (TokenSet->empty()) {
+			return;
+		}
+		sik::Token letToken;
+		sik::Token endToken;
+		letToken.fromLine = line;
+		letToken.index = -1;
+		letToken.node = nullptr;
+		letToken.notation = -1;
+		letToken.obj = SIKLang::dicLangKey_variable;
+		letToken.priority = 100;
+		letToken.type = sik::KEYWORD;
+		letToken.addBlock = sik::BLOCK_NONE;
+		endToken.fromLine = line;
+		endToken.index = -1;
+		endToken.node = nullptr;
+		endToken.notation = -1;
+		endToken.obj = SIKLang::dicLang_semicolon;
+		endToken.priority = 0;
+		endToken.type = sik::DELI_OPEND;
+		endToken.addBlock = sik::BLOCK_NONE;
+		TokenSet->insertAt(letToken, 0);
+		TokenSet->insert(endToken);
+		TokenSet->addIndexes();
+		return;
 	}
 	SIKParser::~SIKParser()
 	{

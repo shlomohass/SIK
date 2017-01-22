@@ -27,7 +27,6 @@ namespace sik
 		this->create_messages();
 		this->Instructions.reserve(150);
 		this->ObjectDefinitions.reserve(20);
-		this->FunctionInstructions.reserve(20);
 	};
 
 	bool SIKScript::validateFileExtension(std::string filename) {
@@ -114,7 +113,13 @@ namespace sik
 			{ sik::INS_CEQUAL,		 "CEQ"  },
 			{ sik::INS_CNEQUAL,		 "CNEQ" },
 			{ sik::INS_CAND,		 "CAND" },
-			{ sik::INS_COR,			 "COR"  }
+			{ sik::INS_COR,			 "COR"  },
+			{ sik::INS_FUNC_NAME,	 "FUNAM" },
+			{ sik::INS_FUNC_NUM,	 "FUNUM" },
+			{ sik::INS_FUNC_DEF,	 "FUDEF" },
+			{ sik::INS_FUNC_DEFE,	 "FUDFE" },
+			{ sik::INS_FUNC_BLOCK,	 "FUBLK" },
+			{ sik::INS_FUNC_CBLOCK,	 "FUCBK" }
 		};
 	}
 
@@ -159,28 +164,15 @@ namespace sik
 		}
 	}
 	void SIKScript::printFunctionDefinitions() {
-		int getSize = (int)this->FunctionInstructions.size();
-		for (int i = 0; i < getSize; i++) {
+		typedef std::map<std::string, std::vector<sik::SIKInstruct>>::iterator it_type;
+		for (it_type iterator = this->FunctionInstructions.begin(); iterator != this->FunctionInstructions.end(); iterator++) {
+			// iterator->first = key
+			// iterator->second = value
 			std::cout
-				<< "INS "
-				<< (i)
-				<< ": "
-				<< this->InstructionName[this->Instructions[i].Type]
-				<< " \t -> V: "
-				<< this->truncateString(this->Instructions[i].Value, 8)
-				<< "\t , SUB: "
-				<< this->Instructions[i].SubType
-				<< " , BLOCK: "
-				<< this->Instructions[i].Block
-				<< " , INSPO: "
-				<< this->Instructions[i].pointToInstruct
-				<< " , INJMP: "
-				<< this->Instructions[i].InternalJumper
-				<< " , INNUM: "
-				<< this->Instructions[i].MyInternalNumber
-				<< " , LINE: "
-				<< this->Instructions[i].lineOrigin
+				<< "FUNCNAME : "
+				<< iterator->first
 				<< std::endl;
+			this->printInstructions(&iterator->second);
 		}
 	}
 	bool SIKScript::compile(std::string filename) {
@@ -350,6 +342,7 @@ namespace sik
 		//The codeAnalayzer:
 		sik::SIKAnaCode anacode = sik::SIKAnaCode(&this->Instructions, &this->ObjectDefinitions, &this->FunctionInstructions, parser.jumperCounter);
 
+		anacode.splitCodeChunks(&this->Instructions);
 		anacode.postCompiler(&this->Instructions);
 
 		//Print Instructions:
@@ -359,6 +352,9 @@ namespace sik
 
 			sik::SIKLang::printHeader("OBJECT DEFINITIONS:");
 			this->printObjectDefinitions();
+
+			sik::SIKLang::printHeader("FUNCTION DEFINITIONS:");
+			this->printFunctionDefinitions();
 		}
 
 		return true;
@@ -433,7 +429,7 @@ namespace sik
 			sik::SIKLang::printHeader("VM EXECUTION OUTPUT:");
 		}
 
-		sik::SIKVm vm = sik::SIKVm(&this->Instructions,&this->ObjectDefinitions,&this->FunctionInstructions);
+		sik::SIKVm vm = sik::SIKVm(&this->Instructions, &this->ObjectDefinitions, &this->FunctionInstructions);
 
 		//Run the code with Exception Handling:
         //Walk tree and evaluate:
