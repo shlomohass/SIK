@@ -1031,8 +1031,8 @@ namespace sik {
 	int SIKVm::exec_traverseArray(sik::SIKInstruct* Inst) {
 
 		//How many in the declaration phase:
-		sik::SIKStackData* nameObj = this->popFromStack();
 		sik::SIKStackData* argNumObj = this->popFromStack();
+		sik::SIKStackData* nameObj = this->popFromStack();
 		int argNum = 0;
 		//Validate availability:
 		if (
@@ -1093,14 +1093,20 @@ namespace sik {
 	void SIKVm::exec_prepareToArrayPush(sik::SIKInstruct* Inst) {
 
 		//Pop From stack:
-		sik::SIKStackData* left = this->getFromStack();
+		sik::SIKStackData* num = this->popFromStack();
+		sik::SIKStackData* to = this->getFromStack();
+		
+
 
 		//Validate the Stack data:
-		if (this->validateStackDataIsAttached(left, false) && left->obj->Type == sik::OBJ_ARRAY) {
-			left->useArrayPush = true;
+		if (this->validateStackDataIsAttached(to, false) && to->obj->Type == sik::OBJ_ARRAY) {
+			to->useArrayPush = true;
 		} else {
 			throw sik::SIKException(sik::EXC_RUNTIME, "Can't make a push on a none array type variable. 11245", Inst->lineOrigin);
 		}
+
+		//Clear some mem:
+		delete num;
 	}
 
 

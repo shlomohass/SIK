@@ -512,8 +512,13 @@ namespace sik {
 		return 1;
 	}
 	int SIKParser::BuildAst_BracketOpen(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {
+
+		//Some helpers:
+		sik::Token* prev = TokenSet->getAtPointer(token->index - 1);
+		
 		//Extract Bracket content:
 		int parenthesesEnd = TokenSet->getParenthesesFirstAndLast(token->index - 1);
+
 		//Validate Closing:
 		if (parenthesesEnd < 0) {
 			switch (parenthesesEnd) {
@@ -526,33 +531,78 @@ namespace sik {
 
 			}
 		}
+
 		//Create Subset:
 		sik::SIKTokens condSubSet = TokenSet->getFromeSet(token->index + 1, parenthesesEnd - 1);
+
 		//Validate Subset:
-		if (condSubSet.empty()) {
+		if (condSubSet.empty() && (prev == nullptr || (prev->type != sik::NAMING && prev->type == sik::DELI_SBRKCLOSE))) {
 			throw sik::SIKException(sik::EXC_COMPILATION, "Parentheses In statement must contain a statement. 11", token->fromLine);
 		}
 
-		//Recursively parse Parentheses content:
-		sik::SIKAst* condNode = this->BuildAst(&condSubSet);
-		if ((int)condNode->bulk.size() > 0) {
-			node->mutateTo(condNode->bulk[0]);
+		//In case its a function call:
+		if (prev != nullptr && (prev->type == sik::NAMING || prev->type == sik::DELI_SBRKCLOSE)) {
+			//Check for args count:
+			std::vector<int> testArgs = condSubSet.hasNestedCommas(0);
+			int argCount = 
+				(int)condSubSet.size() == 1 ? 1 :
+				(int)condSubSet.size() == 0 ? 0 :
+				(int)testArgs.size() + 1;
+			sik::SIKAst* leftHand = new sik::SIKAst();
+
+			//Set the main func call
+			token->type = sik::TOK_CALL;
+			this->SetNodeFromToken(node, token);
+
+			//Set the left: 
+			this->SetNodeFromToken(leftHand, prev);
+
+			//Apply:
+			this->applyNodeToMostLeft(leftHand, node);
+
+			//Set args num:
+			node->Notation = argCount;
+
+			//Recursively parse Parentheses content for args:
+			if (argCount > 0) {
+				sik::SIKAst* argsNode = this->BuildAst(&condSubSet);
+				argsNode->PreventBulkDelete = true;
+				for (int i = 0; i < (int)argsNode->bulk.size(); i++) {
+					node->bulk.push_back(argsNode->bulk[i]);
+				}
+				delete argsNode;
+			}
+
+			//Remove The first Definitionand place the node chain:
+			if (!TokenSet->replaceRangeWithNode(prev->index, parenthesesEnd, node)) {
+				throw sik::SIKException(sik::EXC_COMPILATION, "Error in token extraction. 789884", token->fromLine);
+			}
+
+		//A Simple expression:
 		} else {
-			throw sik::SIKException(sik::EXC_COMPILATION, "IF statement condition part must contain a statement. 22", token->fromLine);
-		}
+			//Recursively parse Parentheses content:
+			sik::SIKAst* condNode = this->BuildAst(&condSubSet);
+			if ((int)condNode->bulk.size() > 0) {
+				node->mutateTo(condNode->bulk[0]);
+			} else {
+				throw sik::SIKException(sik::EXC_COMPILATION, "IF statement condition part must contain a statement. 87778444", token->fromLine);
+			}
 
-		//Clean container:
-		condNode->PreventBulkDelete = true;
-		delete condNode;
+			//Clean container:
+			condNode->PreventBulkDelete = true;
+			delete condNode;
 
-		//Remove The first Definitionand place the node chain:
-		if (!TokenSet->replaceRangeWithNode(token->index, parenthesesEnd, node)) {
-			throw sik::SIKException(sik::EXC_COMPILATION, "Error in token extraction. 22", token->fromLine);
+			//Remove The first Definitionand place the node chain:
+			if (!TokenSet->replaceRangeWithNode(token->index, parenthesesEnd, node)) {
+				throw sik::SIKException(sik::EXC_COMPILATION, "Error in token extraction. 32212565", token->fromLine);
+			}
 		}
+		
 
 		return 1;
 	}
 	int SIKParser::BuildAst_SquareBracketOpen(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {
+		
 		//Extract Bracket content:
 		int parenthesesEnd = TokenSet->getSBracketFirstAndLast(token->index);
 
@@ -606,7 +656,7 @@ namespace sik {
 		numNode->Type = sik::NUMBER;
 		numNode->Value = sik::SIKLang::toString((int)subNode->bulk.size());
 		numNode->Parent = node;
-		node->Left = numNode;
+		node->Right = numNode;
 		int theEleSize = (int)subNode->bulk.size();
 		for (int i = theEleSize - 1; i >= 0; i--) {
 			node->bulk.push_back(subNode->bulk[i]);
@@ -626,8 +676,8 @@ namespace sik {
 							(
 								candid->type == sik::NODE && 
 								candid->node->Type == sik::DELI_SBRKOPEN && 
-								candid->node->Right != nullptr && 
-								candid->node->Right->Type == sik::NAMING
+								candid->node->Left != nullptr && 
+								candid->node->Left->Type == sik::NAMING
 							)
 					)
 				) 
@@ -635,13 +685,15 @@ namespace sik {
 				sik::SIKAst* varNode = new SIKAst();
 				this->SetNodeFromToken(varNode,candid);
 				varNode->Parent = node;
-				node->Right = varNode;
-				node->Notation = 1;
-				if (node->Left->Value == "0") {
-					delete node->Left;
+				node->Left = varNode;
+				node->Notation = 1; // 1 is traverse or push and not definition
+				/*
+				if (node->Right->Value == "0") {
+					delete node->Right;
 					node->Left = node->Right;
 					node->Right = nullptr;
 				}
+				*/
 			}
 		}
 
@@ -670,18 +722,21 @@ namespace sik {
 			) {
 			this->SetNodeFromToken(node, tokR);
 			node->Notation = 4;
-		}
-		else if (tokR->type == sik::NODE && tokR->node->Type == sik::DELI_SBRKOPEN && tokR->node->Notation == 1)
+		} else if (tokR->type == sik::NODE && tokR->node->Type == sik::DELI_SBRKOPEN && tokR->node->Notation == 1)
 		{
 			this->SetNodeFromToken(node, tokR);
-			node->Right->Notation = 4;
+			node->Left->Notation = 4;
+		} else if (tokR->type == sik::NODE && tokR->node->Type == sik::TOK_CALL)
+		{
+			this->SetNodeFromToken(node, tokR);
+			node->Left->Notation = 4;
 		} else {
-			throw sik::SIKException(sik::EXC_COMPILATION, "Expected name of an object member after " + token->obj + " char.", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "Expected name of an object member after " + token->obj + " char. 98798788", token->fromLine);
 		}
 		
 		//Apply to the left token 
 		if (tokL == nullptr) {
-			throw sik::SIKException(sik::EXC_COMPILATION, "Expected name of an object before " + token->obj + " char.", token->fromLine);
+			throw sik::SIKException(sik::EXC_COMPILATION, "Expected name of an object before " + token->obj + " char. 33226544", token->fromLine);
 		}
 		//Left naming node or primitive naming:
 		if ( tokL->type == sik::NAMING || (tokL->type == sik::NODE && tokL->node->Type == sik::NAMING) ) {
@@ -691,6 +746,7 @@ namespace sik {
 		if (tokL->type == sik::NODE && tokL->node->Type == sik::DELI_SBRKOPEN && tokL->node->Notation == 1) {
 			this->SetNodeFromToken(leftHand, tokL);
 		}
+
 		//Apply the chain:
 		this->applyNodeToMostLeft(leftHand, node);
 
@@ -1595,13 +1651,8 @@ namespace sik {
 	}
 	void SIKParser::genForArray(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild) {
 		if (
-			nodeChild->Notation == 1 && 
-			(
-				nodeChild->Left->Type == sik::NAMING || 
-					(
-						nodeChild->Left->Type == sik::DELI_SBRKOPEN && 
-						nodeChild->Notation == 1)
-				)
+			nodeChild->Notation == 1 &&
+			nodeChild->Right->Value == "0"
 		) {
 			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_ARRP));
 			return;

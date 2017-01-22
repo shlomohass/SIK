@@ -476,6 +476,8 @@ namespace sik {
 			return "NODE";
 		case sik::SBLOCK:
 			return "BLOC";
+		case sik::TOK_CALL:
+			return "CALL";
 		default:
 			return "UNK";
 		}

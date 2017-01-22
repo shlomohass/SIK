@@ -146,6 +146,7 @@ namespace sik
 		KEYWORD,  
 		NAMING, 
 		DELIMITER,
+		TOK_CALL,
 		DELI_PLUS,
 		DELI_MINUS,
 		DELI_INCR,
