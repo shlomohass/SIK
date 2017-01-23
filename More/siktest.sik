@@ -1,7 +1,9 @@
-
-// obj.set[1].age;
-// obj.test.in(a,b);
-// obj(1)[1, 3];
+/*
+function mul(a,b) {
+    print a*b;
+};
+mul(2,3);
+*/
 /*
 let obj = {
     i : 0,

@@ -117,6 +117,7 @@ namespace sik
 		INS_CBLOCK,  //General block close.
 
 		INS_FUNC_NAME,
+		INS_FUNC_CALL,
 		INS_FUNC_NUM,
 		INS_FUNC_DEF,
 		INS_FUNC_DEFE,

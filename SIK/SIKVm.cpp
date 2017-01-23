@@ -19,6 +19,7 @@ namespace sik {
 		this->InstPointer = 0;
 		this->InstSize = 0;
 		this->Instructions = nullptr;
+		this->BaseInstructions = nullptr;
 		this->ObjectDefinitions = nullptr;
 		this->FunctionInstructions = nullptr;
 		this->jumperFired = false;
@@ -29,6 +30,7 @@ namespace sik {
 	{
 		this->InstPointer = 0;
 		this->Instructions = _Instructions;
+		this->BaseInstructions = _Instructions;
 		this->ObjectDefinitions = _ObjectDefinitions;
 		this->FunctionInstructions = _FunctionInstructions;
 		this->InstSize = (int)_Instructions->size();
@@ -62,15 +64,21 @@ namespace sik {
 	int SIKVm::execute(int uptoIndex) {
 		sik::SIKInstruct* Inst = this->getInstPointer(this->InstPointer);
 		switch (Inst->Type) {
+		case sik::INS_FUNC_BLOCK:
 		case sik::INS_OBLOCK:
 		case sik::INS_OSBLOCK:
 			this->exec_block(Inst);
 			break;
+		case sik::INS_FUNC_CBLOCK:
 		case sik::INS_CBLOCK:
 			this->exec_exit_block(Inst);
 			break;
 		case sik::INS_PUSH:
+		case sik::INS_FUNC_NAME:
 			this->exec_push(Inst);
+			break;
+		case sik::INS_FUNC_CALL:
+			this->exec_func_call(Inst);
 			break;
 		case sik::INS_ADD:
 			this->exec_Math_addition(Inst);
@@ -168,6 +176,7 @@ namespace sik {
 
 		return -1;
 	}
+
 	/* First Env creation.
 	*/
 	void SIKVm::createContainers() {
@@ -216,6 +225,7 @@ namespace sik {
 		//Create Object:
 		sik::SIKObj* obj = new SIKObj();
 		this->scopes.back()->objects.insert(std::pair<std::string, sik::SIKObj*>(name, obj));
+		this->scopes.back()->DefinitionOrder.push_back(name);
 	}
 	/* Check If the current scope if force scoped: 
 	*/
@@ -344,22 +354,34 @@ namespace sik {
 
 		//Mutate to needed:
 		switch (Inst->SubType) {
-			case NAMING:
+			case sik::NAMING:
 				STData->obj = this->getNameFromScope(Inst->Value);
 				STData->objectType = sik::SDT_ATTACHED;
 				if (STData->obj == nullptr) {
 					throw sik::SIKException(sik::EXC_RUNTIME, "Called to undifined variable. 987544", Inst->lineOrigin);
 				}
 				break;
-			case NUMBER:
+			case sik::NUMBER:
 				STData->obj = new SIKObj(sik::OBJ_NUMBER, Inst->Value);
 				break;
-			case STRING:
+			case sik::STRING:
 				STData->obj = new SIKObj(sik::OBJ_STRING, Inst->Value);
 				break;
-			case BOOLEAN:
+			case sik::BOOLEAN:
 				STData->obj = new SIKObj(Inst->cache == 1 ? true : false);
 				break;
+			case sik::TOK_CALL: {
+					std::pair<int, std::string> key = std::pair<int, std::string>(Inst->cache, Inst->Value);
+					std::map<std::pair<int, std::string>, std::vector<sik::SIKInstruct>>::iterator it = this->FunctionInstructions->find(key);
+					if (it != this->FunctionInstructions->end())
+					{
+						//Function found: store
+						STData->obj = new SIKObj(key, &it->second);
+					} else {
+						//Can't find this:
+						throw sik::SIKException(sik::EXC_RUNTIME, "Called or tried to set an undifined function. 7784454", Inst->lineOrigin);
+					}
+				} break;
 		}
 
 		//Make the Push:
@@ -946,30 +968,11 @@ namespace sik {
 	}
 	void SIKVm::exec_block(sik::SIKInstruct* Inst) {
 		if (Inst->Type == sik::INS_OBLOCK) {
-			switch (Inst->Block) {
-				case sik::BLOCK_WHILE:
-				case sik::BLOCK_EACH:
-				case sik::BLOCK_FOR:
-					break;
-				case sik::BLOCK_FUNC:
-					break;
-				default: return;
-			}
-		} else {
-
-			//Forced closed block 
+		
+		} else if (Inst->Type == sik::INS_FUNC_BLOCK) {
+			this->createScope(sik::SCOPE_FUNCTION);
+		} else if (Inst->Type == sik::INS_OSBLOCK) {
 			this->createScope(sik::SCOPE_FORCE);
-			switch (Inst->Block) {
-				case sik::BLOCK_WHILE:
-				case sik::BLOCK_EACH:
-				case sik::BLOCK_FOR:
-					break;
-				case sik::BLOCK_FUNC:
-					break;
-				default: return;
-			}
-
-			
 		}
 		return;
 	}
@@ -979,8 +982,10 @@ namespace sik {
 			case sik::BLOCK_EACH:
 			case sik::BLOCK_FOR:
 				break;
-			case sik::BLOCK_FUNC:
-				break;
+			case sik::BLOCK_FUNC: {
+				this->deleteNamesInScope();
+				this->removeScope(1);
+			} break;
 			default: {
 				if (Inst->cache == 1) { // cache 1 means forced
 					//Destroy the scope:
@@ -1110,6 +1115,71 @@ namespace sik {
 	}
 
 
+	void SIKVm::exec_func_call(sik::SIKInstruct* Inst) {
+
+		int Args = Inst->cache;
+		std::vector<sik::SIKStackData*> ArgsContainer;
+
+		//Pop From stack the args needed:
+		for (int i = 0; i < Args; i++) {
+			sik::SIKStackData* arg = this->popFromStack();
+			if (this->validateStackDataAvailable(arg, false)) {
+				ArgsContainer.push_back(arg);
+			}
+		}
+
+		//Pop the func:
+		sik::SIKStackData* func = this->popFromStack();
+
+		//Validate the Stack data:
+		if (this->validateStackDataIsCallable(func, false)) {
+			int returnCode = this->exec_func(func->obj->FuncSpace, &ArgsContainer);
+			if (returnCode != -1) { 
+				throw sik::SIKException(sik::EXC_RUNTIME, "Problem in function call", this->getCurrentLineOrigin());
+			}
+		}
+		delete func;
+	}
+	int SIKVm::exec_func(std::vector<sik::SIKInstruct>* InstExecs, std::vector<sik::SIKStackData*>* _Args) {
+
+		int position = this->InstPointer;
+
+		//Reset the position:
+		this->InstPointer = 0;
+
+		//Set the new Instructions set:
+		this->Instructions = InstExecs;
+		this->InstSize = (int)this->Instructions->size();
+
+		//Run the definition execution:
+		int theDefinitionEnd = InstExecs->front().InternalJumper;
+		int theFunctionOriginArgCount = InstExecs->front().cache;
+		int returnCode = this->execute(theDefinitionEnd + 1);
+
+		//Set the args pass:
+		int sentArgs = (int)_Args->size();
+		for (int i = 0; i < sentArgs; i++) {
+			sik::SIKStackData* sup = _Args->back();
+			_Args->pop_back();
+			if (this->scopes.back()->DefinitionOrder.size() > i) {
+				std::string to = this->scopes.back()->DefinitionOrder.at(i);
+				this->getNameFromScope(to)->mutate(sup->obj);
+			}
+			delete sup;
+		}
+
+		//Run the block:
+		returnCode = this->execute(this->InstSize);
+
+		//Restore session:
+		this->Instructions = this->BaseInstructions;
+		this->InstPointer = position;
+		this->InstSize = (int)this->Instructions->size();
+		return -1;
+	}
+
+
+
     bool SIKVm::validateStackDataForMathOp(sik::SIKStackData* Left, sik::SIKStackData* Right, bool preventExcep) {
         if (Left == nullptr || Right == nullptr) {
             if (preventExcep) return false;
@@ -1169,6 +1239,18 @@ namespace sik {
 		}
 		return true;
 	}
+	bool SIKVm::validateStackDataIsCallable(sik::SIKStackData* sd, bool preventExcep) {
+		if (sd == nullptr) {
+			if (preventExcep) return false;
+			throw sik::SIKException(sik::EXC_RUNTIME, "Null Stack. 9888456", this->getCurrentLineOrigin());
+		}
+		if (sd->obj->Type != sik::OBJ_FUNC) {
+			if (preventExcep) return false;
+			throw sik::SIKException(sik::EXC_RUNTIME, "Tried to execute a none function or not properly declared function. 111245", this->getCurrentLineOrigin());
+		}
+		return true;
+	}
+
 
     std::string SIKVm::removeFromString(const std::string& str, int num) {
         if ((int)str.length() - num <= 0) {

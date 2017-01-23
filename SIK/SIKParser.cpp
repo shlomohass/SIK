@@ -1072,7 +1072,7 @@ namespace sik {
 		}
 
 		//Parse the block:
-		sik::SIKTokens blockSubSet = TokenSet->getFromeSet(blockStart, blockEnd);
+		sik::SIKTokens blockSubSet = TokenSet->getFromeSet(blockStart + 1, blockEnd - 1);
 		sik::SIKAst* blockNode = this->BuildAst(&blockSubSet);
 		blockNode->PreventBulkDelete = true;
 
@@ -1344,6 +1344,10 @@ namespace sik {
 			this->genForKeywords(nodeParent, nodeChild);
 			nodeChild->Mark = true;
 			break;
+		case sik::TOK_CALL:
+			this->genForFuncCall(nodeParent, nodeChild);
+			nodeChild->Mark = true;
+			break;
 		case sik::DELI_BRCOPEN:
 		case sik::SBLOCK:
 		case sik::NAMING:
@@ -1444,9 +1448,19 @@ namespace sik {
 			numArgs.Type = sik::INS_FUNC_NUM;
 			this->AddToInstructions(numArgs);
 
+			//Add the block:
+			sik::SIKInstruct funcBlock;
+			funcBlock.lineOrigin = nodeChild->line;
+			funcBlock.cache = -1;
+			funcBlock.Type = sik::INS_FUNC_BLOCK;
+			funcBlock.Block = sik::BLOCK_FUNC;
+
+			this->AddToInstructions(funcBlock);
+
 			//Add definition:
 			numArgs.Type = sik::INS_FUNC_DEF;
 			this->AddToInstructions(numArgs);
+
 			//Add all definition nodes:
 			for (int i = 0; i < numArgs.cache; i++) {
 				this->WalkAst(nodeChild, nodeChild->bulk[i]);
@@ -1455,10 +1469,15 @@ namespace sik {
 			numArgs.Type = sik::INS_FUNC_DEFE;
 			this->AddToInstructions(numArgs);
 
-			//Addt the function Block:	
+			//Add the function Block:	
 			for (int i = numArgs.cache; i < (int)nodeChild->bulk.size(); i++) {
 				this->WalkAst(nodeChild, nodeChild->bulk[i]);
 			}
+
+			//Add the block close:
+			funcBlock.Type = sik::INS_FUNC_CBLOCK;
+			this->AddToInstructions(funcBlock);
+
 			return;
 		}
 		// IF statement:
@@ -1605,7 +1624,6 @@ namespace sik {
 					this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_OBJCREATE), nodeParent);
 					this->Instructions->back().Block = sik::BLOCK_OBJ;
 				} else {
-					this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_FUNC_BLOCK), nodeParent);
 					this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_OBLOCK), nodeParent);
 				}
 				if ((int)nodeChild->bulk.size() > 0) {
@@ -1628,7 +1646,6 @@ namespace sik {
 		//Incase we are wrapping an Object definition:
 		if (nodeChild->Block == sik::BLOCK_FUNC) {
 			this->AddToInstructions(sik::SIKInstruct(nodeChild));
-			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_FUNC_CBLOCK));
 		} else if ((int)this->BlockChunksContainer.size() > 0 && this->BlockChunksContainer.back() == sik::BLOCK_OBJ) {
 			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_OBJDONE));
 			this->BlockChunksContainer.pop_back();
@@ -1667,7 +1684,13 @@ namespace sik {
 		}
 		this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_ARRD));
 	}
-
+	void SIKParser::genForFuncCall(SIKAst* nodeParent, SIKAst* nodeChild) {
+		int size = (int)nodeChild->bulk.size();
+		for (int i = 0; i < size; i++) {
+			this->WalkAst(nodeChild, nodeChild->bulk[i]);
+		}
+		this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_FUNC_CALL));
+	}
 	// Find the maximum height of the binary tree
 	int SIKParser::maxHeight(sik::SIKAst *p) {
 		if (!p) return 0;

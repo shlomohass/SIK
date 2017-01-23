@@ -83,6 +83,7 @@ namespace sik {
 		void genForBlockClose(SIKAst* nodeParent, SIKAst* nodeChild);
 		void genForOpSingleSide(SIKAst* nodeParent, SIKAst* nodeChild);
 		void genForArray(SIKAst* nodeParent, SIKAst* nodeChild);
+		void genForFuncCall(SIKAst* nodeParent, SIKAst* nodeChild);
 		
 		//Printing Trees:
 		int maxHeight(sik::SIKAst *p);

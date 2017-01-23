@@ -10,6 +10,7 @@
 #define SIKObj_hpp
 
 #include "SIKAdd.hpp"
+#include "SIKInstruct.hpp"
 #include <string>
 #include <vector>
 
@@ -24,13 +25,16 @@ namespace sik
 		double			 Number;
 		std::string      String;
 		std::vector<sik::SIKObj> Array;
+		std::pair<int, std::string> Func;
+		std::vector<sik::SIKInstruct>* FuncSpace;
 
 		SIKObj();
 		SIKObj(int value);
 		SIKObj(double value);
-		SIKObj(std::string value);
+		SIKObj(const std::string& value);
 		SIKObj(bool value);
-		SIKObj(sik::ObjectTypes _type, std::string value);
+		SIKObj(const std::pair<int, std::string> _func, std::vector<sik::SIKInstruct>* _space);
+		SIKObj(sik::ObjectTypes _type, const std::string& value);
 		SIKObj(sik::ObjectTypes _type);
         
 		//Flags:

@@ -115,6 +115,7 @@ namespace sik
 			{ sik::INS_CAND,		 "CAND" },
 			{ sik::INS_COR,			 "COR"  },
 			{ sik::INS_FUNC_NAME,	 "FUNAM" },
+			{ sik::INS_FUNC_CALL,	 "FUCAL" },
 			{ sik::INS_FUNC_NUM,	 "FUNUM" },
 			{ sik::INS_FUNC_DEF,	 "FUDEF" },
 			{ sik::INS_FUNC_DEFE,	 "FUDFE" },
@@ -356,7 +357,6 @@ namespace sik
 			sik::SIKLang::printHeader("FUNCTION DEFINITIONS:");
 			this->printFunctionDefinitions();
 		}
-
 		return true;
 	}
 	bool SIKScript::compile(sik::SIKLex* lexer, sik::SIKParser* parser, std::map<int, std::string> exp) {

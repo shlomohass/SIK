@@ -1,0 +1,18 @@
+let sub = function(b,a) {
+	print b - a;
+};
+let add = function(b,a) {
+	print b + a;
+};
+let t = 6, r = -1;
+
+add(3,5);
+add(t,r);
+add(t+r,3*-1);
+sub(t,r);
+sub(r,6);
+/*
+@expected-output
+8527-7
+@end-expected-output
+*/

@@ -33,9 +33,14 @@ namespace sik {
 		this->InternalJumper = node->InternalJumper;
 		this->MyInternalNumber = node->MyInternalNumber;
 
-		//Store the key only for func names:
+		// Store the key only for func names 
+		//  or 
+		// the num of seen args for func call:
 		if (type == sik::INS_FUNC_NAME) {
 			this->cache = node->funcName.first;
+			this->SubType = sik::TOK_CALL;
+		} else if (type == sik::INS_FUNC_CALL) {
+			this->cache = node->Notation;
 		}
 	}
 	SIKInstruct::SIKInstruct(sik::SIKAst* node)

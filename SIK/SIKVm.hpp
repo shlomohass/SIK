@@ -56,6 +56,7 @@ namespace sik
 	struct SIKScope {
 		sik::ScopeTypes Type;
 		std::map<std::string, sik::SIKObj*> objects;
+		std::vector<std::string> DefinitionOrder;
 		sik::SIKStack* Stack;
 		SIKScope() {
 			this->Type = sik::SCOPE_GENERAL;
@@ -77,6 +78,7 @@ namespace sik
 	{
 		//From Script containers:
 		std::vector<sik::SIKInstruct>* Instructions;
+		std::vector<sik::SIKInstruct>* BaseInstructions;
 		std::vector<std::vector<sik::SIKInstruct>>* ObjectDefinitions;
 		std::map<std::pair<int, std::string>, std::vector<sik::SIKInstruct>>* FunctionInstructions;
 
@@ -147,13 +149,17 @@ namespace sik
 		int exec_traverseArray(sik::SIKInstruct* Inst);
 		void exec_prepareToArrayPush(sik::SIKInstruct* Inst);
 
+		void exec_func_call(sik::SIKInstruct* Inst);
+		int  exec_func(std::vector<sik::SIKInstruct>* InstExecs, std::vector<sik::SIKStackData*>* _Args);
+
         //Validation Methods:
         bool validateStackDataForMathOp(sik::SIKStackData* Left, sik::SIKStackData* Right, bool preventExcep);
         bool validateStackDataForMathOpNumbers(sik::SIKStackData* Left, sik::SIKStackData* Right, bool preventExcep);
         bool validateStackDataIsAttached(sik::SIKStackData* Left, bool preventExcep);
         bool validateStackDataAvailable(sik::SIKStackData* sd, bool preventExcep);
 		bool validateStackDataCanBeBool(sik::SIKStackData* sd, bool preventExcep);
-        
+		bool validateStackDataIsCallable(sik::SIKStackData* sd, bool preventExcep);
+
         //Support methods:
         std::string removeFromString(const std::string& str, int num);
         

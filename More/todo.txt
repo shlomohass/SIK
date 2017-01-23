@@ -75,10 +75,29 @@ SIK todo list:
 [X] Improve Function naming for later collision check.
 [X] Add Code Ana for Function blocks.
 [ ] Validate dual function declaration. 
-[ ]
-[ ]
-[ ]
-[ ]
+[ ] Support for obj(1)[1, 3]; And obj(1).test;
+[X] Vm -> Added Function declaration and object assigning to Vm
+[X] Vm -> Added Function execution to Vm with scoping and variable pass.
+[X] Vm -> Support for dynamic arguments pass to functions; 
+[ ] Vm -> Execution of anon funct ??? without var -> precendence for localy set variable.
 
 
+/******************************************************
+ * Some High Optimized to include in the Lib:
+ ******************************************************/
 
+ /* Power a double: */
+double intpowlog(double x, unsigned int e)
+{
+        if (e == 0) return 1.0;
+        if (e % 2 == 0)
+        {
+                double h = intpowlog(x, e / 2);
+                return h * h;
+        }
+        else
+        {
+                double h = intpowlog(x, e / 2);
+                return h * h * x;
+        }
+}

@@ -17,26 +17,38 @@ namespace sik {
 	SIKObj::SIKObj() {
         this->Number = SIK_NAN;
 		this->Type = sik::OBJ_NAN;
+		this->FuncSpace = nullptr;
 	}
     SIKObj::SIKObj(int value) {
         this->Type = sik::OBJ_NUMBER;
         this->Number = (double)value;
+		this->FuncSpace = nullptr;
     }
 	SIKObj::SIKObj(double value) {
 		this->Type = sik::OBJ_NUMBER;
 		this->Number = value;
+		this->FuncSpace = nullptr;
 	}
-	SIKObj::SIKObj(std::string value) {
+	SIKObj::SIKObj(const std::string& value) {
 		this->Type = sik::OBJ_STRING;
 		this->String = value;
         this->Number = SIK_NAN;
+		this->FuncSpace = nullptr;
 	}
 	SIKObj::SIKObj(bool value) {
 		this->Type = sik::OBJ_BOOL;
 		this->Number = value ? 1 : 0;
+		this->FuncSpace = nullptr;
 	}
-	SIKObj::SIKObj(sik::ObjectTypes _type, std::string value) {
+	SIKObj::SIKObj(const std::pair<int, std::string> _func, std::vector<sik::SIKInstruct>* _space) {
+		this->Type = sik::OBJ_FUNC;
+		this->Number = SIK_NAN;
+		this->Func = _func;
+		this->FuncSpace = _space;
+	}
+	SIKObj::SIKObj(sik::ObjectTypes _type, const std::string& value) {
 		this->Type = _type;
+		this->FuncSpace = nullptr;
 		switch (_type) {
 			case sik::OBJ_NUMBER:
 					this->Number = std::atof(value.c_str());
@@ -53,6 +65,7 @@ namespace sik {
 	SIKObj::SIKObj(sik::ObjectTypes _type) {
 		this->Type = _type;
 		this->Number = SIK_NAN;
+		this->FuncSpace = nullptr;
 	}
     /* Always return as a number
      */
@@ -64,6 +77,7 @@ namespace sik {
 			case sik::OBJ_ARRAY:
 				return (double)this->Array.size();
 				break;
+			case sik::OBJ_FUNC:
             case sik::OBJ_BOOL:
             case sik::OBJ_NULL:
             default:
@@ -89,6 +103,9 @@ namespace sik {
 				std::stringstream ss;
 				ss << "ARRAY[" << (int)this->Array.size() << "]";
 				return ss.str();
+			} break;
+			case sik::OBJ_FUNC: {
+				return "FUNC[" + this->Func.second + "]";
 			} break;
             case sik::OBJ_NULL:
             default:
@@ -119,7 +136,10 @@ namespace sik {
         this->Number = obj->Number;
         this->String = obj->String;
 		this->Array = obj->Array;
+		this->Func = obj->Func;
+		this->FuncSpace = obj->FuncSpace;
     }
+
 	SIKObj::~SIKObj()
 	{
         //std::cout << "delete obj " << this->Type << std::endl;
