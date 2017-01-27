@@ -3,7 +3,7 @@
 //  SIK
 //
 //  Created by Shlomo Hassid on 06/11/2016.
-//  Copyright © 2016 Shlomo Hassid. All rights reserved.
+//  Copyright ï¿½ 2016 Shlomo Hassid. All rights reserved.
 //
 
 #include "SIKAnaCode.hpp"
@@ -97,7 +97,6 @@ namespace sik {
 		}
 	}
 	void SIKAnaCode::setMatchigJump(int i, sik::SIKInstruct* inst, std::vector<sik::SIKInstruct>* _Instructions) {
-		bool found = false;
 		int size = (int)_Instructions->size();
 		int nested = 0;
 		if (inst->Type == sik::INS_IF || inst->Type == sik::INS_ELSEIF) {

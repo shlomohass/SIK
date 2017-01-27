@@ -17,8 +17,9 @@
 #define _CRTDBG_MAP_ALLOC
 
 #include <stdlib.h>
-#include <crtdbg.h>
-
+#ifdef _WIN32
+    #include <crtdbg.h>
+#endif
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -32,6 +33,18 @@
 #include "SIKAdd.hpp"
 #include "SIKLang.hpp"
 #include "SIKScript.hpp"
+
+#ifndef _WIN32
+inline int _pipe(int fildes[2], unsigned psize, int textmode) {
+    return pipe(fildes);
+}
+inline FILE* _popen(const char* command, const char* type) {
+    return popen(command, type);
+}
+inline void _pclose(FILE* file) {
+    pclose(file);
+}
+#endif
 
 namespace cm = CommandLineProcessing;
 
@@ -107,8 +120,6 @@ int parseTests(
 	std::map <std::string, std::string>* computed_results_list
 ) {
 	int testcount = 0;
-	int actualTestsPerform = 0;
-
 	tinydir_dir dir;
 	tinydir_open(&dir, testInPath.c_str());
 
@@ -133,7 +144,6 @@ int parseTests(
 			std::string txtline;
 			bool expectedFlag = false;
 			std::string expectedBuffer = "";
-			int c = 0;
 
 			wifs.open(iterator->second.path);
 			if (!wifs.is_open())
@@ -314,7 +324,7 @@ int main(int argc, char** argv) {
 	}
 
 	if (enable_debug) {
-		_CrtDumpMemoryLeaks();
+		//_CrtDumpMemoryLeaks();
 		system("pause");
 	}
 

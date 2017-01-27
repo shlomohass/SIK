@@ -36,6 +36,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		350299A71E3B9031008004F6 /* tinydir.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tinydir.h; sourceTree = "<group>"; };
 		351CA7301E1FB7B0002EA450 /* argvparser.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = argvparser.cpp; sourceTree = "<group>"; };
 		351CA7311E1FB7B0002EA450 /* argvparser.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = argvparser.hpp; sourceTree = "<group>"; };
 		351CA7321E1FB7B0002EA450 /* SETSIK.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SETSIK.hpp; sourceTree = "<group>"; };
@@ -100,6 +101,7 @@
 		3557FF071DCE9177003B2CD5 /* SIK */ = {
 			isa = PBXGroup;
 			children = (
+				350299A71E3B9031008004F6 /* tinydir.h */,
 				351CA7301E1FB7B0002EA450 /* argvparser.cpp */,
 				351CA7311E1FB7B0002EA450 /* argvparser.hpp */,
 				351CA7321E1FB7B0002EA450 /* SETSIK.hpp */,

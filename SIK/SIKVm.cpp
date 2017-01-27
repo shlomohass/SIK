@@ -1153,7 +1153,6 @@ namespace sik {
 
 		//Run the definition execution:
 		int theDefinitionEnd = InstExecs->front().InternalJumper;
-		int theFunctionOriginArgCount = InstExecs->front().cache;
 		int returnCode = this->execute(theDefinitionEnd + 1);
 
 		//Set the args pass:

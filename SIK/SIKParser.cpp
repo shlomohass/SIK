@@ -343,7 +343,7 @@ namespace sik {
 			std::vector<int> testNested = TokenSet->hasNestedCommas(tokP->index);
 			for (int i = (int)testNested.size() - 1; i >= 0; i--) {
 				sik::Token* tokMore = TokenSet->getAtPointer(testNested[i] + 1);
-				tokMore->addBlock;
+
 				if (tokMore != nullptr && tokP->type == NAMING) {
 					//Create definition chain:
 					sik::SIKAst* nodeDefinintion = new sik::SIKAst();
@@ -1034,7 +1034,7 @@ namespace sik {
 		sik::SIKTokens argsSubSet = TokenSet->getFromeSet(parenthesesStart + 1 , parenthesesEnd - 1);
 		std::vector<int> testCommas = argsSubSet.hasNestedCommas(0);
 		numArgs = (argsSubSet.size() > 0 && testCommas.size() == 0) ? 1 :
-					(argsSubSet.size() == 0) ? 0 : testCommas.size() + 1;
+					((int)argsSubSet.size() == 0) ? 0 : (int)testCommas.size() + 1;
 		node->Notation = numArgs;
 
 		//Generate func args definition:
@@ -1042,7 +1042,7 @@ namespace sik {
 			this->padFunctionArgs(&argsSubSet, &testCommas, token->fromLine);
 			sik::SIKAst* argsNode = this->BuildAst(&argsSubSet);
 			argsNode->PreventBulkDelete = true;
-			for (int i = 0; i < (int)argsNode->bulk.size(); i++) {
+			for (unsigned int i = 0; i < (int)argsNode->bulk.size(); i++) {
 				node->bulk.push_back(argsNode->bulk[i]);
 			}
 			//Release container:

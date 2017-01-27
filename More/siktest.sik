@@ -1,9 +1,9 @@
-/*
+
 function mul(a,b) {
     print a*b;
 };
 mul(2,3);
-*/
+
 /*
 let obj = {
     i : 0,
