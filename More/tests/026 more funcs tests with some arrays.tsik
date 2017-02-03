@@ -1,0 +1,19 @@
+function buildArray(a,b,c,d,e) {
+	return [a,b,c,d,e];
+};
+function printArray(arr, getLength) {
+	for (let i = 0, i < 5, i++) {
+		print "E:",arr[i]," L:",getLength(arr[i])," - ";
+	}
+};
+let getLength = function(str) {
+	return 0 + str;
+};
+let s = buildArray("SIK","IS","VERY","FAST","!");
+printArray(s,getLength);
+/*
+@expected-output
+E:SIK L:3 - E:IS L:2 - E:VERY L:4 - E:FAST L:4 - E:! L:1 - 
+@end-expected-output
+*/
+
