@@ -18,37 +18,44 @@ namespace sik {
         this->Number = SIK_NAN;
 		this->Type = sik::OBJ_NAN;
 		this->FuncSpace = nullptr;
+		this->isPerma = false;
 	}
     SIKObj::SIKObj(int value) {
         this->Type = sik::OBJ_NUMBER;
         this->Number = (double)value;
 		this->FuncSpace = nullptr;
+		this->isPerma = false;
     }
 	SIKObj::SIKObj(double value) {
 		this->Type = sik::OBJ_NUMBER;
 		this->Number = value;
 		this->FuncSpace = nullptr;
+		this->isPerma = false;
 	}
 	SIKObj::SIKObj(const std::string& value) {
 		this->Type = sik::OBJ_STRING;
 		this->String = value;
         this->Number = SIK_NAN;
 		this->FuncSpace = nullptr;
+		this->isPerma = false;
 	}
 	SIKObj::SIKObj(bool value) {
 		this->Type = sik::OBJ_BOOL;
 		this->Number = value ? 1 : 0;
 		this->FuncSpace = nullptr;
+		this->isPerma = false;
 	}
 	SIKObj::SIKObj(const std::pair<int, std::string> _func, std::vector<sik::SIKInstruct>* _space) {
 		this->Type = sik::OBJ_FUNC;
 		this->Number = SIK_NAN;
 		this->Func = _func;
 		this->FuncSpace = _space;
+		this->isPerma = false;
 	}
 	SIKObj::SIKObj(sik::ObjectTypes _type, const std::string& value) {
 		this->Type = _type;
 		this->FuncSpace = nullptr;
+		this->isPerma = false;
 		switch (_type) {
 			case sik::OBJ_NUMBER:
 					this->Number = std::atof(value.c_str());
@@ -66,6 +73,7 @@ namespace sik {
 		this->Type = _type;
 		this->Number = SIK_NAN;
 		this->FuncSpace = nullptr;
+		this->isPerma = false;
 	}
     /* Always return as a number
      */

@@ -163,6 +163,9 @@ namespace sik {
 		case sik::INS_ARRP:
 			this->exec_prepareToArrayPush(Inst);
 			break;
+		case sik::INS_FORL:
+			this->exec_loopFor(Inst);
+			break;
 		}
 
 		//Advance the pointer or stop:
@@ -216,9 +219,38 @@ namespace sik {
 		std::map<std::string, sik::SIKObj*>* naming = &this->scopes.back()->objects;
 		typedef std::map<std::string, sik::SIKObj*>::iterator it_type;
 		for (it_type iterator = naming->begin(); iterator != naming->end(); iterator++) {
-			// iterator->first = key
-			// iterator->second = value
 			delete iterator->second;
+		}
+	}
+	/* Remove Names from current scope and but not perma ones:
+	*/
+	void SIKVm::cleanNamesInScope() {
+		std::map<std::string, sik::SIKObj*>* naming = &this->scopes.back()->objects;
+		typedef std::map<std::string, sik::SIKObj*>::iterator it_type;
+		for (it_type iterator = naming->begin(); iterator != naming->end(); iterator++) {
+			if (iterator->second->isPerma) {
+				continue;
+			} else {
+				delete iterator->second;
+			}
+		}
+	}
+	/* Set all names in scope to protected:
+	*/
+	void SIKVm::protectAllNamesInScope() {
+		std::map<std::string, sik::SIKObj*>* naming = &this->scopes.back()->objects;
+		typedef std::map<std::string, sik::SIKObj*>::iterator it_type;
+		for (it_type iterator = naming->begin(); iterator != naming->end(); iterator++) {
+			iterator->second->isPerma = true;
+		}
+	}
+	/* Set all names in scope to unprotected:
+	*/
+	void SIKVm::unProtectAllNamesInScope() {
+		std::map<std::string, sik::SIKObj*>* naming = &this->scopes.back()->objects;
+		typedef std::map<std::string, sik::SIKObj*>::iterator it_type;
+		for (it_type iterator = naming->begin(); iterator != naming->end(); iterator++) {
+			iterator->second->isPerma = false;
 		}
 	}
 	/* Create a name in the scope
@@ -373,6 +405,29 @@ namespace sik {
 		}
 		return false;
 	}
+	/* Get the Loop actual block types Instruction to run:
+	*/
+	std::pair<int, sik::SIKInstruct*> SIKVm::getLoopForSpecialBlocks(sik::InstructType type, sik::SIKInstruct* Inst) {
+		std::pair<int, sik::SIKInstruct*> returnCond = std::pair<int, sik::SIKInstruct*>(Inst->InternalJumper, this->getInstPointer(Inst->InternalJumper));
+		std::pair<int, sik::SIKInstruct*> callCond = std::pair<int, sik::SIKInstruct*>(-1, nullptr);
+		if (type == sik::INS_FRCO) {
+			return returnCond;
+		}
+		if (type == sik::INS_FRCA && returnCond.second != nullptr) {
+			callCond = std::pair<int, sik::SIKInstruct*>(returnCond.second->InternalJumper, this->getInstPointer(returnCond.second->InternalJumper));
+			return callCond;
+		}
+		if (type == sik::INS_OBLOCK && returnCond.second != nullptr) {
+			callCond = std::pair<int, sik::SIKInstruct*>(returnCond.second->InternalJumper, this->getInstPointer(returnCond.second->InternalJumper));
+			if (callCond.second != nullptr) {
+				return std::pair<int, sik::SIKInstruct*>(callCond.second->InternalJumper, this->getInstPointer(callCond.second->InternalJumper));
+			}
+		}
+		return std::pair<int, sik::SIKInstruct*>(-1, nullptr);
+	}
+
+
+
 
     /* All the execution operations:
      */
@@ -1002,8 +1057,10 @@ namespace sik {
 		}
 	}
 	void SIKVm::exec_block(sik::SIKInstruct* Inst) {
-		if (Inst->Type == sik::INS_OBLOCK) {
-		
+		if (Inst->Type == sik::INS_OBLOCK ) {
+			if (Inst->Block == sik::BLOCK_EACH || Inst->Block == sik::BLOCK_FOR || Inst->Block == sik::BLOCK_WHILE) {
+				this->createScope(sik::SCOPE_LOOP);
+			}
 		} else if (Inst->Type == sik::INS_FUNC_BLOCK) {
 			this->createScope(sik::SCOPE_FUNCTION);
 		} else if (Inst->Type == sik::INS_OSBLOCK) {
@@ -1016,7 +1073,6 @@ namespace sik {
 			case sik::BLOCK_WHILE:
 			case sik::BLOCK_EACH:
 			case sik::BLOCK_FOR:
-				break;
 			case sik::BLOCK_FUNC: {
 				this->deleteNamesInScope();
 				this->removeScope(1);
@@ -1149,7 +1205,6 @@ namespace sik {
 		delete num;
 	}
 
-
 	void SIKVm::exec_func_call(sik::SIKInstruct* Inst) {
 
 		int Args = Inst->cache;
@@ -1239,6 +1294,76 @@ namespace sik {
 
 		//Jump to end:
 		this->InstPointer = Inst->InternalJumper - 1;
+	}
+
+	void SIKVm::exec_loopFor(sik::SIKInstruct* Inst) {
+
+		//vars:
+		int defintionResult = -1;
+		bool condMasterLoopResult = true;
+
+		//Loop parts:
+		std::pair<int, sik::SIKInstruct*> cond = this->getLoopForSpecialBlocks(sik::INS_FRCO, Inst);
+		std::pair<int, sik::SIKInstruct*> call = this->getLoopForSpecialBlocks(sik::INS_FRCA, Inst);
+		std::pair<int, sik::SIKInstruct*> block = this->getLoopForSpecialBlocks(sik::INS_OBLOCK, Inst);
+
+		//Load scope
+		if (block.second != nullptr) {
+			this->exec_block(block.second);
+		} else {
+			throw sik::SIKException(sik::EXC_RUNTIME, "For Loop Block UnParsed. 76523489", Inst->lineOrigin);
+		}
+
+		//Execute definition:
+		if (cond.second != nullptr) {
+			this->InstPointer++;
+			defintionResult = this->execute(cond.first);
+			//Mark all definition part as protected:
+			this->protectAllNamesInScope();
+		} else {
+			throw sik::SIKException(sik::EXC_RUNTIME, "For Loop Definition UnParsed. 1215456321", Inst->lineOrigin);
+		}
+
+		//Loop:
+		while (condMasterLoopResult) {
+
+			//Clear the stack:
+			this->clearCurrentStack();
+
+			//Set condition Part:
+			this->InstPointer = cond.first + 1;
+
+			//Execute Condition:
+			this->execute(call.first);
+
+			//Pop From stack:
+			sik::SIKStackData* condResult = this->popFromStack();
+			int intCondResult = 0;
+			if (this->validateStackDataCanBeBool(condResult,false)) {
+				intCondResult = (int)condResult->obj->getAsBool();
+			}
+			int BlockResult = 0;
+			if (intCondResult > 0) {
+
+				//Block Execute:
+				this->InstPointer = block.first + 1;
+				BlockResult = this->execute(block.second->InternalJumper);
+
+				//Clean scope for loop:
+				this->cleanNamesInScope();
+
+				//Execute the call:
+				this->InstPointer = call.first + 1;
+				this->execute(call.second->InternalJumper);
+
+			} else {
+				condMasterLoopResult = false;
+			}
+		}
+
+		//Set the out rout:
+		this->InstPointer = block.second->InternalJumper - 1;
+		return;
 	}
 
 

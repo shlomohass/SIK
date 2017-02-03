@@ -27,6 +27,7 @@ namespace sik
 		std::vector<sik::SIKObj> Array;
 		std::pair<int, std::string> Func;
 		std::vector<sik::SIKInstruct>* FuncSpace;
+		bool			 isPerma; //This is a special flag for preventing scope cleaning such as in for loops definition;
 
 		SIKObj();
 		SIKObj(int value);

@@ -48,6 +48,8 @@ namespace sik {
             case sik::EXC_RUNTIME:
                 return "SIK RUNTIME EXCEPTION -> " + this->Message + " ";
                 break;
+			default:
+				return "SIK GENERAL EXCEPTION -> " + this->Message + " ";
         }
 		
 	}

@@ -106,6 +106,9 @@ namespace sik
 		void createScope(sik::ScopeTypes type);
 		void removeScope(int num);
 		void deleteNamesInScope();
+		void cleanNamesInScope();
+		void protectAllNamesInScope();
+		void unProtectAllNamesInScope();
 		void createNameInScope(const std::string& name);
 		bool scopeHasName(const std::string& name);
 		bool scopeIsForced();
@@ -123,6 +126,7 @@ namespace sik
 		int getCurrentLineOrigin();
 		int getInternalJumper(int jumpto);
 		bool testForInternalNeedJump(sik::SIKInstruct* Inst);
+		std::pair<int, sik::SIKInstruct*> getLoopForSpecialBlocks(sik::InstructType type, sik::SIKInstruct* Inst);
 
 		//Execution and Operations:
 		void exec_push(sik::SIKInstruct* Inst);
@@ -154,6 +158,8 @@ namespace sik
 		void exec_func_call(sik::SIKInstruct* Inst);
 		int  exec_func(std::vector<sik::SIKInstruct>* InstExecs, std::vector<sik::SIKStackData*>* _Args);
 		void exec_func_return(sik::SIKInstruct* Inst);
+
+		void exec_loopFor(sik::SIKInstruct* Inst);
 
         //Validation Methods:
         bool validateStackDataForMathOp(sik::SIKStackData* Left, sik::SIKStackData* Right, bool preventExcep);

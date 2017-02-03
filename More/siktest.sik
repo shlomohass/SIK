@@ -1,14 +1,9 @@
-let advance = function (a) {
-    return a + 1;
-    print "should not Execute!!!";
-};
-let a = 0,
-    c = 2,
-    b = 3;
-a = advance(c);
-c = advance(advance(advance(advance(b))));
-print a, c, b * advance(10);
-//3,7,33
+for (let i = 0, i < 5, i++) { 
+    for (let j = 0; j < i; j++) {
+        print "*";
+    }
+    print "\n";
+}
 
 /*
 let obj = {
@@ -25,18 +20,6 @@ let obj = {
 };
 */
 /*
-if (a == true) {
-    print a;
-    let b = [1,2];
-}
-function test() {
-    if (a == true) {
-        print a;
-        let b = [1,2];
-    }
-};
-
-
 let all = {
     add: function (a, b) {
         let s = {
@@ -48,18 +31,8 @@ let all = {
     }
 };
 */
-//b = 1 + a[1,7, c*3] * 3;
 //g = [2, { name: "sh" }, { name: "gf" }];
-//g = ++a[i];
-//h = a[2, i + 1]++;
-//print [2, 3], t[5]++ + 9;
-//a[] = [2, 4, b[3], ["sh","lo"]];
-//a = [];
-//a[1][] = 4;
-//a[t,j+1][] = ["first"];
-//b = [["shlomi", "hassid"],["yes", "no"],];
 //print { name : "shlomi", last : "hassid"}, 4, true || false;
-
 // a = bob.age++;
 //b = --sed[i].age;
 //a = bob[2].name.test + shl.has;
@@ -79,19 +52,6 @@ if (test) { breakif; }
 /*
 a = (b++ - 4)*3;
 */
-/*
-a = (++b - 4)*3;
-*/
-/*
-let a = 0;
-a += 1;
-a -= a;
-*/
-/*
-while (a > 3, 10) ~{
-	a += 1++;
-}
-*/
 
 //each (a, i, e) { test = test + 1; }
 //each (a, e) { print "yes"; }
@@ -100,53 +60,10 @@ while (a > 3, 10) ~{
 //for (j, j < 10) ~{ --j; j += 2; }
 
 /*
-if (b) ~{} elseif (b) {} else ~{}
-*/
-/*
-b = 2 * ++3 - 9 * --7 + b++;
-a = ++b;
-b = t++;
-c = --b + 4;
-d = 2 + b-- + 4;
-e = 3++;
-*/
-
-/*
-a = { b : 2 + 3 * 4 };
-*/
-/*
 let a = {
 	bb : "shlomi",
 	cc : true
 };
-*/
-/*
-let b = " hassid
-	shlomi
-and 
- we
-";
-*/
-
-/*
-if (bookkkppp + 2) {
-	a = 2 + 3;
-} elseif (a + 1) {
-	if (g - 7) {
-		g = 8;
-	} else {
-		g = 1;
-	}
-}
-*/
-/*
- let b = true, c = null, d = FALSE, e = TRUE;
- let a = 1 == 2 + 3;
- let a = 1 <= 2 && 3 >= 1;
- let a = 1 == 2 || 3 < 4 && 6 > 5;
- let b = 1 + 2 + (((2 * (3 + 5)) * 4 ) - 4) * 6 * 5;
- if (t == 5) { }
- let test = { a : b }, s = 5;
 */
 /*
 let gef,
@@ -169,11 +86,6 @@ let a = {
 	cc : true,
 	dd : { aaa : false, bbb : "hassid", ccc : { a : 4*5 } } 
 };
-*/
-/*
-if (a + 2 && b < 5 || c && d ) {
-
-}
 */
 /*
 for (let i = 0, i < 4, i++) {

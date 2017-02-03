@@ -1,0 +1,26 @@
+for (let i = 0, i < 10000, i++) { 
+    if (i == 100) { 
+		print i,","; 
+		for (let j = 0; j < 1; j++) {
+			print "*";
+		}
+	}
+    if (i == 1000) { 
+		print i,","; 
+		for (let j = 0; j < 3; j++) {
+			print "*";
+		}
+	}
+    if (i == 5000) { 
+		print i,","; 
+		for (let j = 0; j < 5; j++) {
+			print "*";
+		}
+	}
+    if (i == 9999) { print i; }
+}
+/*
+@expected-output
+100,*1000,***5000,*****9999
+@end-expected-output
+*/

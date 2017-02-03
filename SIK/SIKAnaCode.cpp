@@ -80,7 +80,7 @@ namespace sik {
 			
 			//Set Block control if needed
 			if (!this->BlockInCheck.empty()) {
-				inst->Block = this->BlockInCheck.back();
+				//inst->Block = this->BlockInCheck.back();
 			}
 
 			this->setMatchigJump(i, inst, _Instructions);
