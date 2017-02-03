@@ -1,0 +1,29 @@
+ function advance(a) {
+    return a + 1;
+};
+function toWord(a) {
+    if (a==1) {
+		print "One";
+	} elseif (a==2) {
+		print "Two";
+	} elseif (a==3) {
+		print "Three";
+	} else {
+		print "Bigger then 3";
+	}
+};
+let run = function(a) {
+	toWord(a);
+	return advance(a);
+};
+let b = 1;
+b = run(b);
+b = run(b);
+b = run(b);
+b = run(b);
+print " - ",b;
+/*
+@expected-output
+OneTwoThreeBigger then 3 - 5
+@end-expected-output
+*/

@@ -26,7 +26,7 @@ SIK todo list:
 [X] Object Instruction debuger output print.
 [ ] DEFER keyword for blocks.
 [X] Functions base parser and Ast generator.
-[ ] RETRUN keyword decleration.
+[X] RETRUN keyword decleration.
 [X] PRINT keyword -> primitive withe comma support.
 [X] BREAK keyword.
 [X] BREAKIF keyword.

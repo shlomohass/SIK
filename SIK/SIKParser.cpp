@@ -113,6 +113,10 @@ namespace sik {
 					else if (tok->obj == SIKLang::dicLangKey_function) {
 						this->BuildAst_KeyFunction(node, tok, TokenSet);
 					}
+					//Return:
+					else if (tok->obj == SIKLang::dicLangKey_return) {
+						this->BuildAst_KeyReturn(node, tok, TokenSet);
+					}
 					break;
 				case sik::DELI_BRCOPEN:
 					this->BuildAst_BlockOpen(node, tok, TokenSet);
@@ -324,6 +328,7 @@ namespace sik {
 		return 1;
 	}
 	int SIKParser::BuildAst_KeyDefine(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {
+
 		//Single Variable Declaration node:
 		sik::SIKAst* nodeChild = new sik::SIKAst();
 		this->SetNodeFromToken(nodeChild, token);
@@ -1091,6 +1096,56 @@ namespace sik {
 
 		return 1;
 	}
+	int SIKParser::BuildAst_KeyReturn(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {
+
+		//Key node:
+		this->SetNodeFromToken(node, token);
+
+		//Extract Exp part:
+		int statementEnd = TokenSet->getSatementLast(token->index);
+
+		//Validate Return Expression part:
+		if (statementEnd < 0) {
+			switch (statementEnd) {
+			case -1:
+				throw sik::SIKException(sik::EXC_COMPILATION, "Expected Statement End after " + token->obj + " keyword.", token->fromLine);
+				break;
+			default:
+				throw sik::SIKException(sik::EXC_COMPILATION, "Expected Statement End after " + token->obj + " keyword.", token->fromLine);
+			}
+		}
+
+		//Create Subset:
+		sik::SIKTokens SubSet = TokenSet->getFromeSet(token->index + 1, statementEnd - 1);
+
+		//Parse Howmany part:
+		if (!SubSet.empty()) {
+			//handle nested keywords:
+			if (SubSet.hasType(sik::KEYWORD) != -1) {
+				throw sik::SIKException(sik::EXC_COMPILATION, "In " + token->obj + " statement you can't use keywords.", token->fromLine);
+			}
+			//Recursively parse subset:
+			sik::SIKAst* subNode = this->BuildAst(&SubSet);
+			int chunks = (int)subNode->bulk.size();
+			for (int i = 0; i < chunks; i++) {
+				node->bulk.push_back(subNode->bulk[i]);
+			}
+			node->Notation = chunks;
+			//Destroy Container:
+			subNode->PreventBulkDelete = true;
+			delete subNode;
+
+		} else {
+			node->Notation = 0;
+		}
+
+		//Remove The Keyword and place the node chain:
+		if (!TokenSet->replaceRangeWithNode(token->index, statementEnd, node)) {
+			throw sik::SIKException(sik::EXC_COMPILATION, "Error in token extraction. 778444548", token->fromLine);
+		}
+
+		return 1;
+	}
 	int SIKParser::BuildAst_OpSingleSide(sik::SIKAst* node, sik::Token* token, sik::SIKTokens* TokenSet) {
 		this->SetNodeFromToken(node, token);
 		Token* tokL = TokenSet->getAtPointer(token->index - 1);
@@ -1478,6 +1533,15 @@ namespace sik {
 			funcBlock.Type = sik::INS_FUNC_CBLOCK;
 			this->AddToInstructions(funcBlock);
 
+			return;
+		}
+		//Return:
+		if (nodeChild->Value == SIKLang::dicLangKey_return) {
+			unsigned int PartsCount = (int)nodeChild->bulk.size();
+			for (unsigned int i = 0; i < PartsCount; i++) {
+				this->WalkAst(nodeChild, nodeChild->bulk[i]);
+			}
+			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_RETURN));
 			return;
 		}
 		// IF statement:

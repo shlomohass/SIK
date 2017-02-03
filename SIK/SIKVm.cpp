@@ -83,6 +83,9 @@ namespace sik {
 		case sik::INS_FUNC_CALL:
 			this->exec_func_call(Inst);
 			break;
+		case sik::INS_RETURN:
+			this->exec_func_return(Inst);
+			break;
 		case sik::INS_ADD:
 			this->exec_Math_addition(Inst);
 			break;
@@ -1210,7 +1213,33 @@ namespace sik {
 		this->InstSize = (int)this->Instructions->size();
 		return -1;
 	}
+	void SIKVm::exec_func_return(sik::SIKInstruct* Inst) {
+		for (unsigned int i = 0; i < Inst->cache; i++) {
+			//Pop From stack:
+			sik::SIKStackData* right = this->popFromStack();
 
+			//Validate first and then perform print:
+			sik::SIKStackData* toPushSd = new SIKStackData();
+			sik::SIKObj* toPushObj = new SIKObj();
+			toPushSd->objectType = sik::SDT_TEMP;
+			toPushSd->obj = toPushObj;
+			if (right != nullptr) {
+				toPushSd->obj->mutate(right->obj);
+			}
+			//release from stack:
+			delete right;
+
+			//Push to prev stack:
+			if ((int)this->scopes.size() > 1) {
+				this->scopes.end()[-2]->Stack->Stack.push_back(toPushSd);
+			} else {
+				throw sik::SIKException(sik::EXC_RUNTIME, "Scopes not synced! - 76523489329");
+			}
+		}
+
+		//Jump to end:
+		this->InstPointer = Inst->InternalJumper - 1;
+	}
 
 
     bool SIKVm::validateStackDataForMathOp(sik::SIKStackData* Left, sik::SIKStackData* Right, bool preventExcep) {

@@ -124,6 +124,8 @@ namespace sik
 		INS_FUNC_BLOCK,
 		INS_FUNC_CBLOCK,
 
+		INS_RETURN
+
 	};
 	enum BlocksIn {
 		BLOCK_NONE,

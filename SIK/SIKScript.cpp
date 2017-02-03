@@ -120,7 +120,9 @@ namespace sik
 			{ sik::INS_FUNC_DEF,	 "FUDEF" },
 			{ sik::INS_FUNC_DEFE,	 "FUDFE" },
 			{ sik::INS_FUNC_BLOCK,	 "FUBLK" },
-			{ sik::INS_FUNC_CBLOCK,	 "FUCBK" }
+			{ sik::INS_FUNC_CBLOCK,	 "FUCBK" },
+
+			{ sik::INS_RETURN,		 "RETUR" }
 		};
 	}
 

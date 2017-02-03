@@ -113,6 +113,13 @@ namespace sik {
 					return;
 				}
 			}
+		} else if (inst->Type == sik::INS_RETURN) {
+			for (int j = i + 1; j < size; j++) {
+				if (_Instructions->at(j).Type == sik::INS_FUNC_CBLOCK) {
+					inst->InternalJumper = j;
+					return;
+				}
+			}
 		} else if (inst->Type == sik::INS_PRINT) {
 			for (int j = i + 1; j < size; j++) {
 				if (_Instructions->at(j).Type == sik::INS_DOPRINT) {

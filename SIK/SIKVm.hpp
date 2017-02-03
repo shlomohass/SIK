@@ -47,8 +47,8 @@ namespace sik
 		}
 		~SIKStack() {
 			//std::cout << "destroy Stack" << std::endl;
-			for (int i = (int)Stack.size() - 1; i >= 0; i++) {
-				std::cout << i << " - ";
+			for (int i = (int)Stack.size() - 1; i >= 0; i--) {
+				//std::cout << i << " - ";
 				delete Stack.at(i);
 			}
 		}
@@ -153,6 +153,7 @@ namespace sik
 
 		void exec_func_call(sik::SIKInstruct* Inst);
 		int  exec_func(std::vector<sik::SIKInstruct>* InstExecs, std::vector<sik::SIKStackData*>* _Args);
+		void exec_func_return(sik::SIKInstruct* Inst);
 
         //Validation Methods:
         bool validateStackDataForMathOp(sik::SIKStackData* Left, sik::SIKStackData* Right, bool preventExcep);

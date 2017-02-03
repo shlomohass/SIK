@@ -36,10 +36,14 @@ namespace sik {
 		// Store the key only for func names 
 		//  or 
 		// the num of seen args for func call:
+		// or
+	    // the retrun num of parts:
 		if (type == sik::INS_FUNC_NAME) {
 			this->cache = node->funcName.first;
 			this->SubType = sik::TOK_CALL;
 		} else if (type == sik::INS_FUNC_CALL) {
+			this->cache = node->Notation;
+		} else if (type == sik::INS_RETURN) {
 			this->cache = node->Notation;
 		}
 	}

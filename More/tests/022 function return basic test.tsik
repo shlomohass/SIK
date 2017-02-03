@@ -1,0 +1,15 @@
+let advance = function (a) {
+    return a + 1;
+    print "should not Execute!!!";
+};
+let a = 0,
+    c = 2,
+    b = 3;
+a = advance(c);
+c = advance(advance(advance(advance(b))));
+print a, c, b * advance(10);
+/*
+@expected-output
+3733
+@end-expected-output
+*/
