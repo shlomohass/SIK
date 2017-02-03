@@ -1,0 +1,19 @@
+let a = 2, b = 3;
+let advance = function(a) { 
+	print a + 1; 
+};
+function spit(a, b, advance) {
+	let c = a + b;
+	print c;
+	advance(c);
+	if (c < 15) {
+		spit(a,c,advance);
+	}
+};
+spit(a,b,advance);
+print a,b,a+b,a*b;
+/*
+@expected-output
+56789101112131415162356
+@end-expected-output
+*/

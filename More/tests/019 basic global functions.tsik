@@ -1,0 +1,14 @@
+let arr = ["sik","v 1.3","shlomo hassid"],
+	thePad = " - ";
+	
+function attach(ar, pad) {
+	print ar, pad;
+};
+attach(arr[0], thePad);
+attach(arr[1], thePad);
+attach(arr[2], ".");
+/*
+@expected-output
+sik - v 1.3 - shlomo hassid.
+@end-expected-output
+*/

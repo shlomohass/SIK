@@ -1,0 +1,14 @@
+function add(a,b) {
+    print a + b;
+    if (a + b < 30) {
+        add(a + a, b + b);
+    }
+    print a + b;
+};
+add(2,3);
+print "end";
+/*
+@expected-output
+51020404020105end
+@end-expected-output
+*/

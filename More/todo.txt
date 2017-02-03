@@ -35,7 +35,7 @@ SIK todo list:
 [ ] SKIP key word in loops -> for loop, each loop. jump iterations.
 [ ] ADD Pointers.
 [X] Object Traverse in parser.
-[ ] Function Call in Parser.
+[X] Function Call in Parser.
 [ ] .. ?: ..
 [ ] .. ? .. : .. 
 [ ] .. !: .. -> if not set or NaN
@@ -79,8 +79,8 @@ SIK todo list:
 [X] Vm -> Added Function declaration and object assigning to Vm
 [X] Vm -> Added Function execution to Vm with scoping and variable pass.
 [X] Vm -> Support for dynamic arguments pass to functions; 
-[ ] Vm -> Execution of anon funct ??? without var -> precendence for localy set variable.
-
+[X] Vm -> Execution of anon funct ??? without var -> precendence for localy set variable.
+[X] Vm -> Execution of recursive functions.
 
 /******************************************************
  * Some High Optimized to include in the Lib:

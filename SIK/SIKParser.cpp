@@ -1691,6 +1691,7 @@ namespace sik {
 		}
 		this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_FUNC_CALL));
 	}
+
 	// Find the maximum height of the binary tree
 	int SIKParser::maxHeight(sik::SIKAst *p) {
 		if (!p) return 0;

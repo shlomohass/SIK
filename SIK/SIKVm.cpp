@@ -62,7 +62,10 @@ namespace sik {
 		return this->execute(-1);
 	}
 	int SIKVm::execute(int uptoIndex) {
+
 		sik::SIKInstruct* Inst = this->getInstPointer(this->InstPointer);
+		if (Inst == nullptr) { return -1; }
+		
 		switch (Inst->Type) {
 		case sik::INS_FUNC_BLOCK:
 		case sik::INS_OBLOCK:
@@ -246,6 +249,7 @@ namespace sik {
 		return this->scopes.back()->objects.find(name) != this->scopes.back()->objects.end();
 	}
 	sik::SIKObj* SIKVm::getNameFromScope(const std::string& name) {
+		//Checks in nested scopes:
 		if (this->scopeIsForced()) {
 			if (!this->scopeHasName(name)) return nullptr;
 			return this->scopes.back()->objects[name];
@@ -254,6 +258,26 @@ namespace sik {
 				if (this->scopes[i]->objects.find(name) != this->scopes[i]->objects.end()) {
 					return this->scopes[i]->objects[name];
 				}				
+			}
+		}
+		return nullptr;
+	}
+	sik::SIKObj* SIKVm::findGlobalFuncAndCache(const std::string& name, sik::SIKInstruct* Inst, bool cache) {
+		//Check maybe its a global function:
+		//Maybe cached?
+		if (Inst->cache > 0) {
+			std::pair<int, std::string> theCandidKey = std::pair<int, std::string>(Inst->cache, name);
+			if (this->FunctionInstructions->find(theCandidKey) != this->FunctionInstructions->end()) {
+				return new sik::SIKObj(theCandidKey, &this->FunctionInstructions->at(theCandidKey));
+			}
+		}
+		typedef std::map<std::pair<int, std::string>, std::vector<sik::SIKInstruct>>::iterator it_type;
+		for (it_type iterator = this->FunctionInstructions->begin(); iterator != this->FunctionInstructions->end(); iterator++) {
+			if (iterator->first.second[0] == name[0] && iterator->first.second == name) {
+				if (cache) {
+					Inst->cache = iterator->first.first;
+				}
+				return new sik::SIKObj(std::pair<int, std::string>(iterator->first.first, name), &iterator->second);
 			}
 		}
 		return nullptr;
@@ -293,12 +317,14 @@ namespace sik {
 	/* Get an Instruction at a specific Index.
 	*/
 	sik::SIKInstruct SIKVm::getInst(int pos) {
-		return this->Instructions->at(InstPointer);
+		return this->Instructions->at(pos);
 	}
 	/* Get an Instruction pointer at a specific Index.
 	*/
 	sik::SIKInstruct* SIKVm::getInstPointer(int pos) {
-		return &this->Instructions->at(InstPointer);
+		//If we finished auto exit:
+		if (pos >= this->InstSize) { return nullptr; }
+		return &this->Instructions->at(pos);
 	}
 	/* Get the Instructions size casted to Integer.
 	*/
@@ -355,10 +381,16 @@ namespace sik {
 		//Mutate to needed:
 		switch (Inst->SubType) {
 			case sik::NAMING:
+				//Ger var:
 				STData->obj = this->getNameFromScope(Inst->Value);
 				STData->objectType = sik::SDT_ATTACHED;
 				if (STData->obj == nullptr) {
-					throw sik::SIKException(sik::EXC_RUNTIME, "Called to undifined variable. 987544", Inst->lineOrigin);
+					//try global function:
+					STData->obj = this->findGlobalFuncAndCache(Inst->Value, Inst, true);
+					STData->objectType = sik::SDT_TEMP;
+					if (STData->obj == nullptr) {
+						throw sik::SIKException(sik::EXC_RUNTIME, "Called to undifined variable. 987544", Inst->lineOrigin);
+					}
 				}
 				break;
 			case sik::NUMBER:
@@ -1142,7 +1174,9 @@ namespace sik {
 	}
 	int SIKVm::exec_func(std::vector<sik::SIKInstruct>* InstExecs, std::vector<sik::SIKStackData*>* _Args) {
 
-		int position = this->InstPointer;
+		//Cache position:
+		int CachePosition = this->InstPointer;
+		std::vector<sik::SIKInstruct>* CacheInstructions = this->Instructions;
 
 		//Reset the position:
 		this->InstPointer = 0;
@@ -1156,8 +1190,8 @@ namespace sik {
 		int returnCode = this->execute(theDefinitionEnd + 1);
 
 		//Set the args pass:
-		int sentArgs = (int)_Args->size();
-		for (int i = 0; i < sentArgs; i++) {
+		unsigned int sentArgs = (int)_Args->size();
+		for (unsigned int i = 0; i < sentArgs; i++) {
 			sik::SIKStackData* sup = _Args->back();
 			_Args->pop_back();
 			if (this->scopes.back()->DefinitionOrder.size() > i) {
@@ -1171,8 +1205,8 @@ namespace sik {
 		returnCode = this->execute(this->InstSize);
 
 		//Restore session:
-		this->Instructions = this->BaseInstructions;
-		this->InstPointer = position;
+		this->Instructions = CacheInstructions;
+		this->InstPointer = CachePosition;
 		this->InstSize = (int)this->Instructions->size();
 		return -1;
 	}

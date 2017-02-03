@@ -1,8 +1,13 @@
-
-function mul(a,b) {
-    print a*b;
+let advance = function(a) { print a + 1; };
+function spit(a, b, advance) {
+    let c = a + b;
+    print c;
+    advance(c);
+    if (c < 15) {
+        spit(a,c,advance);
+    }
 };
-mul(2,3);
+spit(2,3,advance);
 
 /*
 let obj = {

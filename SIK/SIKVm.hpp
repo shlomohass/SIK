@@ -87,6 +87,7 @@ namespace sik
 		int InstSize;
 		bool jumperFired;
 		bool allowElseIf;
+
 		//Vm containers:
 		std::vector<SIKScope*> scopes;
 
@@ -109,6 +110,7 @@ namespace sik
 		bool scopeHasName(const std::string& name);
 		bool scopeIsForced();
 		sik::SIKObj* getNameFromScope(const std::string& name);
+		sik::SIKObj* findGlobalFuncAndCache(const std::string& name, sik::SIKInstruct* Inst, bool cache);
 		void pushToStack(sik::SIKStackData* STData);
         sik::SIKStackData* popFromStack(); //will earasse the mem too.
         sik::SIKStackData* getFromStack();
