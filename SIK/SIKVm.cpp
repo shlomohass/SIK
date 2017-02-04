@@ -166,6 +166,9 @@ namespace sik {
 		case sik::INS_FORL:
 			this->exec_loopFor(Inst);
 			break;
+		case sik::INS_WHLL:
+			this->exec_loopWhile(Inst);
+			break;
 		}
 
 		//Advance the pointer or stop:
@@ -426,6 +429,16 @@ namespace sik {
 		return std::pair<int, sik::SIKInstruct*>(-1, nullptr);
 	}
 
+	std::pair<int, sik::SIKInstruct*> SIKVm::getLoopWhileSpecialBlocks(sik::InstructType type, sik::SIKInstruct* Inst) {
+		std::pair<int, sik::SIKInstruct*> maxCond = std::pair<int, sik::SIKInstruct*>(Inst->InternalJumper, this->getInstPointer(Inst->InternalJumper));
+		if (type == sik::INS_WHLM) {
+			return maxCond;
+		}
+		if (type == sik::INS_OBLOCK && maxCond.second != nullptr) {
+			return std::pair<int, sik::SIKInstruct*>(maxCond.second->InternalJumper, this->getInstPointer(maxCond.second->InternalJumper));
+		}
+		return std::pair<int, sik::SIKInstruct*>(-1, nullptr);
+	}
 
 
 
@@ -1367,7 +1380,86 @@ namespace sik {
 		this->InstPointer = block.second->InternalJumper - 1;
 		return;
 	}
+	void SIKVm::exec_loopWhile(sik::SIKInstruct* Inst) {
 
+		//vars:
+		bool condMasterLoopResult = true;
+		int  iterator = 0;
+		bool avoidMax = false;
+		int  condStart = this->InstPointer;
+
+		//Loop parts:
+		std::pair<int, sik::SIKInstruct*> max = this->getLoopWhileSpecialBlocks(sik::INS_WHLM, Inst);
+		std::pair<int, sik::SIKInstruct*> block = this->getLoopWhileSpecialBlocks(sik::INS_OBLOCK, Inst);
+
+		//Load scope
+		if (block.second != nullptr) {
+			this->exec_block(block.second);
+		} else {
+			throw sik::SIKException(sik::EXC_RUNTIME, "For Loop Block UnParsed. 76523489", Inst->lineOrigin);
+		}
+
+		//Check for max part:
+		if (max.first + 1 >= block.first) {
+			avoidMax = true;
+		}
+
+		//Loop:
+		while (condMasterLoopResult) {
+
+			//Clear the stack:
+			this->clearCurrentStack();
+			//Set condition Part:
+			this->InstPointer = condStart + 1;
+			//Execute Condition:
+			this->execute(max.first);
+			//Pop From stack:
+			sik::SIKStackData* condResult = this->popFromStack();
+			int intCondResult = 0;
+			if (this->validateStackDataCanBeBool(condResult, false)) {
+				intCondResult = (int)condResult->obj->getAsBool();
+			}
+			delete condResult;
+
+			//Max part:
+			int intMaxResult = 0;
+			if (!avoidMax) {
+				//Clear the stack:
+				this->clearCurrentStack();
+				//Set max Part:
+				this->InstPointer = max.first + 1;
+				//Execute max:
+				this->execute(block.first);
+				//Pop From stack:
+				sik::SIKStackData* maxResult = this->popFromStack();
+				
+				if (this->validateStackDataCanBeNumeric(maxResult, false)) {
+					intMaxResult = (int)maxResult->obj->getAsNumber();
+				}
+				delete maxResult;
+			}
+
+			int BlockResult = 0;
+			if (intCondResult > 0 && (avoidMax || intMaxResult > iterator)) {
+
+				//Block Execute:
+				this->InstPointer = block.first + 1;
+				BlockResult = this->execute(block.second->InternalJumper);
+
+				//Clean scope while loop:
+				this->cleanNamesInScope();
+
+			} else {
+				condMasterLoopResult = false;
+			}
+
+			iterator++;
+		}
+
+		//Set the out rout:
+		this->InstPointer = block.second->InternalJumper - 1;
+		return;
+	}
 
     bool SIKVm::validateStackDataForMathOp(sik::SIKStackData* Left, sik::SIKStackData* Right, bool preventExcep) {
         if (Left == nullptr || Right == nullptr) {
@@ -1418,6 +1510,17 @@ namespace sik {
         return true;
     }
 	bool SIKVm::validateStackDataCanBeBool(sik::SIKStackData* sd, bool preventExcep) {
+		if (sd == nullptr) {
+			if (preventExcep) return false;
+			throw sik::SIKException(sik::EXC_RUNTIME, "Null Stack. 65326773", this->getCurrentLineOrigin());
+		}
+		if (sd->obj->Type == sik::OBJ_NAN || sd->obj->Type == sik::OBJ_FUNC || sd->obj->Type == sik::OBJ_NULL || sd->obj->Type == sik::OBJ_OBJ) {
+			if (preventExcep) return false;
+			throw sik::SIKException(sik::EXC_RUNTIME, "Expected Boolean Value Instead a none boolean and none primitive type. 9878877", this->getCurrentLineOrigin());
+		}
+		return true;
+	}
+	bool SIKVm::validateStackDataCanBeNumeric(sik::SIKStackData* sd, bool preventExcep) {
 		if (sd == nullptr) {
 			if (preventExcep) return false;
 			throw sik::SIKException(sik::EXC_RUNTIME, "Null Stack. 65326773", this->getCurrentLineOrigin());

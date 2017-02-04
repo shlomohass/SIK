@@ -1,5 +1,6 @@
-for (let j = 0; j < 5; j++) {
-    print "*";
+let c = 5, j = 5;
+while (true, c) {
+    print --j,",";
 }
 
 /*

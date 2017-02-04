@@ -127,6 +127,7 @@ namespace sik
 		int getInternalJumper(int jumpto);
 		bool testForInternalNeedJump(sik::SIKInstruct* Inst);
 		std::pair<int, sik::SIKInstruct*> getLoopForSpecialBlocks(sik::InstructType type, sik::SIKInstruct* Inst);
+		std::pair<int, sik::SIKInstruct*> getLoopWhileSpecialBlocks(sik::InstructType type, sik::SIKInstruct* Inst);
 
 		//Execution and Operations:
 		void exec_push(sik::SIKInstruct* Inst);
@@ -160,6 +161,8 @@ namespace sik
 		void exec_func_return(sik::SIKInstruct* Inst);
 
 		void exec_loopFor(sik::SIKInstruct* Inst);
+		void exec_loopWhile(sik::SIKInstruct* Inst);
+
 
         //Validation Methods:
         bool validateStackDataForMathOp(sik::SIKStackData* Left, sik::SIKStackData* Right, bool preventExcep);
@@ -167,6 +170,7 @@ namespace sik
         bool validateStackDataIsAttached(sik::SIKStackData* Left, bool preventExcep);
         bool validateStackDataAvailable(sik::SIKStackData* sd, bool preventExcep);
 		bool validateStackDataCanBeBool(sik::SIKStackData* sd, bool preventExcep);
+		bool validateStackDataCanBeNumeric(sik::SIKStackData* sd, bool preventExcep);
 		bool validateStackDataIsCallable(sik::SIKStackData* sd, bool preventExcep);
 
         //Support methods:

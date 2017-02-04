@@ -83,9 +83,11 @@ SIK todo list:
 [X] Vm -> Execution of recursive functions.
 [X] Vm -> For loop execution with proper scoping and nesting support.
 [X] Vm -> For loop execution with shorhand type (without call part).  
-[ ] Vm -> While loop execution with proper scoping and nesting support.
+[X] Vm -> While loop execution with proper scoping and nesting support.
 [ ] Vm -> Each loop execution with proper scoping and nesting support.
 [ ] Vm -> Test and implementation of mix loop nested.
+[ ] Port the FOR loop from usage of , to ; must change when the precompiler cuts the statement.
+
 
 /******************************************************
  * Some High Optimized to include in the Lib:

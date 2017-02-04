@@ -1573,9 +1573,9 @@ namespace sik {
 				switch (i) {
 				case 0:
 					this->WalkAst(nodeChild, nodeChild->bulk[i]);
+					this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_WHLM));
 					break;
 				case 1:
-					this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_WHLM));
 					this->WalkAst(nodeChild, nodeChild->bulk[i]);
 					return;
 					break; // max 2 parts -> so go out.
