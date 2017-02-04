@@ -1,0 +1,19 @@
+let str = "abcdefgh" + "efghefgh";
+let imax = 1024 / (0 + str) * 4 * 512 * 2; // 262144
+
+let i = 0,
+    lngth;
+
+// will loop 262144 times:
+while (i < imax) {
+    lngth = (0 + str) * i;
+	i++;
+}
+
+print "Iterations: ",i," - Result: ",lngth;
+
+/*
+@expected-output
+Iterations: 262144 - Result: 4.19429e+06
+@end-expected-output
+*/

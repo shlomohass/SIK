@@ -1,0 +1,36 @@
+let a = true,
+    b = false,
+	c = "shlomi",
+	d = "hassid",
+	e = 1,
+	f = 6;
+
+// On booleans:
+if (a != b) { print "k1"; } else { print "n1"; }
+if (a =~ b) { print "k2"; } else { print "n2"; }
+if (a == b) { print "n3"; } else { print "k3"; }
+if (a !~ b) { print "n4"; } else { print "k4"; }
+
+// On strings:
+if (c != d) { print "k5"; } else { print "n5"; }
+if (c =~ d) { print "k6"; } else { print "n6"; }
+if (c == d) { print "n7"; } else { print "k7"; }
+if (c !~ d) { print "n8"; } else { print "k8"; }
+
+// On numbers:
+if (e != f) { print "k9"; } else { print "n9"; }
+if (e =~ f) { print "k10"; } else { print "n10"; }
+if (e == f) { print "n11"; } else { print "k11"; }
+if (e !~ f) { print "n12"; } else { print "k12"; }
+
+// Mixed:
+if (f == c) { print "k13"; } else { print "n13"; } // should be true cause the string is evaluated as length;
+if (f =~ c) { print "n14"; } else { print "k14"; }
+if (e == a) { print "k15"; } else { print "n15"; } // should be true cause the boolean is evaluated as length;
+if (e !~ a) { print "k16"; } else { print "n16"; }
+
+/*
+@expected-output
+k1k2k3k4k5k6k7k8k9k10k11k12k13k14k15k16
+@end-expected-output
+*/
