@@ -75,8 +75,8 @@ namespace sik {
 		void WalkAst(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild);
 
 		//Generate codes:
-		void AddToInstructions(const sik::SIKInstruct& instruct);
-		void AddToInstructions(const sik::SIKInstruct& instruct, SIKAst* nodeParent);
+		void AddToInstructions(sik::SIKInstruct instruct);
+		void AddToInstructions(sik::SIKInstruct instruct, SIKAst* nodeParent);
 		void pushToObjectsInstructions(const sik::SIKInstruct& instruct);
 		void genForKeywords(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild);
 		void genForPrimitives(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild);

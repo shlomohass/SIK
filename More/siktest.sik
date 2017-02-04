@@ -1,4 +1,35 @@
 
+let program = {
+    name    : "SIK",
+    author  : "Shlomo Hassid",
+    version : "0.3",
+    date    : { year : "2017", month: "January" },
+    info    : {
+        platforms : { support : ["win", "mac", "linux"] },
+        op        : [86, 64]
+    }
+};
+print program.name, " By: ", program.author, "\n";
+print "Program Version: ", program.version, "\n";
+print "Created: ", program.year, " - ", program.month, "\n";
+print "Operating On: ", program.support[0], "\n";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
 let obj = {

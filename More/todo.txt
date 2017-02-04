@@ -87,6 +87,13 @@ SIK todo list:
 [ ] Vm -> Each loop execution with proper scoping and nesting support.
 [ ] Vm -> Test and implementation of mix loop nested.
 [ ] Port the FOR loop from usage of , to ; must change when the precompiler cuts the statement.
+[ ] Handle how numbers are printed to screen such as e+06 and decimal point etc.
+[ ] Scope FOR and WHILE option.
+[X] Vm -> Object Execution.
+[X] Vm -> Object fast traverse objects with short traversal.
+[X] Vm -> Object With nested arrays.
+[ ] Vm -> Object assigning.
+[ ] Vm -> Object With nested private functions.
 
 
 /******************************************************

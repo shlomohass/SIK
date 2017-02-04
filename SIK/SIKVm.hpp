@@ -80,6 +80,7 @@ namespace sik
 		std::vector<sik::SIKInstruct>* Instructions;
 		std::vector<sik::SIKInstruct>* BaseInstructions;
 		std::vector<std::vector<sik::SIKInstruct>>* ObjectDefinitions;
+		std::vector<sik::SIKObj*> ObjectOnionBuilder;
 		std::map<std::pair<int, std::string>, std::vector<sik::SIKInstruct>>* FunctionInstructions;
 
 		//Instruction helpers:
@@ -114,6 +115,7 @@ namespace sik
 		bool scopeIsForced();
 		sik::SIKObj* getNameFromScope(const std::string& name);
 		sik::SIKObj* findGlobalFuncAndCache(const std::string& name, sik::SIKInstruct* Inst, bool cache);
+		void pushToStack(sik::SIKObj* CandidObj);
 		void pushToStack(sik::SIKStackData* STData);
         sik::SIKStackData* popFromStack(); //will earasse the mem too.
         sik::SIKStackData* getFromStack();
@@ -163,11 +165,16 @@ namespace sik
 		void exec_loopFor(sik::SIKInstruct* Inst);
 		void exec_loopWhile(sik::SIKInstruct* Inst);
 
+		void exec_objCreate(sik::SIKInstruct* Inst);
+		void exec_objDone(sik::SIKInstruct* Inst);
+		void exec_objChild(sik::SIKInstruct* Inst);
+		void exec_objAccess(sik::SIKInstruct* Inst);
 
         //Validation Methods:
         bool validateStackDataForMathOp(sik::SIKStackData* Left, sik::SIKStackData* Right, bool preventExcep);
         bool validateStackDataForMathOpNumbers(sik::SIKStackData* Left, sik::SIKStackData* Right, bool preventExcep);
         bool validateStackDataIsAttached(sik::SIKStackData* Left, bool preventExcep);
+		bool validateStackDataIsObject(sik::SIKStackData* Left, bool preventExcep);
         bool validateStackDataAvailable(sik::SIKStackData* sd, bool preventExcep);
 		bool validateStackDataCanBeBool(sik::SIKStackData* sd, bool preventExcep);
 		bool validateStackDataCanBeNumeric(sik::SIKStackData* sd, bool preventExcep);

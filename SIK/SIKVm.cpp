@@ -80,6 +80,18 @@ namespace sik {
 		case sik::INS_FUNC_NAME:
 			this->exec_push(Inst);
 			break;
+		case sik::INS_OBJCREATE:
+			this->exec_objCreate(Inst);
+			break;
+		case sik::INS_OBJDONE:
+			this->exec_objDone(Inst);
+			break;
+		case sik::INS_CHILDASSIGN:
+			this->exec_objChild(Inst);
+			break;
+		case sik::INS_ACCESS:
+			this->exec_objAccess(Inst);
+			break;
 		case sik::INS_FUNC_CALL:
 			this->exec_func_call(Inst);
 			break;
@@ -319,6 +331,13 @@ namespace sik {
 			}
 		}
 		return nullptr;
+	}
+	/* Push to stack some data from an object.
+	*/
+	void SIKVm::pushToStack(sik::SIKObj* CandidObj) {
+		sik::SIKStackData* SD = new sik::SIKStackData();
+		SD->obj = CandidObj;
+		this->pushToStack(SD);
 	}
 	/* Push to stack some data.
 	*/
@@ -1462,6 +1481,79 @@ namespace sik {
 		return;
 	}
 
+	void SIKVm::exec_objCreate(sik::SIKInstruct* Inst) {
+
+		//Create a container:
+		sik::SIKObj* currentEle = new SIKObj(sik::OBJ_OBJ);
+
+		//Get Instruction space:
+		//Cache position:
+		int CachePosition = this->InstPointer;
+		std::vector<sik::SIKInstruct>* CacheInstructions = this->Instructions;
+
+		//Reset the position:
+		this->InstPointer = 0;
+
+		//Set the new Instructions set:
+		this->Instructions = &this->ObjectDefinitions->at(Inst->pointToInstruct);
+		this->InstSize = (int)this->Instructions->size();
+
+		//Set the current object to assign To:
+		this->ObjectOnionBuilder.push_back(currentEle);
+
+		//Run the block Builder:
+		int resultBuilder = this->execute((int)this->Instructions->size());
+
+		//Reset this step:
+		this->InstPointer = CachePosition;
+		this->Instructions = CacheInstructions;
+		this->InstSize = (int)this->Instructions->size();
+
+	}
+	void SIKVm::exec_objDone(sik::SIKInstruct* Inst) {
+
+		//Push it to stack:
+		this->pushToStack(this->ObjectOnionBuilder.back());
+
+		//Pop from builder onion:
+		this->ObjectOnionBuilder.pop_back();
+	
+	}
+	void SIKVm::exec_objChild(sik::SIKInstruct* Inst) {
+
+		//Pop From stack:
+		sik::SIKStackData* right = this->popFromStack();
+		sik::SIKStackData* left = this->popFromStack();
+
+		//Validate the Stack data:
+		if (this->validateStackDataAvailable(left, false) && this->validateStackDataAvailable(right, false)) {
+			/*
+			sik::SIKObj* theChild = new SIKObj();
+			theChild->mutate(right->obj);
+			*/
+			this->ObjectOnionBuilder.back()->setInObject(left->obj->getAsString(), right->obj);
+		}
+
+		//Release mem:
+		delete right;
+		delete left;
+	}
+	void SIKVm::exec_objAccess(sik::SIKInstruct* Inst) {
+		//Pop From stack:
+		sik::SIKStackData* left = this->getFromStack();
+
+		//Validate the Stack data:
+		if (this->validateStackDataIsObject(left, false)) {
+			sik::SIKObj* theChild = left->obj->getFromObject(Inst->Value);
+			if (theChild != nullptr) {
+				//Set the child as the current path:
+				left->obj = theChild;
+			} else {
+				throw sik::SIKException(sik::EXC_RUNTIME, "Object has no child member: " + Inst->Value + ". 4554112145", this->getCurrentLineOrigin());
+			}
+		}
+	}
+
     bool SIKVm::validateStackDataForMathOp(sik::SIKStackData* Left, sik::SIKStackData* Right, bool preventExcep) {
         if (Left == nullptr || Right == nullptr) {
             if (preventExcep) return false;
@@ -1503,6 +1595,17 @@ namespace sik {
         }
         return true;
     }
+	bool SIKVm::validateStackDataIsObject(sik::SIKStackData* Left, bool preventExcep) {
+		if (Left == nullptr) {
+			if (preventExcep) return false;
+			throw sik::SIKException(sik::EXC_RUNTIME, "Null Stack. 11211445", this->getCurrentLineOrigin());
+		}
+		if (Left->obj == nullptr || Left->obj->Type != sik::OBJ_OBJ) {
+			if (preventExcep) return false;
+			throw sik::SIKException(sik::EXC_RUNTIME, "Trying to opperate on an none object value. 788745444", this->getCurrentLineOrigin());
+		}
+		return true;
+	}
     bool SIKVm::validateStackDataAvailable(sik::SIKStackData* sd, bool preventExcep) {
         if (sd == nullptr) {
             if (preventExcep) return false;

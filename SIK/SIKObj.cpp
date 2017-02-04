@@ -85,6 +85,7 @@ namespace sik {
 			case sik::OBJ_ARRAY:
 				return (double)this->Array.size();
 				break;
+			case sik::OBJ_OBJ:
 			case sik::OBJ_FUNC:
             case sik::OBJ_BOOL:
             case sik::OBJ_NULL:
@@ -112,6 +113,9 @@ namespace sik {
 				ss << "ARRAY[" << (int)this->Array.size() << "]";
 				return ss.str();
 			} break;
+			case sik::OBJ_OBJ: {
+				return "OBJECT";
+			} break;
 			case sik::OBJ_FUNC: {
 				return "FUNC[" + this->Func.second + "]";
 			} break;
@@ -136,20 +140,58 @@ namespace sik {
                 return 0;
         }
     }
-	void SIKObj::pushToArray(sik::SIKObj _obj) {
+	/* Array type push an element will create a copy
+	*/
+	void SIKObj::pushToArray(const sik::SIKObj& _obj) {
 		this->Array.push_back(_obj);
 	}
-    void SIKObj::mutate(SIKObj* obj) {
+	/* Set a child in an object will replace if allready exists
+	*/
+	void SIKObj::setInObject(const std::string& name,sik::SIKObj* _obj) {
+		this->Obj[name] = *_obj;
+	}
+	/* Get a child in an object.
+	*/
+	sik::SIKObj* SIKObj::getFromObject(const std::string& name) {
+		sik::SIKObj* found = nullptr;
+		if (this->Obj.find(name) != this->Obj.end()) {
+			//Quick return:
+			return &this->Obj.at(name);
+		} else {
+			//Scan
+			typedef std::unordered_map<std::string, sik::SIKObj>::iterator it_type;
+			for (it_type iterator = this->Obj.begin(); iterator != this->Obj.end(); iterator++) {
+				if (iterator->second.Type == sik::OBJ_OBJ) {
+					found = iterator->second.getFromObject(name);
+					if (found != nullptr) { return found; }
+				}
+			}
+		}
+		return nullptr;
+	}
+	/* Mutates an object base on a supplied pointer:
+	*/
+    void SIKObj::mutate(sik::SIKObj* obj) {
         this->Type = obj->Type;
         this->Number = obj->Number;
         this->String = obj->String;
 		this->Array = obj->Array;
 		this->Func = obj->Func;
 		this->FuncSpace = obj->FuncSpace;
+		this->isPerma = obj->isPerma;
+		this->Obj = obj->Obj;
     }
 
 	SIKObj::~SIKObj()
 	{
         //std::cout << "delete obj " << this->Type << std::endl;
+
+		//If its an object with childs release them now:
+		/*
+		typedef std::unordered_map<std::string, sik::SIKObj*>::iterator it_type;
+		for (it_type iterator = this->Obj.begin(); iterator != this->Obj.end(); iterator++) {
+			delete iterator->second;
+		}
+		*/
 	}
 }

@@ -311,6 +311,9 @@ namespace sik {
 			if (tokLL != nullptr && tokLL->type != sik::NODE && tokLL->type != sik::DELI_BRCOPEN && tokLL->type != sik::DELI_COMMA) {
 				throw SIKException(sik::EXC_COMPILATION, "In Object definition properties must be seperated by commas.", tokL->fromLine);
 			}
+
+			//Mutate naming to string for VM execution later:
+			tokL->type = sik::STRING;
 		}
 
 		SIKAst* nodeLeft = new SIKAst();
@@ -1451,11 +1454,19 @@ namespace sik {
 			break;
 		}
 	}
-	void SIKParser::AddToInstructions(const sik::SIKInstruct& instruct) {
+	void SIKParser::AddToInstructions(sik::SIKInstruct instruct) {
 		this->AddToInstructions(instruct, nullptr);
 	}
-	void SIKParser::AddToInstructions(const sik::SIKInstruct& instruct, sik::SIKAst* nodeParent) {
+	void SIKParser::AddToInstructions(sik::SIKInstruct instruct, sik::SIKAst* nodeParent) {
 		int testForBlocks = (int)this->BlockChunksContainer.size();
+		bool AddNewObjecSpace = false;
+		//If its a object chunk set pointer to the correct definition
+		if (instruct.Type == sik::INS_OBJCREATE) {
+			instruct.pointToInstruct = (int)this->ObjectDefinitions->size();
+			AddNewObjecSpace = true;
+		}
+
+		//Store in the correct place:
 		if (testForBlocks > 0 && this->BlockChunksContainer[testForBlocks - 1] == sik::BLOCK_OBJ) {
 			//Push to objects:
 			this->pushToObjectsInstructions(instruct);
@@ -1464,10 +1475,16 @@ namespace sik {
 			this->Instructions->push_back(instruct);
 		}
 		
+		//If needed create object space:
+		if (AddNewObjecSpace) {
+			this->BlockChunksContainer.push_back(sik::BLOCK_OBJ);
+			this->ObjectDefinitions->push_back(std::vector<sik::SIKInstruct>());
+		}
 		//This will start a object definition at the correct place: 
-		if (instruct.Type == sik::INS_OBJCREATE && testForBlocks > 0 && this->BlockChunksContainer[testForBlocks - 1]) {
+		/*
+		if (instruct.Type == sik::INS_OBJCREATE && testForBlocks > 0) {
 			int blockContainer = (int)this->ObjectDefinitions->size();
-			this->ObjectDefinitions->back().back().pointToInstruct = blockContainer;
+			this->ObjectDefinitions->at(this->BlockChunksContainer.size()-1).back().pointToInstruct = blockContainer;
 			this->BlockChunksContainer.push_back(sik::BLOCK_OBJ);
 			this->ObjectDefinitions->push_back(std::vector<sik::SIKInstruct>());
 		} else if (instruct.Type == sik::INS_OBJCREATE) {
@@ -1476,18 +1493,14 @@ namespace sik {
 			this->BlockChunksContainer.push_back(sik::BLOCK_OBJ);
 			this->ObjectDefinitions->push_back(std::vector<sik::SIKInstruct>());
 		}
+		*/
 	}
 	void SIKParser::pushToObjectsInstructions(const sik::SIKInstruct& instruct) {
-		//Does it has a specific Point to block:
-		if (instruct.pointToInstruct != -1) {
-			this->ObjectDefinitions->at(instruct.pointToInstruct).push_back(instruct);
-		} else {
-			int size = (int)this->ObjectDefinitions->size();
-			for (int i = size - 1; i >= 0; i--) {
-				if ((int)this->ObjectDefinitions->at(i).size() == 0 || this->ObjectDefinitions->at(i).back().Type != sik::INS_OBJDONE) {
-					this->ObjectDefinitions->at(i).push_back(instruct);
-					break;
-				}
+		int size = (int)this->ObjectDefinitions->size();
+		for (int i = size - 1; i >= 0; i--) {
+			if ((int)this->ObjectDefinitions->at(i).size() == 0 || this->ObjectDefinitions->at(i).back().Type != sik::INS_OBJDONE) {
+				this->ObjectDefinitions->at(i).push_back(instruct);
+				break;
 			}
 		}
 	}

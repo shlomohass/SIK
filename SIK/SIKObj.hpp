@@ -13,6 +13,7 @@
 #include "SIKInstruct.hpp"
 #include <string>
 #include <vector>
+#include <unordered_map>
 
 namespace sik
 {
@@ -25,9 +26,11 @@ namespace sik
 		double			 Number;
 		std::string      String;
 		std::vector<sik::SIKObj> Array;
+		std::unordered_map<std::string, sik::SIKObj> Obj;
 		std::pair<int, std::string> Func;
 		std::vector<sik::SIKInstruct>* FuncSpace;
 		bool			 isPerma; //This is a special flag for preventing scope cleaning such as in for loops definition;
+		
 
 		SIKObj();
 		SIKObj(int value);
@@ -44,9 +47,11 @@ namespace sik
         double getAsNumber();
         std::string getAsString();
         double getAsBool();
-		void pushToArray(sik::SIKObj _obj);
+		void pushToArray(const sik::SIKObj& _obj);
+		void setInObject(const std::string& name,sik::SIKObj* _obj);
+		sik::SIKObj* getFromObject(const std::string& name);
 
-        void mutate(SIKObj* obj);
+        void mutate(sik::SIKObj* obj);
 		virtual ~SIKObj();
 	};
 }

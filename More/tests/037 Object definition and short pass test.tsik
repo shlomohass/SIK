@@ -1,0 +1,20 @@
+let program = {
+    name    : "SIK",
+    author  : "Shlomo Hassid",
+    version : "0.3",
+    date    : { year : "2017", month: "Jan" },
+    info    : {
+        platforms : { support : ["win", "mac", "linux"] },
+        op        : [86, 64]
+    }
+};
+print program.name, " By: ", program.author, " - ";
+print "Ver: ", program.version, " - ";
+print "Created: ", program.year, "/", program.month, " - ";
+print "Op: ", program.support[0];
+
+/*
+@expected-output
+SIK By: Shlomo Hassid - Ver: 0.3 - Created: 2017/Jan - Op: win
+@end-expected-output
+*/
