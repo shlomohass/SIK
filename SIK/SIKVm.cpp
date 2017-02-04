@@ -1352,9 +1352,11 @@ namespace sik {
 				//Clean scope for loop:
 				this->cleanNamesInScope();
 
-				//Execute the call:
-				this->InstPointer = call.first + 1;
-				this->execute(call.second->InternalJumper);
+				//Execute the call if needed:
+				if (call.first + 1 < call.second->InternalJumper) {
+					this->InstPointer = call.first + 1;
+					this->execute(call.second->InternalJumper);
+				}
 
 			} else {
 				condMasterLoopResult = false;

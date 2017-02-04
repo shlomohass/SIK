@@ -82,7 +82,7 @@ SIK todo list:
 [X] Vm -> Execution of anon funct ??? without var -> precendence for localy set variable.
 [X] Vm -> Execution of recursive functions.
 [X] Vm -> For loop execution with proper scoping and nesting support.
-[ ] Vm -> For loop execution with shorhand type (without call part).  
+[X] Vm -> For loop execution with shorhand type (without call part).  
 [ ] Vm -> While loop execution with proper scoping and nesting support.
 [ ] Vm -> Each loop execution with proper scoping and nesting support.
 [ ] Vm -> Test and implementation of mix loop nested.

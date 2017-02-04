@@ -1,0 +1,18 @@
+for (let j = 0, j <= 5) {
+	for (let i = 0, i < j) {
+		print "*";
+		i++;
+	}
+	if (j > 0 && j < 5) { print "\n"; }
+	j++;
+}
+
+/*
+@expected-output
+*
+**
+***
+****
+*****
+@end-expected-output
+*/

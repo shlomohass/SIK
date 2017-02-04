@@ -1,16 +1,6 @@
-function buildArray(a,b,c,d,e) {
-    return [a,b,c,d,e];
-};
-function printArray(arr, getLength) {
-    for (let i = 0, i < 5, i++) {
-		print "E:",arr[i]," L:",getLength(arr[i])," - ";
-    }
-};
-let getLength = function(str) {
-    return 0 + str;
-};
-let s = buildArray("SIK","IS","VERY","FAST","!");
-printArray(s,getLength);
+for (let j = 0; j < 5; j++) {
+    print "*";
+}
 
 /*
 let obj = {
