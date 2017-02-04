@@ -1047,9 +1047,10 @@ namespace sik {
 				//Move pointer to end of If true block:
 				this->InstPointer = this->Instructions->at(Inst->InternalJumper).InternalJumper;
 				//Check Whether has an else:
-				if (this->Instructions->at(this->InstPointer + 1).Type == sik::INS_ELSE) {
+				sik::SIKInstruct* checkInst = this->getInstPointer(this->InstPointer + 1);
+				if (checkInst != nullptr && checkInst->Type == sik::INS_ELSE) {
 					this->InstPointer++;
-				} else if (this->Instructions->at(this->InstPointer + 1).Type == sik::INS_ELSEIF) {
+				} else if (checkInst != nullptr && checkInst->Type == sik::INS_ELSEIF) {
 					this->allowElseIf = true;
 				}
 			} else {

@@ -1,0 +1,26 @@
+let a,b,c,d;
+b = "sik script";
+c = 2*2*2;
+d = (0 + b) == (0 + b) + 1 - 1;
+if ( 0 + b > 6 ) {
+	print true;
+} else {
+	print false;
+}
+print ",";
+if (d) {
+	print true;
+} else {
+	print false;
+}
+print ",";
+if (d == false) {
+	print true;
+} else {
+	print false;
+}
+/*
+@expected-output
+TRUE,TRUE,FALSE
+@end-expected-output
+*/

@@ -1,0 +1,17 @@
+let a = 4,
+    b = true,
+	c = false,
+	d = 2;
+	
+if (b) { print "s"; }
+if (b || c) { print "i"; }
+if (a == (d + 2) && (b || c)) { print "k"; }
+if (c) { print "no1"; }
+if (c == b) { print "no2"; }
+if (d == a) { print "no3"; }
+if (b && c) { print "no4"; }
+/*
+@expected-output
+sik
+@end-expected-output
+*/

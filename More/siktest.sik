@@ -1,7 +1,4 @@
-let c = 5, j = 5;
-while (true, c) {
-    print --j,",";
-}
+
 
 /*
 let obj = {
@@ -40,9 +37,6 @@ let all = {
 //a = .67 + a.name[i].age * 0.6 + .5;
 
 /*
-while (a > 3, 10) { break 3 + 2; }
-*/
-/*
 while (true) { continue; }
 if (test) { breakif; }
 */
@@ -53,8 +47,6 @@ a = (b++ - 4)*3;
 
 //each (a, i, e) { test = test + 1; }
 //each (a, e) { print "yes"; }
-
-//for (i, i < 2) { i++; a -= "shlomi"; }
 //for (j, j < 10) ~{ --j; j += 2; }
 
 /*
@@ -84,14 +76,6 @@ let a = {
 	cc : true,
 	dd : { aaa : false, bbb : "hassid", ccc : { a : 4*5 } } 
 };
-*/
-/*
-for (let i = 0, i < 4, i++) {
-	let j,r,e;
-	j = { name : "shlomi", last : "hassid" };
-	r = a + 2 && b < 5 || c && d;
-	e = r++ + 4;
-}
 */
 /*
 let bob = { 
