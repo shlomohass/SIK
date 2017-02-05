@@ -10,6 +10,7 @@
 //  -r "More\siktest.sik"
 //  --tin "More\tests" --texec  "Release\SIK.exe" --debug
 //  -h
+//  In win -> x64\Release\SIK.exe --tin "More\tests" --texec  "x64\Release\SIK.exe" --debug
 //
 
 #define SIK_VERSION "0.3"
@@ -226,7 +227,7 @@ int executeTests(
 				failedTests->push_back(iterator->first);
 			}
 			clock_t tEnd = clock();
-			printf("       Execution: %.2fs, %dms\n\n", (double)(tEnd - tStart) / CLOCKS_PER_SEC, (tEnd - tStart) / (CLOCKS_PER_SEC / 1000));
+			printf("       Execution: %.2fs, %dms \n\n", (double)(tEnd - tStart) / CLOCKS_PER_SEC, (tEnd - tStart) / (CLOCKS_PER_SEC / 1000));
 
 			(*actualTestsPerform)++;
 		} else {

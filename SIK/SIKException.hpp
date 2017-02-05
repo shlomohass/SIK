@@ -18,6 +18,7 @@ namespace sik {
 	{
 		std::string Message;
 		int Line;
+		int Inst;
         sik::ExcepTypes Type;
 
 	public:
@@ -26,8 +27,10 @@ namespace sik {
         SIKException(sik::ExcepTypes type);
 		SIKException(sik::ExcepTypes type, const std::string& message);
 		SIKException(sik::ExcepTypes type, const std::string& message, int line);
+		SIKException(sik::ExcepTypes type, const std::string& message, int line, int inst);
 		std::string what();
-		std::string where();
+		std::string where(); 
+		std::string instruct();
 		void render(int debug);
 	};
 }

@@ -273,7 +273,7 @@ namespace sik {
 	void SIKVm::createNameInScope(const std::string& name) {
 		//Validate Names:
 		if (this->scopeHasName(name)) {
-            throw sik::SIKException(sik::EXC_RUNTIME, "Tried to redefine a variable. 323256", this->getCurrentLineOrigin());
+            throw sik::SIKException(sik::EXC_RUNTIME, "Tried to redefine a variable. 323256", this->getCurrentLineOrigin(), this->InstPointer);
 		}
 		//Create Object:
 		sik::SIKObj* obj = new SIKObj();
@@ -479,7 +479,7 @@ namespace sik {
 					STData->obj = this->findGlobalFuncAndCache(Inst->Value, Inst, true);
 					STData->objectType = sik::SDT_TEMP;
 					if (STData->obj == nullptr) {
-						throw sik::SIKException(sik::EXC_RUNTIME, "Called to undifined variable. 987544", Inst->lineOrigin);
+						throw sik::SIKException(sik::EXC_RUNTIME, "Called to undifined variable. 987544", Inst->lineOrigin, this->InstPointer);
 					}
 				}
 				break;
@@ -501,7 +501,7 @@ namespace sik {
 						STData->obj = new SIKObj(key, &it->second);
 					} else {
 						//Can't find this:
-						throw sik::SIKException(sik::EXC_RUNTIME, "Called or tried to set an undifined function. 7784454", Inst->lineOrigin);
+						throw sik::SIKException(sik::EXC_RUNTIME, "Called or tried to set an undifined function. 7784454", Inst->lineOrigin, this->InstPointer);
 					}
 				} break;
 		}
@@ -736,7 +736,7 @@ namespace sik {
             //Number,Any
             if (left->obj->Type == sik::OBJ_NUMBER) {
                 if (left->obj->Number == 0) {
-                    throw sik::SIKException(sik::EXC_RUNTIME,"Devision by Zero",Inst->lineOrigin);
+                    throw sik::SIKException(sik::EXC_RUNTIME,"Devision by Zero",Inst->lineOrigin, this->InstPointer);
                 }
                 STData->obj = new SIKObj(left->obj->Number / right->obj->getAsNumber());
             }
@@ -778,7 +778,7 @@ namespace sik {
 				}
 
 			} else {
-				throw sik::SIKException(sik::EXC_RUNTIME, "Trying to opperate on a none numeric value. 65484", Inst->lineOrigin);
+				throw sik::SIKException(sik::EXC_RUNTIME, "Trying to opperate on a none numeric value. 65484", Inst->lineOrigin, this->InstPointer);
 			}
 		}
 
@@ -1175,7 +1175,7 @@ namespace sik {
 		
 		//Validate we are handlig with an array:
 		if (nameObj->obj->Type != sik::OBJ_ARRAY) {
-			throw sik::SIKException(sik::EXC_RUNTIME, "Tried to perform operation on a none array variable. 332254", Inst->lineOrigin);
+			throw sik::SIKException(sik::EXC_RUNTIME, "Tried to perform operation on a none array variable. 332254", Inst->lineOrigin, this->InstPointer);
 		}
 
 		if (argNum > 0) {
@@ -1196,12 +1196,12 @@ namespace sik {
 				int WalkTo = (int)element->obj->getAsNumber();
 				if (i == 0) {
 					if (WalkTo >= (int)nameObj->obj->Array.size()) {
-						throw sik::SIKException(sik::EXC_RUNTIME, "Tried to call to undefined array element. 658475", Inst->lineOrigin);
+						throw sik::SIKException(sik::EXC_RUNTIME, "Tried to call to undefined array element. 658475", Inst->lineOrigin, this->InstPointer);
 					}
 					STData->obj = &nameObj->obj->Array.at(WalkTo);
 				} else {
 					if (WalkTo >= (int)STData->obj->Array.size()) {
-						throw sik::SIKException(sik::EXC_RUNTIME, "Tried to call to undefined array element. 658475", Inst->lineOrigin);
+						throw sik::SIKException(sik::EXC_RUNTIME, "Tried to call to undefined array element. 658475", Inst->lineOrigin, this->InstPointer);
 					}
 					STData->obj = &STData->obj->Array.at(WalkTo);
 				}
@@ -1231,7 +1231,7 @@ namespace sik {
 		if (this->validateStackDataIsAttached(to, false) && to->obj->Type == sik::OBJ_ARRAY) {
 			to->useArrayPush = true;
 		} else {
-			throw sik::SIKException(sik::EXC_RUNTIME, "Can't make a push on a none array type variable. 11245", Inst->lineOrigin);
+			throw sik::SIKException(sik::EXC_RUNTIME, "Can't make a push on a none array type variable. 11245", Inst->lineOrigin, this->InstPointer);
 		}
 
 		//Clear some mem:
@@ -1258,7 +1258,7 @@ namespace sik {
 		if (this->validateStackDataIsCallable(func, false)) {
 			int returnCode = this->exec_func(func->obj->FuncSpace, &ArgsContainer);
 			if (returnCode != -1) { 
-				throw sik::SIKException(sik::EXC_RUNTIME, "Problem in function call", this->getCurrentLineOrigin());
+				throw sik::SIKException(sik::EXC_RUNTIME, "Problem in function call", this->getCurrentLineOrigin(), this->InstPointer);
 			}
 		}
 		delete func;
@@ -1321,7 +1321,7 @@ namespace sik {
 			if ((int)this->scopes.size() > 1) {
 				this->scopes.end()[-2]->Stack->Stack.push_back(toPushSd);
 			} else {
-				throw sik::SIKException(sik::EXC_RUNTIME, "Scopes not synced! - 76523489329");
+				throw sik::SIKException(sik::EXC_RUNTIME, "Scopes not synced! - 76523489329", this->InstPointer);
 			}
 		}
 
@@ -1344,7 +1344,7 @@ namespace sik {
 		if (block.second != nullptr) {
 			this->exec_block(block.second);
 		} else {
-			throw sik::SIKException(sik::EXC_RUNTIME, "For Loop Block UnParsed. 76523489", Inst->lineOrigin);
+			throw sik::SIKException(sik::EXC_RUNTIME, "For Loop Block UnParsed. 76523489", Inst->lineOrigin, this->InstPointer);
 		}
 
 		//Execute definition:
@@ -1354,7 +1354,7 @@ namespace sik {
 			//Mark all definition part as protected:
 			this->protectAllNamesInScope();
 		} else {
-			throw sik::SIKException(sik::EXC_RUNTIME, "For Loop Definition UnParsed. 1215456321", Inst->lineOrigin);
+			throw sik::SIKException(sik::EXC_RUNTIME, "For Loop Definition UnParsed. 1215456321", Inst->lineOrigin, this->InstPointer);
 		}
 
 		//Loop:
@@ -1416,7 +1416,7 @@ namespace sik {
 		if (block.second != nullptr) {
 			this->exec_block(block.second);
 		} else {
-			throw sik::SIKException(sik::EXC_RUNTIME, "For Loop Block UnParsed. 76523489", Inst->lineOrigin);
+			throw sik::SIKException(sik::EXC_RUNTIME, "For Loop Block UnParsed. 76523489", Inst->lineOrigin, this->InstPointer);
 		}
 
 		//Check for max part:
@@ -1549,7 +1549,7 @@ namespace sik {
 				//Set the child as the current path:
 				left->obj = theChild;
 			} else {
-				throw sik::SIKException(sik::EXC_RUNTIME, "Object has no child member: " + Inst->Value + ". 4554112145", this->getCurrentLineOrigin());
+				throw sik::SIKException(sik::EXC_RUNTIME, "Object has no child member: " + Inst->Value + ". 4554112145", this->getCurrentLineOrigin(), this->InstPointer);
 			}
 		}
 	}
@@ -1557,92 +1557,92 @@ namespace sik {
     bool SIKVm::validateStackDataForMathOp(sik::SIKStackData* Left, sik::SIKStackData* Right, bool preventExcep) {
         if (Left == nullptr || Right == nullptr) {
             if (preventExcep) return false;
-            throw sik::SIKException(sik::EXC_RUNTIME, "Null Stack. 54343555", this->getCurrentLineOrigin());
+            throw sik::SIKException(sik::EXC_RUNTIME, "Null Stack. 54343555", this->getCurrentLineOrigin(), this->InstPointer);
         }
         if (Left->obj->Type == sik::OBJ_FUNC || Left->obj->Type == sik::OBJ_OBJ || Left->obj->Type == sik::OBJ_NAN) {
             if (preventExcep) return false;
-            throw sik::SIKException(sik::EXC_RUNTIME, "Math with unsupported types. 54343556", this->getCurrentLineOrigin());
+            throw sik::SIKException(sik::EXC_RUNTIME, "Math with unsupported types. 54343556", this->getCurrentLineOrigin(), this->InstPointer);
         }
         if (Right->obj->Type == sik::OBJ_FUNC || Right->obj->Type == sik::OBJ_OBJ || Right->obj->Type == sik::OBJ_NAN) {
             if (preventExcep) return false;
-            throw sik::SIKException(sik::EXC_RUNTIME, "Math with unsupported types. 54343557", this->getCurrentLineOrigin());
+            throw sik::SIKException(sik::EXC_RUNTIME, "Math with unsupported types. 54343557", this->getCurrentLineOrigin(), this->InstPointer);
         }
         return true;
     }
     bool SIKVm::validateStackDataForMathOpNumbers(sik::SIKStackData* Left, sik::SIKStackData* Right, bool preventExcep) {
         if (Left == nullptr || Right == nullptr) {
             if (preventExcep) return false;
-            throw sik::SIKException(sik::EXC_RUNTIME, "Null Stack. 543439874", this->getCurrentLineOrigin());
+            throw sik::SIKException(sik::EXC_RUNTIME, "Null Stack. 543439874", this->getCurrentLineOrigin(), this->InstPointer);
         }
         if (Left->obj->Type != sik::OBJ_NUMBER) {
             if (preventExcep) return false;
-            throw sik::SIKException(sik::EXC_RUNTIME, "Math with unsupported types. 543654556", this->getCurrentLineOrigin());
+            throw sik::SIKException(sik::EXC_RUNTIME, "Math with unsupported types. 543654556", this->getCurrentLineOrigin(), this->InstPointer);
         }
         if (Right->obj->Type == sik::OBJ_FUNC || Right->obj->Type == sik::OBJ_OBJ || Right->obj->Type == sik::OBJ_NAN) {
             if (preventExcep) return false;
-            throw sik::SIKException(sik::EXC_RUNTIME, "Math with unsupported types. 5222257", this->getCurrentLineOrigin());
+            throw sik::SIKException(sik::EXC_RUNTIME, "Math with unsupported types. 5222257", this->getCurrentLineOrigin(), this->InstPointer);
         }
         return true;
     }
     bool SIKVm::validateStackDataIsAttached(sik::SIKStackData* Left, bool preventExcep) {
         if (Left == nullptr) {
             if (preventExcep) return false;
-            throw sik::SIKException(sik::EXC_RUNTIME, "Null Stack. 54343558", this->getCurrentLineOrigin());
+            throw sik::SIKException(sik::EXC_RUNTIME, "Null Stack. 54343558", this->getCurrentLineOrigin(), this->InstPointer);
         }
         if (Left->objectType != sik::SDT_ATTACHED || Left->obj == nullptr) {
             if (preventExcep) return false;
-            throw sik::SIKException(sik::EXC_RUNTIME, "Trying to opperate on an undeclared object. 54343559", this->getCurrentLineOrigin());
+            throw sik::SIKException(sik::EXC_RUNTIME, "Trying to opperate on an undeclared object. 54343559", this->getCurrentLineOrigin(), this->InstPointer);
         }
         return true;
     }
 	bool SIKVm::validateStackDataIsObject(sik::SIKStackData* Left, bool preventExcep) {
 		if (Left == nullptr) {
 			if (preventExcep) return false;
-			throw sik::SIKException(sik::EXC_RUNTIME, "Null Stack. 11211445", this->getCurrentLineOrigin());
+			throw sik::SIKException(sik::EXC_RUNTIME, "Null Stack. 11211445", this->getCurrentLineOrigin(), this->InstPointer);
 		}
 		if (Left->obj == nullptr || Left->obj->Type != sik::OBJ_OBJ) {
 			if (preventExcep) return false;
-			throw sik::SIKException(sik::EXC_RUNTIME, "Trying to opperate on an none object value. 788745444", this->getCurrentLineOrigin());
+			throw sik::SIKException(sik::EXC_RUNTIME, "Trying to opperate on an none object value. 788745444", this->getCurrentLineOrigin(), this->InstPointer);
 		}
 		return true;
 	}
     bool SIKVm::validateStackDataAvailable(sik::SIKStackData* sd, bool preventExcep) {
         if (sd == nullptr) {
             if (preventExcep) return false;
-            throw sik::SIKException(sik::EXC_RUNTIME, "Null Stack. 5434360", this->getCurrentLineOrigin());
+            throw sik::SIKException(sik::EXC_RUNTIME, "Null Stack. 5434360", this->getCurrentLineOrigin(), this->InstPointer);
         }
         return true;
     }
 	bool SIKVm::validateStackDataCanBeBool(sik::SIKStackData* sd, bool preventExcep) {
 		if (sd == nullptr) {
 			if (preventExcep) return false;
-			throw sik::SIKException(sik::EXC_RUNTIME, "Null Stack. 65326773", this->getCurrentLineOrigin());
+			throw sik::SIKException(sik::EXC_RUNTIME, "Null Stack. 65326773", this->getCurrentLineOrigin(), this->InstPointer);
 		}
 		if (sd->obj->Type == sik::OBJ_NAN || sd->obj->Type == sik::OBJ_FUNC || sd->obj->Type == sik::OBJ_NULL || sd->obj->Type == sik::OBJ_OBJ) {
 			if (preventExcep) return false;
-			throw sik::SIKException(sik::EXC_RUNTIME, "Expected Boolean Value Instead a none boolean and none primitive type. 9878877", this->getCurrentLineOrigin());
+			throw sik::SIKException(sik::EXC_RUNTIME, "Expected Boolean Value Instead a none boolean and none primitive type. 9878877", this->getCurrentLineOrigin(), this->InstPointer);
 		}
 		return true;
 	}
 	bool SIKVm::validateStackDataCanBeNumeric(sik::SIKStackData* sd, bool preventExcep) {
 		if (sd == nullptr) {
 			if (preventExcep) return false;
-			throw sik::SIKException(sik::EXC_RUNTIME, "Null Stack. 65326773", this->getCurrentLineOrigin());
+			throw sik::SIKException(sik::EXC_RUNTIME, "Null Stack. 65326773", this->getCurrentLineOrigin(), this->InstPointer);
 		}
 		if (sd->obj->Type == sik::OBJ_NAN || sd->obj->Type == sik::OBJ_FUNC || sd->obj->Type == sik::OBJ_NULL || sd->obj->Type == sik::OBJ_OBJ) {
 			if (preventExcep) return false;
-			throw sik::SIKException(sik::EXC_RUNTIME, "Expected Boolean Value Instead a none boolean and none primitive type. 9878877", this->getCurrentLineOrigin());
+			throw sik::SIKException(sik::EXC_RUNTIME, "Expected Boolean Value Instead a none boolean and none primitive type. 9878877", this->getCurrentLineOrigin(), this->InstPointer);
 		}
 		return true;
 	}
 	bool SIKVm::validateStackDataIsCallable(sik::SIKStackData* sd, bool preventExcep) {
 		if (sd == nullptr) {
 			if (preventExcep) return false;
-			throw sik::SIKException(sik::EXC_RUNTIME, "Null Stack. 9888456", this->getCurrentLineOrigin());
+			throw sik::SIKException(sik::EXC_RUNTIME, "Null Stack. 9888456", this->getCurrentLineOrigin(), this->InstPointer);
 		}
 		if (sd->obj->Type != sik::OBJ_FUNC) {
 			if (preventExcep) return false;
-			throw sik::SIKException(sik::EXC_RUNTIME, "Tried to execute a none function or not properly declared function. 111245", this->getCurrentLineOrigin());
+			throw sik::SIKException(sik::EXC_RUNTIME, "Tried to execute a none function or not properly declared function. 111245", this->getCurrentLineOrigin(), this->InstPointer);
 		}
 		return true;
 	}

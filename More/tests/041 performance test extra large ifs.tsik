@@ -1,0 +1,12 @@
+for (let i=0, i < 900, i++) {
+	if (i == -1) {
+	} elseif (i == -2) {
+	} elseif (i == -3) {
+	}
+}
+print "done";
+/*
+@expected-output
+done
+@end-expected-output
+*/

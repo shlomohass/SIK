@@ -17,24 +17,35 @@ namespace sik {
         this->Type = sik::EXC_GENERAL;
 		this->Message = "Unknown Exeception occured.";
 		this->Line = -1;
+		this->Inst = -1;
 	}
     SIKException::SIKException(sik::ExcepTypes type)
     {
         this->Type = type;
         this->Message = "Unknown Exeception occured.";
         this->Line = -1;
+		this->Inst = -1;
     }
 	SIKException::SIKException(sik::ExcepTypes type, const std::string& message)
 	{
         this->Type = type;
 		this->Message = message;
 		this->Line = -1;
+		this->Inst = -1;
 	}
 	SIKException::SIKException(sik::ExcepTypes type, const std::string& message, int line)
 	{
         this->Type = type;
 		this->Message = message;
 		this->Line = line;
+		this->Inst = -1;
+	}
+	SIKException::SIKException(sik::ExcepTypes type, const std::string& message, int line, int inst)
+	{
+		this->Type = type;
+		this->Message = message;
+		this->Line = line;
+		this->Inst = inst;
 	}
 	std::string SIKException::what()
 	{
@@ -57,8 +68,12 @@ namespace sik {
 	{
 		return "[ Line : " + std::to_string(this->Line) + " ] ";
 	}
+	std::string SIKException::instruct()
+	{
+		return this->Inst != -1 ? "[ Instruct : " + std::to_string(this->Inst) + " ] " : "";
+	}
 	void SIKException::render(int debug) {
 		if (debug > 0)
-			std::cout << this->what() << this->where() << std::endl;
+			std::cout << this->what() << this->where() << this->instruct() << std::endl;
 	}
 }

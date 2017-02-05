@@ -1,0 +1,28 @@
+
+let tools = {
+    buffer : [],
+    print_buffer : function(a) {
+        for (let i = 0, i < a, i++) {
+            print tools.buffer[i],",";
+        }
+    },
+    output: function(a) {
+        print a;
+    },
+    length: function(a) {
+        return 0 + a;
+    }
+};
+
+tools.buffer[] = 1;
+tools.buffer[] = 2;
+tools.buffer[] = 3;
+tools.output("SIK - ");
+print tools.length("my length"), " - ";
+tools.print_buffer(tools.length("123"));
+
+/*
+@expected-output
+SIK - 9 - 1,2,3,
+@end-expected-output
+*/

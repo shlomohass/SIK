@@ -1,0 +1,10 @@
+let a = 4,
+    car = { sale: true, type: "KIA" },
+    bike = car;
+bike.type = "GIANT";
+print car.type, ", ", bike.type, " - Onsale: ", car.sale, ", ", bike.sale;
+/*
+@expected-output
+KIA, GIANT - Onsale: TRUE, TRUE
+@end-expected-output
+*/

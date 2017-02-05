@@ -485,6 +485,11 @@ namespace sik {
 		}
 		sik::SIKTokens blockSubSet = TokenSet->getFromeSet(token->index + 1, BlockEnd);
 
+		//Mark as obj block:
+		if (!blockSubSet.empty()) {
+			blockSubSet.back()->addBlock = sik::BLOCK_OBJ;
+		}
+
 		//Recursively parse condition:
 		sik::SIKAst* blockNode = this->BuildAst(&blockSubSet);
 		
@@ -1458,8 +1463,17 @@ namespace sik {
 		this->AddToInstructions(instruct, nullptr);
 	}
 	void SIKParser::AddToInstructions(sik::SIKInstruct instruct, sik::SIKAst* nodeParent) {
+		//Mutate the intruct base on the parent value if needed:
+		if (nodeParent != nullptr) {
+			if (instruct.Type == sik::INS_DEFINE) {
+				instruct.Value = nodeParent->Value;
+			}
+		}
+
+		//Helpers:
 		int testForBlocks = (int)this->BlockChunksContainer.size();
 		bool AddNewObjecSpace = false;
+		
 		//If its a object chunk set pointer to the correct definition
 		if (instruct.Type == sik::INS_OBJCREATE) {
 			instruct.pointToInstruct = (int)this->ObjectDefinitions->size();
@@ -1480,20 +1494,6 @@ namespace sik {
 			this->BlockChunksContainer.push_back(sik::BLOCK_OBJ);
 			this->ObjectDefinitions->push_back(std::vector<sik::SIKInstruct>());
 		}
-		//This will start a object definition at the correct place: 
-		/*
-		if (instruct.Type == sik::INS_OBJCREATE && testForBlocks > 0) {
-			int blockContainer = (int)this->ObjectDefinitions->size();
-			this->ObjectDefinitions->at(this->BlockChunksContainer.size()-1).back().pointToInstruct = blockContainer;
-			this->BlockChunksContainer.push_back(sik::BLOCK_OBJ);
-			this->ObjectDefinitions->push_back(std::vector<sik::SIKInstruct>());
-		} else if (instruct.Type == sik::INS_OBJCREATE) {
-			int blockContainer = (int)this->ObjectDefinitions->size();
-			this->Instructions->back().pointToInstruct = blockContainer;
-			this->BlockChunksContainer.push_back(sik::BLOCK_OBJ);
-			this->ObjectDefinitions->push_back(std::vector<sik::SIKInstruct>());
-		}
-		*/
 	}
 	void SIKParser::pushToObjectsInstructions(const sik::SIKInstruct& instruct) {
 		int size = (int)this->ObjectDefinitions->size();
@@ -1574,8 +1574,7 @@ namespace sik {
 		}
 		// Variable definition:
 		if (nodeChild->Value == SIKLang::dicLangKey_variable) {
-			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_DEFINE));
-			this->Instructions->back().Value = nodeParent->Value;
+			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_DEFINE), nodeParent);
 			return;
 		}
 		//While Loop:
@@ -1723,14 +1722,13 @@ namespace sik {
 		//Incase we are wrapping an Object definition:
 		if (nodeChild->Block == sik::BLOCK_FUNC) {
 			this->AddToInstructions(sik::SIKInstruct(nodeChild));
-		} else if ((int)this->BlockChunksContainer.size() > 0 && this->BlockChunksContainer.back() == sik::BLOCK_OBJ) {
+		} else if (nodeChild->Block == sik::BLOCK_OBJ && (int)this->BlockChunksContainer.size() > 0 && this->BlockChunksContainer.back() == sik::BLOCK_OBJ) {
 			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_OBJDONE));
 			this->BlockChunksContainer.pop_back();
 		//Normal Object:
 		} else {
 			this->AddToInstructions(sik::SIKInstruct(nodeChild));
-		}
-		
+		}		
 	}
 	void SIKParser::genForOpSingleSide(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild) {
 		if (nodeChild->preVariable && nodeChild->Type == sik::DELI_INCR) {

@@ -1,0 +1,24 @@
+
+let c = {
+    fact : .5,
+    add  : 10
+};
+let bed = {
+    price: 45 * c.fact,
+    fabric: "wood",
+    add: c.add
+};
+let newbed = bed;
+newbed.price = 80;
+newbed.price++;
+bed.fabric = "plastic";
+
+print bed.fabric," ", bed.price, " ";
+print newbed.fabric," ", newbed.price, " ";
+print newbed.price + bed.price + newbed.add;
+
+/*
+@expected-output
+plastic 22.5 wood 81 113.5
+@end-expected-output
+*/

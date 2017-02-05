@@ -1,34 +1,25 @@
 
-let program = {
-    name    : "SIK",
-    author  : "Shlomo Hassid",
-    version : "0.3",
-    date    : { year : "2017", month: "January" },
-    info    : {
-        platforms : { support : ["win", "mac", "linux"] },
-        op        : [86, 64]
+let tools = {
+    buffer : [],
+    print_buffer : function(a) {
+        for (let i = 0, i < a, i++) {
+            print tools.buffer[i],",";
+        }
+    },
+    output: function(a) {
+        print a;
+    },
+    length: function(a) {
+        return 0 + a;
     }
 };
-print program.name, " By: ", program.author, "\n";
-print "Program Version: ", program.version, "\n";
-print "Created: ", program.year, " - ", program.month, "\n";
-print "Operating On: ", program.support[0], "\n";
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+tools.buffer[] = 1;
+tools.buffer[] = 2;
+tools.buffer[] = 3;
+tools.output("SIK - ");
+print tools.length("my length"), " - ";
+tools.print_buffer(tools.length("123"));
 
 
 /*
@@ -72,42 +63,11 @@ while (true) { continue; }
 if (test) { breakif; }
 */
 
-/*
-a = (b++ - 4)*3;
-*/
 
 //each (a, i, e) { test = test + 1; }
 //each (a, e) { print "yes"; }
 //for (j, j < 10) ~{ --j; j += 2; }
 
-/*
-let a = {
-	bb : "shlomi",
-	cc : true
-};
-*/
-/*
-let gef,
-    a = {
-		one : 2,
-		b : true,
-		c : { e : true, f : false }
-	}, 
-	kke = 5;
-*/
-/*
-let a = {
-    aa: 2 + 3 * 4 - 4
-};
-*/
-/*
-let a = {
-	aa : 2 + 3 * 4 - 4,
-	bb : "shlomi",
-	cc : true,
-	dd : { aaa : false, bbb : "hassid", ccc : { a : 4*5 } } 
-};
-*/
 /*
 let bob = { 
 	a : { t : 7 }, 
