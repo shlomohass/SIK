@@ -1,4 +1,4 @@
-for (let i=0, i < 900, i++) {
+for (let i=0, i < 1000, i++) {
 	if (i == -1) {
 	} elseif (i == -2) {
 	} elseif (i == -3) {

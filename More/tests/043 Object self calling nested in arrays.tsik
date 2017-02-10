@@ -1,0 +1,19 @@
+let g = [2, 
+         { name: "sik" }, 
+         { name: "tests" }, 
+         { printMe:function(g){ 
+             print g[0]," ",
+                   g[1].name," ",
+                   g[2].name," ",
+                   g[4];
+            }
+         }
+];
+g[] = "done";
+g[3].printMe(g);
+
+/*
+@expected-output
+2 sik tests done
+@end-expected-output
+*/

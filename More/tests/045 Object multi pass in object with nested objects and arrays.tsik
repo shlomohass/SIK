@@ -1,0 +1,18 @@
+let obj = {
+    firstPass: [
+        {
+            secondPass: {
+                thirdPass: ["sik"]
+            }
+        }
+    ]
+};
+
+print obj.firstPass[0].secondPass.thirdPass[0];
+
+	  
+/*
+@expected-output
+sik
+@end-expected-output
+*/

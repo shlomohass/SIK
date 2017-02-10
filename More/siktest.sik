@@ -1,76 +1,9 @@
-
-let tools = {
-    buffer : [],
-    print_buffer : function(a) {
-        for (let i = 0, i < a, i++) {
-            print tools.buffer[i],",";
-        }
-    },
-    output: function(a) {
-        print a;
-    },
-    length: function(a) {
-        return 0 + a;
-    }
-};
-
-tools.buffer[] = 1;
-tools.buffer[] = 2;
-tools.buffer[] = 3;
-tools.output("SIK - ");
-print tools.length("my length"), " - ";
-tools.print_buffer(tools.length("123"));
-
-
-/*
-let obj = {
-    i : 0,
-    set: function(a) {
-        obj.i = a;
-    },
-    move: function(x) { 
-        obj.i += x;
-    },
-    printAll: function() {
-        print obj.i;
-    }
-};
-*/
-/*
-let all = {
-    add: function (a, b) {
-        let s = {
-            run: function (a, b) {
-                print a + b;
-            }
-        };
-        s.run;
-    }
-};
-*/
-//g = [2, { name: "sh" }, { name: "gf" }];
-//print { name : "shlomi", last : "hassid"}, 4, true || false;
-// a = bob.age++;
-//b = --sed[i].age;
-//a = bob[2].name.test + shl.has;
-//a = mom.test.shlo[3] + mic[3].ab.ter[1];
-//t[4].type = met.be[2, 3] * bet[i].childs[0].name;
-//a = last.name[0].test;
-//a = .67 + a.name[i].age * 0.6 + .5;
-
+// { name : "sik" }.name; <--- HANDLE internal error
 /*
 while (true) { continue; }
 if (test) { breakif; }
 */
 
-
 //each (a, i, e) { test = test + 1; }
 //each (a, e) { print "yes"; }
 //for (j, j < 10) ~{ --j; j += 2; }
-
-/*
-let bob = { 
-	a : { t : 7 }, 
-	b : function() { } 
-};
-*/

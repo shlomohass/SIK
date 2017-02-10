@@ -1,0 +1,18 @@
+let all = {
+    add: function (a, b) {
+        let s = {
+            run: function (a, b) {
+                print a + b;
+            }
+        };
+        s.run(a,b);
+    }
+};
+
+all.add(2,3);
+
+/*
+@expected-output
+5
+@end-expected-output
+*/

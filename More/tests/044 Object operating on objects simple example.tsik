@@ -1,0 +1,15 @@
+let bob = { age : 18 };
+let all = [bob, bob]; 
+let nextAge = bob.age++;
+let childOne = --all[1].age;
+print nextAge," ",
+      bob.age," ",
+      childOne," ",
+      all[1].age," ",
+      { name : "sik" };
+	  
+/*
+@expected-output
+18 19 17 17 OBJECT
+@end-expected-output
+*/
