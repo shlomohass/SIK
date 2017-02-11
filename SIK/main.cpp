@@ -34,6 +34,7 @@
 #include "SIKAdd.hpp"
 #include "SIKLang.hpp"
 #include "SIKScript.hpp"
+#include "SIKPluginManager.hpp"
 
 #ifndef _WIN32
 inline int _pipe(int fildes[2], unsigned psize, int textmode) {
@@ -112,14 +113,7 @@ std::string unescape(const std::string& str) {
 	}
 	return res;
 }
-int parseTests(
-	const std::string& testInPath, 
-	const std::string& testOutPath,
-	const std::string& testExt, 
-	std::map<std::string, tinydir_file> *test_files,
-	std::map <std::string, std::string>* expected_results_list,
-	std::map <std::string, std::string>* computed_results_list
-) {
+int parseTests(const std::string& testInPath, const std::string& testOutPath, const std::string& testExt, std::map<std::string, tinydir_file> *test_files, std::map <std::string, std::string>* expected_results_list, std::map <std::string, std::string>* computed_results_list) {
 	int testcount = 0;
 	tinydir_dir dir;
 	tinydir_open(&dir, testInPath.c_str());
@@ -191,14 +185,7 @@ int parseTests(
 	}
 	return 1;
 }
-int executeTests(
-	const std::string& execpath,
-	std::map<std::string, tinydir_file> *test_files,
-	std::map <std::string, std::string>* expected_results_list,
-	std::map <std::string, std::string>* computed_results_list,
-	std::vector<std::string>* failedTests,
-	int *actualTestsPerform
-) {
+int executeTests(const std::string& execpath,std::map<std::string, tinydir_file> *test_files,std::map <std::string, std::string>* expected_results_list,std::map <std::string, std::string>* computed_results_list,std::vector<std::string>* failedTests,int *actualTestsPerform) {
 
 	*actualTestsPerform = 0;
 
@@ -286,17 +273,33 @@ int main(int argc, char** argv) {
 
 	//Execute a file:
 	if (execute_is_requested) {
+		
 		//Create the SIKLang Definition:
 		sik::SIKLang* lang = new sik::SIKLang();
 		//Create a Script Container:
 		sik::SIKScript script(enable_debug, debug_level);
+
+		//Load Libs and Plugins:
+		sik::PluginManager plugs;
+		plugs.getPluginList("S:\\proj\\c++\\SIK\\Ext\\");
+		unsigned int allPlaugs = (unsigned int)plugs.getNumPlugins();
+		for (unsigned int i = 0; i < allPlaugs; i++) {
+			sik::PluginInterface* Math = plugs.makeNewPluginInstance(i);
+			if (Math != nullptr) {
+				script.RegisterPlugin(plugs.getPluginName(i), Math);
+			}
+		}
+
 		//Load target script:
 		bool indicator = script.compile(filepath);
 		//Loading success so go and do stuff:
 		if (indicator) {
 			execution_result = script.runVm();
 		}
+
+		//Clear:
 		delete lang;
+		script.release();
 	}
 	//Execute Tests:
 	else if (run_tests) {

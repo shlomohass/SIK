@@ -11,6 +11,7 @@
 #include "SIKInstruct.hpp"
 #include "SIK_Lex.hpp"
 #include "SIKParser.hpp"
+#include "SIKPlugin.hpp"
 #include <iostream>
 #include <string>
 #include <vector>
@@ -29,6 +30,8 @@ namespace sik
 		std::vector<std::vector<sik::SIKInstruct>> ObjectDefinitions;
 		std::map<std::pair<int, std::string>, std::vector<sik::SIKInstruct>> FunctionInstructions;
 
+		std::map<std::string, sik::PluginInterface*> LoadedObjectsAndMethods;
+
 		bool script_debug_flag;
 		int  script_debug_level;
 
@@ -42,12 +45,14 @@ namespace sik
 	public:
 
 		SIKScript(bool debugMode, int debugLevel);
+		bool RegisterPlugin(const std::string& name, sik::PluginInterface* theHandle);
 		bool compile(std::string filename);
 		bool compile(sik::SIKLex* lexer, sik::SIKParser* parser, std::map<int,std::string> exp);
 		int  runVm();
 
 		std::string truncateString(const std::string& str, int max);
 
+		void release();
 	};
 
 }

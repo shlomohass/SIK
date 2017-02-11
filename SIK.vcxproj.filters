@@ -54,6 +54,15 @@
     <ClCompile Include="SIK\SIKObj.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SIK\SIKExtension.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SIK\SIKPluginDetails.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SIK\SIKPluginManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sik\SIKAdd.hpp">
@@ -99,6 +108,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SIK\tinydir.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SIK\SIKExtension.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SIK\SIKPluginManager.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SIK\SIKPluginDetails.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SIK\SIKPlugin.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

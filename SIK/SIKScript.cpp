@@ -28,7 +28,23 @@ namespace sik
 		this->Instructions.reserve(150);
 		this->ObjectDefinitions.reserve(20);
 	};
-
+	/* Register a lib / Ext / Plug the the manager:
+	*/
+	bool SIKScript::RegisterPlugin(const std::string& name, sik::PluginInterface* theHandle) {
+		std::map<std::string, sik::PluginInterface*>::iterator it = this->LoadedObjectsAndMethods.find(name);
+		if (it == this->LoadedObjectsAndMethods.end())
+		{
+			//Run Activate:
+			theHandle->Activate();
+			//Register new:
+			this->LoadedObjectsAndMethods[name] = theHandle;
+			return true;
+		} else {
+			//Allready in so delete:
+			delete theHandle;
+			return false;
+		}
+	}
 	bool SIKScript::validateFileExtension(std::string filename) {
 		std::string ext = filename.substr(filename.find_last_of(".") + 1);
 		if (find(SIKLang::extensionLib.begin(), SIKLang::extensionLib.end(), ext) != SIKLang::extensionLib.end()) {
@@ -451,5 +467,15 @@ namespace sik
 			return std::string(str.begin(), str.begin() + (max - 1)) + ">";
 		}
 		return str;
+	}
+
+	void SIKScript::release() {
+		if (!this->LoadedObjectsAndMethods.empty()) {
+			typedef std::map<std::string, sik::PluginInterface*>::iterator it_type;
+			for (it_type iterator = this->LoadedObjectsAndMethods.begin(); iterator != this->LoadedObjectsAndMethods.end(); iterator++) {
+				iterator->second->Destroy();
+				delete iterator->second;
+			}
+		}
 	}
 }
