@@ -21,9 +21,24 @@
     <ClInclude Include="SIKPlugin.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SIKObj.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SIKAdd.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SIKInstruct.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="SIKPlug_Mani.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SIKInstruct.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SIKObj.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

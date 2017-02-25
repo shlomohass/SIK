@@ -9,6 +9,10 @@
 #ifndef SIKPlugin_hpp
 #define SIKPlugin_hpp
 
+#include "SIKObj.hpp"
+#include <functional>
+#include <iostream>
+#include <map>
 
 #define DECLARE_PLUGIN(x) extern "C"{ __declspec(dllexport) sik::PluginInterface * makePlugin(){ return new x; } }
 #define SET_PLUGIN_NAME(x) extern "C"{ __declspec(dllexport) char * getPluginName(){ return x; } }
@@ -19,6 +23,9 @@ namespace sik
 	class PluginInterface
 	{
 	public:
+
+		std::map<std::string, std::function<sik::SIKObj(std::vector<sik::SIKObj>)>> lookup_members;
+
 		PluginInterface() {}
 		virtual ~PluginInterface() {}
 

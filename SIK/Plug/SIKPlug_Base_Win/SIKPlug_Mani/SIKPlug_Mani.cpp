@@ -18,6 +18,7 @@ namespace sik {
 
 	SIKPlug_Mani::SIKPlug_Mani()
 	{
+		this->lookup_members["concat"] = std::bind(&SIKPlug_Mani::concat, this, std::placeholders::_1);
 	}
 
 
@@ -41,5 +42,12 @@ namespace sik {
 	{
 		std::cout << " Destroy Mani" << std::endl;
 		return 0;
+	}
+
+	//Special Methods:
+	sik::SIKObj SIKPlug_Mani::concat(std::vector<sik::SIKObj> args) {
+		if (args.size() < 2) return sik::SIKObj();
+		sik::SIKObj result(args[0].getAsString() + args[1].getAsString());
+		return result;
 	}
 }

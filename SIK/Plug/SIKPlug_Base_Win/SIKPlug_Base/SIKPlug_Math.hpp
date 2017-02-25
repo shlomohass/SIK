@@ -10,19 +10,26 @@
 #define SIKPlug_Math_hpp
 
 #include "SIKPlugin.hpp"
+#include <vector>
+#include <string>
 
 namespace sik
 {
 
 	class SIKPlug_Math : public sik::PluginInterface
 	{
+
 	public:
+
 		SIKPlug_Math();
 		virtual ~SIKPlug_Math();
 
 		int Activate();
 		int Execute();
 		int Destroy();
+		
+		//Special Methods:
+		sik::SIKObj pow(std::vector<sik::SIKObj> args);
 	};
 
 }

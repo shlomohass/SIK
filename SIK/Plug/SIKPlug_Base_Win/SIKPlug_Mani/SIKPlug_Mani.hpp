@@ -10,6 +10,8 @@
 #define SIKPlug_Mani_hpp
 
 #include "SIKPlugin.hpp"
+#include <map>
+#include <string>
 
 namespace sik
 {
@@ -17,12 +19,16 @@ namespace sik
 	class SIKPlug_Mani : public sik::PluginInterface
 	{
 	public:
+
 		SIKPlug_Mani();
 		virtual ~SIKPlug_Mani();
 
 		int Activate();
 		int Execute();
 		int Destroy();
+
+		//Special Methods:
+		sik::SIKObj concat(std::vector<sik::SIKObj> args);
 	};
 
 }

@@ -146,9 +146,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="SIKInstruct.cpp" />
+    <ClCompile Include="SIKObj.cpp" />
     <ClCompile Include="SIKPlug_Mani.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="SIKAdd.hpp" />
+    <ClInclude Include="SIKInstruct.hpp" />
+    <ClInclude Include="SIKObj.hpp" />
     <ClInclude Include="SIKPlugin.hpp" />
     <ClInclude Include="SIKPlug_Mani.hpp" />
   </ItemGroup>

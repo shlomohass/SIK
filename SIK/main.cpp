@@ -292,6 +292,7 @@ int main(int argc, char** argv) {
 
 		//Load target script:
 		bool indicator = script.compile(filepath);
+
 		//Loading success so go and do stuff:
 		if (indicator) {
 			execution_result = script.runVm();
