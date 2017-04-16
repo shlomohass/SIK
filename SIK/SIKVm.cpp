@@ -87,6 +87,9 @@ namespace sik {
 		case sik::INS_OBJDONE:
 			this->exec_objDone(Inst);
 			break;
+		case sik::INS_OBJADD:
+			this->exec_objAdd(Inst);
+			break;
 		case sik::INS_CHILDASSIGN:
 			this->exec_objChild(Inst);
 			break;
@@ -352,6 +355,14 @@ namespace sik {
 	*/
 	void SIKVm::pushToStack(sik::SIKStackData* STData) {
 		this->scopes.back()->Stack->Stack.push_back(STData);
+	}
+	/* Push to stack some data from an object.
+	*/
+	void SIKVm::pushToStack(sik::SIKObj* CandidObj, sik::SatckDataTypes type) {
+		sik::SIKStackData* SD = new sik::SIKStackData();
+		SD->obj = CandidObj;
+		SD->objectType = type;
+		this->pushToStack(SD);
 	}
     /* Pop from current active stack -> will remove the stackdata too
      */
@@ -1182,11 +1193,14 @@ namespace sik {
 		//Clear some mem:
 		delete argNumObj;
 		
-		//Validate we are handlig with an array:
-		if (nameObj->obj->Type != sik::OBJ_ARRAY) {
+		//Validate we are handlig with an array or a single argument on an object:
+		if (nameObj->obj->Type != sik::OBJ_ARRAY && nameObj->obj->Type != sik::OBJ_OBJ) {
 			throw sik::SIKException(sik::EXC_RUNTIME, "Tried to perform operation on a none array variable. 332254", Inst->lineOrigin, this->InstPointer);
+		} else if (nameObj->obj->Type == sik::OBJ_OBJ && argNum != 1) {
+			throw sik::SIKException(sik::EXC_RUNTIME, "Tried to perform property insert with wrong number of args. 332254", Inst->lineOrigin, this->InstPointer);
 		}
 
+		
 		if (argNum > 0) {
 			//Execute condition:
 			this->InstPointer++;
@@ -1194,38 +1208,50 @@ namespace sik {
 			if (returnCode != -1) { return returnCode; }
 		}
 
-		//Create the array:
+		
+		//Create the return capsule:
 		sik::SIKStackData* STData = new SIKStackData();
 		STData->objectType = sik::SDT_ATTACHED;
 
-		//Traverse All:
-		for (int i = 0; i < argNum; i++) {
-			sik::SIKStackData* element = this->popFromStack();
-			if (this->validateStackDataAvailable(element, false)) {
-				int WalkTo = (int)element->obj->getAsNumber();
-				if (i == 0) {
-					if (WalkTo >= (int)nameObj->obj->Array.size()) {
-						throw sik::SIKException(sik::EXC_RUNTIME, "Tried to call to undefined array element. 658475", Inst->lineOrigin, this->InstPointer);
-					}
-					STData->obj = &nameObj->obj->Array.at(WalkTo);
-				} else {
-					if (WalkTo >= (int)STData->obj->Array.size()) {
-						throw sik::SIKException(sik::EXC_RUNTIME, "Tried to call to undefined array element. 658475", Inst->lineOrigin, this->InstPointer);
-					}
-					STData->obj = &STData->obj->Array.at(WalkTo);
-				}
+		//incase we are handling with an object:
+		if (nameObj->obj->Type == sik::OBJ_OBJ) {
+			sik::SIKStackData* name = this->popFromStack();
+			//TODO : add naming validation
+			STData->obj = nameObj->obj->getFromObject(name->obj->getAsString());
+			if (STData->obj == nullptr) {
+				STData->obj = nameObj->obj->setInObject(name->obj->getAsString());
 			}
-			delete element;
+			delete name;
+		} else {
+			//incase we are handling with an array:
+			//Traverse All:
+			for (int i = 0; i < argNum; i++) {
+				sik::SIKStackData* element = this->popFromStack();
+				if (this->validateStackDataAvailable(element, false)) {
+					int WalkTo = (int)element->obj->getAsNumber();
+					if (i == 0) {
+						if (WalkTo >= (int)nameObj->obj->Array.size()) {
+							throw sik::SIKException(sik::EXC_RUNTIME, "Tried to call to undefined array element. 658475", Inst->lineOrigin, this->InstPointer);
+						}
+						STData->obj = &nameObj->obj->Array.at(WalkTo);
+					}
+					else {
+						if (WalkTo >= (int)STData->obj->Array.size()) {
+							throw sik::SIKException(sik::EXC_RUNTIME, "Tried to call to undefined array element. 658475", Inst->lineOrigin, this->InstPointer);
+						}
+						STData->obj = &STData->obj->Array.at(WalkTo);
+					}
+				}
+				delete element;
+			}
 		}
 
+		//Release
 		delete nameObj;
-
 		//Push new created:
 		this->pushToStack(STData);
-
 		//Try to injump for skipping CAND COR:
 		this->testForInternalNeedJump(Inst);
-
 		return -1;
 	}
 	void SIKVm::exec_prepareToArrayPush(sik::SIKInstruct* Inst) {
@@ -1311,7 +1337,7 @@ namespace sik {
 		return -1;
 	}
 	void SIKVm::exec_func_return(sik::SIKInstruct* Inst) {
-		for (unsigned int i = 0; i < Inst->cache; i++) {
+		for (int i = 0; i < (int)Inst->cache; i++) {
 			//Pop From stack:
 			sik::SIKStackData* right = this->popFromStack();
 
@@ -1527,6 +1553,26 @@ namespace sik {
 		//Pop from builder onion:
 		this->ObjectOnionBuilder.pop_back();
 	
+	}
+	void SIKVm::exec_objAdd(sik::SIKInstruct* Inst) {
+		//Pop From stack:
+		sik::SIKStackData* name = this->popFromStack();
+		sik::SIKStackData* CandidObj = this->popFromStack();
+		sik::SIKObj* theChild;
+		//Validate the Stack data:
+		//TODO : add naming validation
+		if (this->validateStackDataIsObject(CandidObj, false) && name->obj->Type == sik::OBJ_STRING) {
+			theChild = CandidObj->obj->getFromObject(name->obj->getAsString());
+			if (theChild == nullptr) {
+				theChild = CandidObj->obj->setInObject(name->obj->getAsString());
+			}
+		} else {
+			throw sik::SIKException(sik::EXC_RUNTIME, "Object child member can only be a valid name, seen: " + name->obj->getAsString() + ". 4554112145", this->getCurrentLineOrigin(), this->InstPointer);
+		}
+		delete name;
+		delete CandidObj;
+		//Push new created:
+		this->pushToStack(theChild, sik::SDT_ATTACHED);
 	}
 	void SIKVm::exec_objChild(sik::SIKInstruct* Inst) {
 

@@ -151,6 +151,10 @@ namespace sik {
 	}
 	/* Set a child in an object will replace if allready exists
 	*/
+	sik::SIKObj* SIKObj::setInObject(const std::string& name) {
+		this->Obj[name] = sik::SIKObj();
+		return &this->Obj[name];
+	}
 	void SIKObj::setInObject(const std::string& name,sik::SIKObj* _obj) {
 		this->Obj[name] = *_obj;
 	}
@@ -159,10 +163,10 @@ namespace sik {
 	sik::SIKObj* SIKObj::getFromObject(const std::string& name) {
 		sik::SIKObj* found = nullptr;
 		if (this->Obj.find(name) != this->Obj.end()) {
-			//Quick return:
+			//Quick return first level:
 			return &this->Obj.at(name);
 		} else {
-			//Scan
+			//Scan deeper
 			typedef std::unordered_map<std::string, sik::SIKObj>::iterator it_type;
 			for (it_type iterator = this->Obj.begin(); iterator != this->Obj.end(); iterator++) {
 				if (iterator->second.Type == sik::OBJ_OBJ) {
@@ -174,6 +178,8 @@ namespace sik {
 		return nullptr;
 	}
 	sik::SIKObj* SIKObj::getFromPlug(const std::string& name) {
+
+		//TODO here is the base objects that the program recieves.
 		if (this->PluginHook) {
 			return this;
 		}

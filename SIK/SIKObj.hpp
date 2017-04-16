@@ -53,6 +53,7 @@ namespace sik
         std::string getAsString();
         double getAsBool();
 		void pushToArray(const sik::SIKObj& _obj);
+		sik::SIKObj* setInObject(const std::string& name);
 		void setInObject(const std::string& name,sik::SIKObj* _obj);
 		sik::SIKObj* getFromObject(const std::string& name);
 		sik::SIKObj* getFromPlug(const std::string& name);

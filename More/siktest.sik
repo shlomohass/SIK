@@ -1,13 +1,17 @@
-let a, b, c;
 
-print 1 + 2;
-
+let obj = { a : "b" };
+obj[obj.a] = "yes!";
+print obj.b;
 
 // { name : "sik" }.name; <--- HANDLE internal error
 /*
 while (true) { continue; }
 if (test) { breakif; }
 */
+
+
+//let::int  a = 30;
+//let::float::string::array::object::auto a, b, c, d, e;
 
 //each (a, i, e) { test = test + 1; }
 //each (a, e) { print "yes"; }

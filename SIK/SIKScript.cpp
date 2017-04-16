@@ -66,7 +66,7 @@ namespace sik
 
 			{ sik::INS_OBJCREATE,	"OBJCR" },
 			{ sik::INS_OBJDONE,		"OBJDN" },
-
+			{ sik::INS_OBJADD,		"OBJAD" },
 			{ sik::INS_ARRC,		"ARRC" },
 			{ sik::INS_ARRT,		"ARRT" },
 			{ sik::INS_ARRP,		"ARRP" },
@@ -217,6 +217,7 @@ namespace sik
 		bool inString = false;
 		bool specChar = false;
 		int block = 0;
+
 		//Lex the lines:  
 		while (input >> std::noskipws >> cbuffer) {
 			//Handle new lines:

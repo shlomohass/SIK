@@ -6,6 +6,7 @@
 //  Copyright © 2016 Shlomo Hassid. All rights reserved.
 //
 
+//TODO -> Add enums for notations codes N_SOME_STUFF
 #ifndef SIK_NAN
 #define SIK_NAN -3231307.6790
 #endif
@@ -83,6 +84,7 @@ namespace sik
 		INS_DEFINE, //OBJECTS
 		INS_OBJCREATE,
 		INS_OBJDONE,
+		INS_OBJADD,
 
 		INS_ARRC, //Array create
 		INS_ARRT, //Array traverse

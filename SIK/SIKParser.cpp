@@ -649,7 +649,7 @@ namespace sik {
 		}
 		
 		//Validate key words & blocks:
-		/*
+		/* TODO -> add this validation of types between the square Brackets.
 		if (SubSet.hasTypeDeep(sik::KEYWORD) >= 0 || SubSet.hasTypeDeep(sik::DELI_BRCOPEN) >= 0) {
 			throw sik::SIKException("You can't use keywords or Blocks in an array declaration / traverse after the " + token->obj  + " chars.", token->fromLine);
 		}
@@ -669,6 +669,7 @@ namespace sik {
 		numNode->Type = sik::NUMBER;
 		numNode->Value = sik::SIKLang::toString((int)subNode->bulk.size());
 		numNode->Parent = node;
+		numNode->Notation = 0;
 		node->Right = numNode;
 		int theEleSize = (int)subNode->bulk.size();
 		for (int i = theEleSize - 1; i >= 0; i--) {
@@ -700,19 +701,19 @@ namespace sik {
 				varNode->Parent = node;
 				node->Left = varNode;
 				node->Notation = 1; // 1 is traverse or push and not definition
-				/*
-				if (node->Right->Value == "0") {
-					delete node->Right;
-					node->Left = node->Right;
-					node->Right = nullptr;
+				
+				//Special case Only when the inner arguments are constant STRINGS.
+				if (node->bulk.size() == 1 && node->bulk[0]->Type == sik::STRING) {
+					//This is an object auto assign mark as 2:
+					node->Notation = 2;
+					node->Right->Notation = 9; //This will prevent the push of num args before.
 				}
-				*/
 			}
 		}
 
 		
 		//Remove The first Definitionand place the node chain:
-		if (node->Notation == 1) {
+		if (node->Notation == 1 || node->Notation == 2) {
 			if (!TokenSet->replaceRangeWithNode(token->index - 1, parenthesesEnd, node)) {
 				throw sik::SIKException(sik::EXC_COMPILATION, "Error in token extraction. 876165", token->fromLine);
 			}
@@ -1463,7 +1464,7 @@ namespace sik {
 		this->AddToInstructions(instruct, nullptr);
 	}
 	void SIKParser::AddToInstructions(sik::SIKInstruct instruct, sik::SIKAst* nodeParent) {
-		//Mutate the intruct base on the parent value if needed:
+		//Mutate the instruct based on the parent value if needed:
 		if (nodeParent != nullptr) {
 			if (instruct.Type == sik::INS_DEFINE) {
 				instruct.Value = nodeParent->Value;
@@ -1488,7 +1489,7 @@ namespace sik {
 			//Push to main:
 			this->Instructions->push_back(instruct);
 		}
-		
+
 		//If needed create object space:
 		if (AddNewObjecSpace) {
 			this->BlockChunksContainer.push_back(sik::BLOCK_OBJ);
@@ -1711,6 +1712,7 @@ namespace sik {
 			case sik::STRING:
 			case sik::BOOLEAN:
 			case sik::NULLTYPE:
+				if (nodeChild->Notation == 9) break;
 				this->AddToInstructions(sik::SIKInstruct(nodeChild));
 				break;
 		}
@@ -1743,21 +1745,33 @@ namespace sik {
 	}
 	void SIKParser::genForArray(sik::SIKAst* nodeParent, sik::SIKAst* nodeChild) {
 		if (
-			nodeChild->Notation == 1 &&
+			nodeChild->Notation == 1 &&  // Array Push Marked by 1 and no arguments
 			nodeChild->Right->Value == "0"
 		) {
 			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_ARRP));
 			return;
-		} else if (nodeChild->Notation == 1) {
+		} else if (nodeChild->Notation == 1) { // Array traverse Marked by 1
 			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_ARRT));
+		} else if (nodeChild->Notation == 2) { // Object Push Marked by 2
+			//num args was skipped before this cause we don't need it
+			//Now we store first the attribute STRING.
+			this->AddToInstructions(sik::SIKInstruct(nodeChild->bulk[0]));
+			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_OBJADD));
 		} else {
 			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_ARRC));
 		}
-		int size = (int)nodeChild->bulk.size();
-		for (int i = 0; i < size; i++) {
-			this->WalkAst(nodeChild, nodeChild->bulk[i]);
+		
+
+		//Skip this if we made OBJADD that is Special with constant STRING:
+		if (nodeChild->Notation != 2) {
+			//Push the inner arguments:
+			int size = (int)nodeChild->bulk.size();
+			for (int i = 0; i < size; i++) {
+				this->WalkAst(nodeChild, nodeChild->bulk[i]);
+			}
+			//Close the Container:
+			this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_ARRD));
 		}
-		this->AddToInstructions(sik::SIKInstruct(nodeChild, sik::INS_ARRD));
 	}
 	void SIKParser::genForFuncCall(SIKAst* nodeParent, SIKAst* nodeChild) {
 		int size = (int)nodeChild->bulk.size();

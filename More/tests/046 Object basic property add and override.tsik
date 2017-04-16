@@ -1,0 +1,17 @@
+let obj = { 
+    name : "nooop",
+    out  : function(obj) { 
+        return obj.name + " " + obj.lname + " " + "age:" + obj.age;
+    }
+};
+obj["name"] = "SIK";
+obj["lname"] = "Lang";
+obj["age"] = 1;
+
+print obj.out(obj);
+  
+/*
+@expected-output
+SIK Lang age:1
+@end-expected-output
+*/

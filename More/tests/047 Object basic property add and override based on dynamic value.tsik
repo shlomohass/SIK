@@ -1,0 +1,12 @@
+let obj = {};
+obj["a"] = "b"
+obj[obj.a] = "c";
+obj[obj["b"]] = "d";
+obj["d"] = obj.a + obj.b + obj.c;
+print obj.d;
+  
+/*
+@expected-output
+bcd
+@end-expected-output
+*/

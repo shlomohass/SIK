@@ -122,7 +122,8 @@ namespace sik
 		sik::SIKObj* findGlobalFuncAndCache(const std::string& name, sik::SIKInstruct* Inst, bool cache);
 		void pushToStack(sik::SIKObj* CandidObj);
 		void pushToStack(sik::SIKStackData* STData);
-        sik::SIKStackData* popFromStack(); //will earasse the mem too.
+		void pushToStack(sik::SIKObj* CandidObj, sik::SatckDataTypes type);
+        sik::SIKStackData* popFromStack(); //will erase the cell too <- Should always remmember to delete mem.
         sik::SIKStackData* getFromStack();
         void clearCurrentStack();
         
@@ -172,6 +173,7 @@ namespace sik
 
 		void exec_objCreate(sik::SIKInstruct* Inst);
 		void exec_objDone(sik::SIKInstruct* Inst);
+		void exec_objAdd(sik::SIKInstruct* Inst);
 		void exec_objChild(sik::SIKInstruct* Inst);
 		void exec_objAccess(sik::SIKInstruct* Inst);
 

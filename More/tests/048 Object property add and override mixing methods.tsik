@@ -1,0 +1,13 @@
+let obj = { 
+    name : "nooop"
+};
+obj["name"] = "sik";
+obj["lname"] = "lang";
+obj[obj["name"] + obj.lname] = "success";
+print obj.siklang;
+  
+/*
+@expected-output
+success
+@end-expected-output
+*/
