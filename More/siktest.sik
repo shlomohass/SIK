@@ -1,3 +1,8 @@
+let a, b, c;
+
+print 1 + 2;
+
+
 // { name : "sik" }.name; <--- HANDLE internal error
 /*
 while (true) { continue; }

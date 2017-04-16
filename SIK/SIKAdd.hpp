@@ -45,6 +45,7 @@ namespace sik
 		OBJ_STRING,
 		OBJ_OBJ,
 		OBJ_FUNC,
+		OBJ_PLUG,
 		OBJ_ARRAY
 	};
 	enum InstructType {

@@ -623,4 +623,35 @@ namespace sik {
 		}
 	}
 
+	/** Parse any string to lower ASCII chars
+	*
+	* @param string s
+	* @return string
+	*/
+	std::string SIKLang::toLowerString(std::string *s) {
+		std::string outBuffer = *s;
+		std::transform(s->begin(), s->end(), outBuffer.begin(), ::tolower);
+		return outBuffer;
+	}
+	std::string SIKLang::toLowerString(const std::string& s) {
+		std::string outBuffer = s;
+		std::transform(s.begin(), s.end(), outBuffer.begin(), ::tolower);
+		return outBuffer;
+	}
+	/** Parse any string to lower ASCII chars
+	*
+	* @param string s
+	* @return string
+	*/
+	std::string SIKLang::toUpperString(std::string *s) {
+		std::string outBuffer = *s;
+		std::transform(s->begin(), s->end(), outBuffer.begin(), ::toupper);
+		return outBuffer;
+	}
+	std::string SIKLang::toUpperString(const std::string& s) {
+		std::string outBuffer = s;
+		std::transform(s.begin(), s.end(), outBuffer.begin(), ::toupper);
+		return outBuffer;
+	}
+
 }

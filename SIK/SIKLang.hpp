@@ -172,7 +172,10 @@ namespace sik
 		static void printHeader(std::string headername);
 		static void printSepLine(int breaks);
 		static void printEmpLine(int breaks);
-
+		static std::string toLowerString(std::string *s);
+		static std::string toLowerString(const std::string& s);
+		static std::string toUpperString(std::string *s);
+		static std::string toUpperString(const std::string& s);
 	};
 }
 #endif	/* SIKLANG_H */

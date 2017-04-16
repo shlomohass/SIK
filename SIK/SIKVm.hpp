@@ -82,6 +82,7 @@ namespace sik
 		std::vector<std::vector<sik::SIKInstruct>>* ObjectDefinitions;
 		std::vector<sik::SIKObj*> ObjectOnionBuilder;
 		std::map<std::pair<int, std::string>, std::vector<sik::SIKInstruct>>* FunctionInstructions;
+		std::map<std::string, sik::PluginInterface*>* LoadedObjectsAndMethods;
 
 		//Instruction helpers:
 		int InstPointer;
@@ -94,7 +95,11 @@ namespace sik
 
 	public:
 		SIKVm();
-		SIKVm(std::vector<sik::SIKInstruct>* _Instructions, std::vector<std::vector<sik::SIKInstruct>>* _ObjectDefinitions, std::map<std::pair<int, std::string>, std::vector<sik::SIKInstruct>>* _FunctionInstructions);
+		SIKVm(	std::vector<sik::SIKInstruct>* _Instructions, 
+				std::vector<std::vector<sik::SIKInstruct>>* _ObjectDefinitions, 
+				std::map<std::pair<int, std::string>, 
+				std::vector<sik::SIKInstruct>>* _FunctionInstructions
+		);
 		
 		//Vm controls:
 		int run();

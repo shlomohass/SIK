@@ -34,7 +34,6 @@
 #include "SIKAdd.hpp"
 #include "SIKLang.hpp"
 #include "SIKScript.hpp"
-#include "SIKPluginManager.hpp"
 
 #ifndef _WIN32
 inline int _pipe(int fildes[2], unsigned psize, int textmode) {
@@ -276,19 +275,22 @@ int main(int argc, char** argv) {
 		
 		//Create the SIKLang Definition:
 		sik::SIKLang* lang = new sik::SIKLang();
+
 		//Create a Script Container:
 		sik::SIKScript script(enable_debug, debug_level);
 
 		//Load Libs and Plugins:
+		/*
 		sik::PluginManager plugs;
 		plugs.getPluginList("S:\\proj\\c++\\SIK\\Ext\\");
-		unsigned int allPlaugs = (unsigned int)plugs.getNumPlugins();
-		for (unsigned int i = 0; i < allPlaugs; i++) {
-			sik::PluginInterface* Math = plugs.makeNewPluginInstance(i);
-			if (Math != nullptr) {
-				script.RegisterPlugin(plugs.getPluginName(i), Math);
+		unsigned int allPlugs = (unsigned int)plugs.getNumPlugins();
+		for (unsigned int i = 0; i < allPlugs; i++) {
+			sik::PluginInterface* Plug = plugs.makeNewPluginInstance(i);
+			if (Plug != nullptr) {
+				script.RegisterPlugin(sik::SIKLang::toLowerString(plugs.getPluginName(i)), Plug);
 			}
 		}
+		*/
 
 		//Load target script:
 		bool indicator = script.compile(filepath);

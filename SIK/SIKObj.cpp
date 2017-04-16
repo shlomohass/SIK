@@ -75,6 +75,13 @@ namespace sik {
 		this->FuncSpace = nullptr;
 		this->isPerma = false;
 	}
+	SIKObj::SIKObj(sik::PluginInterface* _plug) {
+		this->Type = sik::OBJ_PLUG;
+		this->Number = SIK_NAN;
+		this->FuncSpace = nullptr;
+		this->isPerma = false;
+		this->PluginHook = _plug;
+	}
     /* Always return as a number
      */
     double SIKObj::getAsNumber() {
@@ -85,10 +92,6 @@ namespace sik {
 			case sik::OBJ_ARRAY:
 				return (double)this->Array.size();
 				break;
-			case sik::OBJ_OBJ:
-			case sik::OBJ_FUNC:
-            case sik::OBJ_BOOL:
-            case sik::OBJ_NULL:
             default:
                 return this->Number;
         }
@@ -119,7 +122,8 @@ namespace sik {
 			case sik::OBJ_FUNC: {
 				return "FUNC[" + this->Func.second + "]";
 			} break;
-            case sik::OBJ_NULL:
+			case sik::OBJ_PLUG:
+				return "PLUG[]";
             default:
                 return this->String;
         }
@@ -169,6 +173,11 @@ namespace sik {
 		}
 		return nullptr;
 	}
+	sik::SIKObj* SIKObj::getFromPlug(const std::string& name) {
+		if (this->PluginHook) {
+			return this;
+		}
+	}
 	/* Mutates an object base on a supplied pointer:
 	*/
     void SIKObj::mutate(sik::SIKObj* obj) {
@@ -180,6 +189,7 @@ namespace sik {
 		this->FuncSpace = obj->FuncSpace;
 		this->isPerma = obj->isPerma;
 		this->Obj = obj->Obj;
+		this->PluginHook = obj->PluginHook;
     }
 
 	SIKObj::~SIKObj()

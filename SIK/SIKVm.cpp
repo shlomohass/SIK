@@ -22,6 +22,7 @@ namespace sik {
 		this->BaseInstructions = nullptr;
 		this->ObjectDefinitions = nullptr;
 		this->FunctionInstructions = nullptr;
+		this->LoadedObjectsAndMethods = nullptr;
 		this->jumperFired = false;
 		this->allowElseIf = false;
 	}
@@ -321,6 +322,7 @@ namespace sik {
 				return new sik::SIKObj(theCandidKey, &this->FunctionInstructions->at(theCandidKey));
 			}
 		}
+		//Check in function space:
 		typedef std::map<std::pair<int, std::string>, std::vector<sik::SIKInstruct>>::iterator it_type;
 		for (it_type iterator = this->FunctionInstructions->begin(); iterator != this->FunctionInstructions->end(); iterator++) {
 			if (iterator->first.second[0] == name[0] && iterator->first.second == name) {
@@ -329,6 +331,13 @@ namespace sik {
 				}
 				return new sik::SIKObj(std::pair<int, std::string>(iterator->first.first, name), &iterator->second);
 			}
+		}
+		//Check in loaded extensions:
+		std::map<std::string, sik::PluginInterface*>::iterator it = this->LoadedObjectsAndMethods->find(name);
+		if (it != this->LoadedObjectsAndMethods->end())
+		{
+			//Plug found;
+			return new sik::SIKObj(it->second);
 		}
 		return nullptr;
 	}
@@ -475,7 +484,7 @@ namespace sik {
 				STData->obj = this->getNameFromScope(Inst->Value);
 				STData->objectType = sik::SDT_ATTACHED;
 				if (STData->obj == nullptr) {
-					//try global function:
+					//try global function or Plugin:
 					STData->obj = this->findGlobalFuncAndCache(Inst->Value, Inst, true);
 					STData->objectType = sik::SDT_TEMP;
 					if (STData->obj == nullptr) {
@@ -1544,7 +1553,12 @@ namespace sik {
 
 		//Validate the Stack data:
 		if (this->validateStackDataIsObject(left, false)) {
-			sik::SIKObj* theChild = left->obj->getFromObject(Inst->Value);
+			sik::SIKObj* theChild;
+			if (left->obj->Type == sik::OBJ_OBJ) {
+				theChild = left->obj->getFromObject(Inst->Value);
+			} else {
+				theChild = left->obj->getFromPlug(Inst->Value);
+			}
 			if (theChild != nullptr) {
 				//Set the child as the current path:
 				left->obj = theChild;
@@ -1600,7 +1614,7 @@ namespace sik {
 			if (preventExcep) return false;
 			throw sik::SIKException(sik::EXC_RUNTIME, "Null Stack. 11211445", this->getCurrentLineOrigin(), this->InstPointer);
 		}
-		if (Left->obj == nullptr || Left->obj->Type != sik::OBJ_OBJ) {
+		if (Left->obj == nullptr || (Left->obj->Type != sik::OBJ_OBJ && Left->obj->Type != sik::OBJ_PLUG)) {
 			if (preventExcep) return false;
 			throw sik::SIKException(sik::EXC_RUNTIME, "Trying to opperate on an none object value. 788745444", this->getCurrentLineOrigin(), this->InstPointer);
 		}

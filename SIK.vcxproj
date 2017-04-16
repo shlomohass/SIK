@@ -122,16 +122,12 @@
     <ClCompile Include="SIK\SIKLang.cpp" />
     <ClCompile Include="SIK\SIKObj.cpp" />
     <ClCompile Include="SIK\SIKParser.cpp" />
-    <ClCompile Include="SIK\SIKPluginDetails.cpp" />
-    <ClCompile Include="SIK\SIKPluginManager.cpp" />
     <ClCompile Include="SIK\SIKScript.cpp" />
     <ClCompile Include="sik\SIKTokens.cpp" />
     <ClCompile Include="SIK\SIKVm.cpp" />
     <ClCompile Include="sik\SIK_Lex.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SIK\SIKPluginManager.hpp" />
-    <ClInclude Include="SIK\SIKPluginDetails.hpp" />
     <ClInclude Include="SIK\SIKAnaCode.hpp" />
     <ClInclude Include="SIK\argvparser.hpp" />
     <ClInclude Include="SIK\SETSIK.hpp" />
@@ -142,7 +138,6 @@
     <ClInclude Include="SIK\SIKLang.hpp" />
     <ClInclude Include="SIK\SIKObj.hpp" />
     <ClInclude Include="SIK\SIKParser.hpp" />
-    <ClInclude Include="SIK\SIKPlugin.hpp" />
     <ClInclude Include="SIK\SIKScript.hpp" />
     <ClInclude Include="sik\SIKAdd.hpp" />
     <ClInclude Include="sik\SIKTokens.hpp" />
