@@ -94,8 +94,8 @@ SIK todo list:
 [X] Vm -> Object With nested arrays.
 [X] Vm -> Object assigning.
 [X] Vm -> Object With nested private functions.
-[ ] Vm -> Object add childs.
-
+[X] Vm -> Object add childs.
+[X] Vm -> Name runtime validation when adding object childs 
 
 /******************************************************
  * Some High Optimized to include in the Lib:

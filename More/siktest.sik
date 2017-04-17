@@ -1,7 +1,6 @@
 
-let obj = { a : "b" };
-obj[obj.a] = "yes!";
-print obj.b;
+let obj = { a : "b12" };
+obj[obj.a] = 4;
 
 // { name : "sik" }.name; <--- HANDLE internal error
 /*

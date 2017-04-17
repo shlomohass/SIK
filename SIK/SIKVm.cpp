@@ -1217,10 +1217,15 @@ namespace sik {
 		if (nameObj->obj->Type == sik::OBJ_OBJ) {
 			sik::SIKStackData* name = this->popFromStack();
 			//TODO : add naming validation
-			STData->obj = nameObj->obj->getFromObject(name->obj->getAsString());
-			if (STData->obj == nullptr) {
-				STData->obj = nameObj->obj->setInObject(name->obj->getAsString());
+			if (this->validateStackDataAvailable(name, false) && sik::SIKLang::LangIsNaming(name->obj->getAsString())) {
+				STData->obj = nameObj->obj->getFromObject(name->obj->getAsString());
+				if (STData->obj == nullptr) {
+					STData->obj = nameObj->obj->setInObject(name->obj->getAsString());
+				}
+			} else {
+				throw sik::SIKException(sik::EXC_RUNTIME, "Object child member can only be a valid name, seen: " + name->obj->getAsString() + ". 12315885", this->getCurrentLineOrigin(), this->InstPointer);
 			}
+	
 			delete name;
 		} else {
 			//incase we are handling with an array:
@@ -1561,7 +1566,11 @@ namespace sik {
 		sik::SIKObj* theChild;
 		//Validate the Stack data:
 		//TODO : add naming validation
-		if (this->validateStackDataIsObject(CandidObj, false) && name->obj->Type == sik::OBJ_STRING) {
+		if (
+			this->validateStackDataIsObject(CandidObj, false) && 
+			name->obj->Type == sik::OBJ_STRING && 
+			sik::SIKLang::LangIsNaming(name->obj->getAsString())
+		) {
 			theChild = CandidObj->obj->getFromObject(name->obj->getAsString());
 			if (theChild == nullptr) {
 				theChild = CandidObj->obj->setInObject(name->obj->getAsString());
