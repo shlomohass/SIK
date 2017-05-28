@@ -1391,6 +1391,7 @@ namespace sik {
 		if (cond.second != nullptr) {
 			this->InstPointer++;
 			defintionResult = this->execute(cond.first);
+
 			//Mark all definition part as protected:
 			this->protectAllNamesInScope();
 		} else {

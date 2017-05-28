@@ -193,7 +193,8 @@ namespace sik {
 		this->Array = obj->Array;
 		this->Func = obj->Func;
 		this->FuncSpace = obj->FuncSpace;
-		this->isPerma = obj->isPerma;
+		// TODO : this prevents i in loops (that is perma) being overwriten
+		//this->isPerma = obj->isPerma;
 		this->Obj = obj->Obj;
 		this->PluginHook = obj->PluginHook;
     }

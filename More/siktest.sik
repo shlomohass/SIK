@@ -1,7 +1,17 @@
 
+for (let i = 5, i < 100000, i = i * 2.75) {
+	print i, "\n";
+}
+
+/* Handle this exception:
+for (i = 5, i < 100000, i = i * 2.75) {
+	print i, "\n";
+}
+*/
+/*
 let obj = { a : "b12" };
 obj[obj.a] = 4;
-
+*/
 // { name : "sik" }.name; <--- HANDLE internal error
 /*
 while (true) { continue; }
