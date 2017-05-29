@@ -283,17 +283,6 @@ int main(int argc, char** argv) {
 		/* TODO: will be removed later -> just for laying the ground for later.
 		 * The new approach of the extenssion stuff -> will be implemented by usin SIK code.
 		 */
-		/*
-		sik::PluginManager plugs;
-		plugs.getPluginList("S:\\proj\\c++\\SIK\\Ext\\");
-		unsigned int allPlugs = (unsigned int)plugs.getNumPlugins();
-		for (unsigned int i = 0; i < allPlugs; i++) {
-			sik::PluginInterface* Plug = plugs.makeNewPluginInstance(i);
-			if (Plug != nullptr) {
-				script.RegisterPlugin(sik::SIKLang::toLowerString(plugs.getPluginName(i)), Plug);
-			}
-		}
-		*/
 
 		//Load target script:
 		bool indicator = script.compile(filepath);

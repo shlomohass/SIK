@@ -21,8 +21,6 @@ namespace sik
 	class SIKObj
 	{
 
-		friend class PluginInterface;
-
 	public:
 
 		sik::ObjectTypes							 Type;
@@ -32,7 +30,6 @@ namespace sik
 		std::unordered_map<std::string, sik::SIKObj> Obj;
 		std::pair<int, std::string>					 Func;
 		std::vector<sik::SIKInstruct>*				 FuncSpace;
-		sik::PluginInterface*						 PluginHook;
 		bool										 isPerma; //This is a special flag for preventing scope cleaning such as in for loops definition;
 		
 
@@ -44,7 +41,6 @@ namespace sik
 		SIKObj(const std::pair<int, std::string> _func, std::vector<sik::SIKInstruct>* _space);
 		SIKObj(sik::ObjectTypes _type, const std::string& value);
 		SIKObj(sik::ObjectTypes _type);
-		SIKObj(sik::PluginInterface* _plug);
 
 		//Flags:
 
@@ -56,7 +52,6 @@ namespace sik
 		sik::SIKObj* setInObject(const std::string& name);
 		void setInObject(const std::string& name,sik::SIKObj* _obj);
 		sik::SIKObj* getFromObject(const std::string& name);
-		sik::SIKObj* getFromPlug(const std::string& name);
 
         void mutate(sik::SIKObj* obj);
 		virtual ~SIKObj();

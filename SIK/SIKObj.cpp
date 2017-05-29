@@ -75,13 +75,7 @@ namespace sik {
 		this->FuncSpace = nullptr;
 		this->isPerma = false;
 	}
-	SIKObj::SIKObj(sik::PluginInterface* _plug) {
-		this->Type = sik::OBJ_PLUG;
-		this->Number = SIK_NAN;
-		this->FuncSpace = nullptr;
-		this->isPerma = false;
-		this->PluginHook = _plug;
-	}
+
     /* Always return as a number
      */
     double SIKObj::getAsNumber() {
@@ -177,13 +171,7 @@ namespace sik {
 		}
 		return nullptr;
 	}
-	sik::SIKObj* SIKObj::getFromPlug(const std::string& name) {
 
-		//TODO here is the base objects that the program recieves.
-		if (this->PluginHook) {
-			return this;
-		}
-	}
 	/* Mutates an object base on a supplied pointer:
 	*/
     void SIKObj::mutate(sik::SIKObj* obj) {
@@ -196,7 +184,6 @@ namespace sik {
 		// TODO : this prevents i in loops (that is perma) being overwriten
 		//this->isPerma = obj->isPerma;
 		this->Obj = obj->Obj;
-		this->PluginHook = obj->PluginHook;
     }
 
 	SIKObj::~SIKObj()

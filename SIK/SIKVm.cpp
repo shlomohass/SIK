@@ -22,7 +22,6 @@ namespace sik {
 		this->BaseInstructions = nullptr;
 		this->ObjectDefinitions = nullptr;
 		this->FunctionInstructions = nullptr;
-		this->LoadedObjectsAndMethods = nullptr;
 		this->jumperFired = false;
 		this->allowElseIf = false;
 	}
@@ -335,13 +334,7 @@ namespace sik {
 				return new sik::SIKObj(std::pair<int, std::string>(iterator->first.first, name), &iterator->second);
 			}
 		}
-		//Check in loaded extensions:
-		std::map<std::string, sik::PluginInterface*>::iterator it = this->LoadedObjectsAndMethods->find(name);
-		if (it != this->LoadedObjectsAndMethods->end())
-		{
-			//Plug found;
-			return new sik::SIKObj(it->second);
-		}
+
 		return nullptr;
 	}
 	/* Push to stack some data from an object.
@@ -1612,8 +1605,6 @@ namespace sik {
 			sik::SIKObj* theChild;
 			if (left->obj->Type == sik::OBJ_OBJ) {
 				theChild = left->obj->getFromObject(Inst->Value);
-			} else {
-				theChild = left->obj->getFromPlug(Inst->Value);
 			}
 			if (theChild != nullptr) {
 				//Set the child as the current path:
